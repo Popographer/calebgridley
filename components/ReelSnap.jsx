@@ -179,7 +179,13 @@ export default function ReelSnap({
     <div
       ref={containerRef}
       tabIndex={0}
-      className="h-screen w-full overflow-y-auto snap-y snap-mandatory scroll-smooth outline-none bg-black no-scrollbar no-bounce"
+      className="
+        h-screen w-full overflow-y-auto
+        snap-y snap-mandatory
+        scroll-smooth outline-none
+        bg-black no-scrollbar no-bounce
+        scroll-pb-[30vh] md:scroll-pb-0
+      "
       style={{ WebkitOverflowScrolling: "touch" }}
     >
       <div
@@ -270,7 +276,12 @@ export default function ReelSnap({
         );
       })}
 
-      {footer ? <section className="relative w-full snap-start bg-black safe-b">{footer}</section> : null}
+      {/* Footer as its own snap target to avoid overpull + bleed */}
+      {footer ? (
+        <section className="relative w-full snap-end snap-always bg-black safe-b-plus min-h-[30vh] md:min-h-[220px]">
+          {footer}
+        </section>
+      ) : null}
     </div>
   );
 }
