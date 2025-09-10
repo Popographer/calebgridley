@@ -153,7 +153,7 @@ export default function ReelSnap({
     <div
       ref={containerRef}
       tabIndex={0}
-      className="h-screen w-full overflow-y-auto snap-y snap-mandatory scroll-smooth outline-none bg-black"
+      className="h-screen w-full overflow-y-auto snap-y snap-mandatory scroll-smooth outline-none bg-black no-scrollbar"
       style={{ WebkitOverflowScrolling: "touch" }}
     >
       <div
@@ -206,7 +206,7 @@ export default function ReelSnap({
               className="h-full w-full"
               sources={buildSources(loop)}
               loop
-              preload={i === 0 ? "auto" : "metadata"} // <— eager on first
+              preload={i === 0 ? "auto" : "metadata"} // eager on first
             />
             <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
             {showTitle && (

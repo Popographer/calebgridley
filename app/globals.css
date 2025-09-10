@@ -40,3 +40,8 @@ html { -webkit-tap-highlight-color: transparent; }
 /* minor: avoid white flash before video paint */
 video { background:#000; display:block; }
 img { display:block; }
+
+/* Hide scrollbars on any element with .no-scrollbar */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
