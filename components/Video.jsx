@@ -3,13 +3,6 @@
 import React from "react";
 import { SoundContext } from "./SoundContext";
 
-/**
- * <Video>
- *  - Prefer `sources` (ordered best→fallback): [{ src, type, media? }, ...]
- *  - You can also pass a single `src` string.
- *  - New: `preload` ("none" | "metadata" | "auto") and `fetchPriority`
- *    so you can fully preload the first reel and keep others lighter.
- */
 export default function Video({
   sources = [],
   src,
@@ -18,29 +11,68 @@ export default function Video({
   loop = true,
   controls = false,
   autoPlay = true,
-  preload = "metadata",
-  fetchPriority = "auto",
+  preload = "metadata", // <— default light; pass "auto" for the first reel
   tagRef,
 }) {
   const { muted } = React.useContext(SoundContext);
   const [ready, setReady] = React.useState(false);
   const localRef = React.useRef(null);
+  const resumeHandlersRef = React.useRef({ installed: false, fn: null });
 
-  // Merge external ref (function or ref object) with our local ref
   const setRef = (el) => {
     localRef.current = el;
     if (typeof tagRef === "function") tagRef(el);
     else if (tagRef && typeof tagRef === "object") tagRef.current = el;
   };
 
-  // Try to kick playback when the element is present / muted state changes
-  React.useEffect(() => {
-    if (!autoPlay) return;
+  const tryPlay = React.useCallback(() => {
     const el = localRef.current;
-    if (!el) return;
-    const t = setTimeout(() => el.play().catch(() => {}), 40);
+    if (!autoPlay || !el) return;
+
+    // Ensure muted + playsInline every time before calling play()
+    el.muted = true;
+    el.playsInline = true;
+
+    const p = el.play?.();
+    if (p && typeof p.catch === "function") {
+      p.catch(() => {
+        if (!resumeHandlersRef.current.installed) {
+          const resume = () => {
+            // small delay helps on iOS after touch
+            setTimeout(() => el.play().catch(() => {}), 10);
+            document.removeEventListener("pointerdown", resume);
+            document.removeEventListener("touchstart", resume);
+            resumeHandlersRef.current.installed = false;
+            resumeHandlersRef.current.fn = null;
+          };
+          resumeHandlersRef.current.fn = resume;
+          document.addEventListener("pointerdown", resume, { once: true });
+          document.addEventListener("touchstart", resume, { once: true });
+          resumeHandlersRef.current.installed = true;
+        }
+      });
+    }
+  }, [autoPlay]);
+
+  React.useEffect(() => {
+    const t = setTimeout(tryPlay, 40);
     return () => clearTimeout(t);
-  }, [autoPlay, muted]);
+  }, [tryPlay, muted]);
+
+  React.useEffect(() => {
+    const onVisible = () => {
+      if (document.visibilityState === "visible") tryPlay();
+    };
+    document.addEventListener("visibilitychange", onVisible);
+    return () => {
+      document.removeEventListener("visibilitychange", onVisible);
+      // cleanup any gesture resume listeners if they were installed
+      if (resumeHandlersRef.current.installed && resumeHandlersRef.current.fn) {
+        document.removeEventListener("pointerdown", resumeHandlersRef.current.fn);
+        document.removeEventListener("touchstart", resumeHandlersRef.current.fn);
+      }
+    };
+  }, [tryPlay]);
 
   const markReady = () => setReady(true);
 
@@ -58,7 +90,7 @@ export default function Video({
         className="h-full w-full object-cover transition-opacity duration-150"
         style={{ opacity: ready ? 1 : 0.0001 }}
         poster={poster}
-        muted={muted}
+        muted
         playsInline
         autoPlay={autoPlay}
         loop={loop}
@@ -66,13 +98,10 @@ export default function Video({
         crossOrigin="anonymous"
         disablePictureInPicture
         controls={controls}
-        // any of these will flip the opacity to 1
         onLoadedData={markReady}
         onCanPlay={markReady}
         onPlay={markReady}
         onError={() => setReady(false)}
-        // Chrome/Edge support `fetchpriority`; others ignore it safely.
-        fetchpriority={fetchPriority}
       >
         {Array.isArray(sources) && sources.length > 0 ? (
           sources.map((s, i) => (
