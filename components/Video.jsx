@@ -38,21 +38,24 @@ export default function Video({
       p.catch(() => {
         if (!resumeHandlersRef.current.installed) {
           const resume = () => {
+            // Tiny delay helps certain iOS builds after the user gesture
             setTimeout(() => el.play().catch(() => {}), 10);
+
             document.removeEventListener("pointerdown", resume);
             document.removeEventListener("touchstart", resume);
-            document.removeEventListener("mousedown", resume); // NEW
-            document.removeEventListener("keydown", resume);   // NEW
-            document.removeEventListener("wheel", resume, { passive: true }); // NEW
+            document.removeEventListener("mousedown", resume);
+            document.removeEventListener("keydown", resume);
+            document.removeEventListener("wheel", resume);
+
             resumeHandlersRef.current.installed = false;
             resumeHandlersRef.current.fn = null;
           };
           resumeHandlersRef.current.fn = resume;
           document.addEventListener("pointerdown", resume, { once: true });
           document.addEventListener("touchstart", resume, { once: true });
-          document.addEventListener("mousedown", resume, { once: true }); // NEW
-          document.addEventListener("keydown", resume, { once: true });   // NEW
-          document.addEventListener("wheel", resume, { once: true, passive: true }); // NEW
+          document.addEventListener("mousedown", resume, { once: true });
+          document.addEventListener("keydown", resume, { once: true });
+          document.addEventListener("wheel", resume, { once: true });
           resumeHandlersRef.current.installed = true;
         }
       });
@@ -72,11 +75,12 @@ export default function Video({
     return () => {
       document.removeEventListener("visibilitychange", onVisible);
       if (resumeHandlersRef.current.installed && resumeHandlersRef.current.fn) {
-        document.removeEventListener("pointerdown", resumeHandlersRef.current.fn);
-        document.removeEventListener("touchstart", resumeHandlersRef.current.fn);
-        document.removeEventListener("mousedown", resumeHandlersRef.current.fn); // NEW
-        document.removeEventListener("keydown", resumeHandlersRef.current.fn);   // NEW
-        document.removeEventListener("wheel", resumeHandlersRef.current.fn, { passive: true }); // NEW
+        const r = resumeHandlersRef.current.fn;
+        document.removeEventListener("pointerdown", r);
+        document.removeEventListener("touchstart", r);
+        document.removeEventListener("mousedown", r);
+        document.removeEventListener("keydown", r);
+        document.removeEventListener("wheel", r);
       }
     };
   }, [tryPlay]);
@@ -97,18 +101,21 @@ export default function Video({
         className="h-full w-full object-cover transition-opacity duration-150"
         style={{ opacity: ready ? 1 : 0.0001 }}
         poster={poster}
-        // Critical autoplay attributes rendered at creation time:
+
+        /* Critical autoplay attrs present at parse time (older iOS/Safari) */
         muted
+        defaultMuted
         playsInline
+        {...{ "webkit-playsinline": "true" }}
+
         autoPlay={autoPlay}
-        // iOS/Safari quirk: ensure inline, not full-screen
-        {...{ "webkit-playsinline": "true" }} // NEW — passthrough attr
         loop={loop}
         preload={preload}
         crossOrigin="anonymous"
         disablePictureInPicture
         controls={controls}
-        onLoadedMetadata={(e) => {          // NEW — belt & suspenders
+        onLoadedMetadata={(e) => {
+          // Belt & suspenders: keep these true even if the element rehydrates
           e.currentTarget.muted = true;
           e.currentTarget.playsInline = true;
         }}
