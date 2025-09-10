@@ -5,20 +5,21 @@ import { SoundContext } from "./SoundContext";
 
 /**
  * <Video>
- *  - Prefer `sources` (ordered best→fallback):
- *      [{ src, type, media? }, ...]
- *  - You can also pass a single `src` (string) if easier.
- *  - `autoPlay` defaults to true and we also programmatically
- *    call play() on mount/ready to dodge occasional browser stalls.
+ *  - Prefer `sources` (ordered best→fallback): [{ src, type, media? }, ...]
+ *  - You can also pass a single `src` string.
+ *  - New: `preload` ("none" | "metadata" | "auto") and `fetchPriority`
+ *    so you can fully preload the first reel and keep others lighter.
  */
 export default function Video({
   sources = [],
-  src,                         // optional single source
+  src,
   poster,
   className = "",
   loop = true,
   controls = false,
   autoPlay = true,
+  preload = "metadata",
+  fetchPriority = "auto",
   tagRef,
 }) {
   const { muted } = React.useContext(SoundContext);
@@ -37,7 +38,6 @@ export default function Video({
     if (!autoPlay) return;
     const el = localRef.current;
     if (!el) return;
-    // tiny delay helps some browsers after source selection
     const t = setTimeout(() => el.play().catch(() => {}), 40);
     return () => clearTimeout(t);
   }, [autoPlay, muted]);
@@ -58,11 +58,11 @@ export default function Video({
         className="h-full w-full object-cover transition-opacity duration-150"
         style={{ opacity: ready ? 1 : 0.0001 }}
         poster={poster}
-        muted={muted}           // critical for mobile autoplay
-        playsInline             // iOS: stay inline
+        muted={muted}
+        playsInline
         autoPlay={autoPlay}
         loop={loop}
-        preload="auto"          // eager enough to avoid first-frame black
+        preload={preload}
         crossOrigin="anonymous"
         disablePictureInPicture
         controls={controls}
@@ -71,6 +71,8 @@ export default function Video({
         onCanPlay={markReady}
         onPlay={markReady}
         onError={() => setReady(false)}
+        // Chrome/Edge support `fetchpriority`; others ignore it safely.
+        fetchpriority={fetchPriority}
       >
         {Array.isArray(sources) && sources.length > 0 ? (
           sources.map((s, i) => (

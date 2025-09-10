@@ -18,6 +18,13 @@ export default function RootLayout({ children }) {
         <link rel="dns-prefetch" href="https://cdn.calebgridley.com" />
         <link rel="preconnect" href="https://images.squarespace-cdn.com" crossOrigin="" />
         <link rel="dns-prefetch" href="https://images.squarespace-cdn.com" />
+
+        {/* Preload key posters (CDN) */}
+        <link rel="preload" as="image" href="https://cdn.calebgridley.com/caleb-gridley-poster.webp" crossOrigin="" />
+        <link rel="preload" as="image" href="https://cdn.calebgridley.com/body-of-work-poster.webp" crossOrigin="" />
+        <link rel="preload" as="image" href="https://cdn.calebgridley.com/not-warhol-poster.webp" crossOrigin="" />
+        <link rel="preload" as="image" href="https://cdn.calebgridley.com/augmentations-poster.webp" crossOrigin="" />
+
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="color-scheme" content="dark light" />
         <meta name="theme-color" content="#000000" />

@@ -202,6 +202,8 @@ export default function ReelSnap({
               className="h-full w-full"
               sources={buildSources(loop)}
               loop
+              preload={i === 0 ? "auto" : "metadata"}   // first reel eager, others light
+              fetchPriority={i === 0 ? "high" : "auto"} // small hint for poster fetch
             />
             <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
             {showTitle && (
