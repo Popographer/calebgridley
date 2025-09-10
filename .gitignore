@@ -1,0 +1,31 @@
+# dependencies
+node_modules/
+pnpm-lock.yaml
+*.log
+
+# Next.js build / export
+.next/
+out/
+
+# env files
+.env*
+!.env.example
+
+# editors / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+# deps + builds
+node_modules/
+.next/
+out/
+
+# OS/editor noise
+.DS_Store
+Thumbs.db
+*.log
+
+# env files
+.env
+.env.*

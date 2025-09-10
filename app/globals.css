@@ -1,0 +1,42 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* tiny reset */
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; }
+html, body, #__next { height: 100%; }
+
+/* black canvas */
+body{
+  background:#000;
+  color:#fff;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+}
+
+/* hide scrollbars */
+html { scrollbar-width: none; }            /* Firefox */
+body::-webkit-scrollbar { display: none; } /* WebKit */
+
+/* default overscroll: allow page to chain (prevents footer “stickiness”) */
+html, body { overscroll-behavior-y: auto; }
+
+/* opt-in helper: apply to the reel container if you want to tame bounce there */
+.no-bounce { overscroll-behavior-y: contain; }
+
+/* keyboard accessibility */
+:focus-visible { outline:2px solid rgba(255,255,255,.9); outline-offset:2px; }
+
+/* mobile niceties */
+html { -webkit-tap-highlight-color: transparent; }
+
+/* reduce motion = disable animations/transitions/smooth scroll */
+@media (prefers-reduced-motion: reduce){
+  * { animation: none !important; transition: none !important; }
+  html { scroll-behavior: auto !important; }
+}
+
+/* minor: avoid white flash before video paint */
+video { background:#000; display:block; }
+img { display:block; }

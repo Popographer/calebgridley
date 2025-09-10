@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
+
+  <!-- Landing / Home -->
+  <url>
+    <loc>https://calebgridley.com/</loc>
+    <video:video>
+      <video:title>Caleb Gridley — Landing Loop</video:title>
+      <video:description>Landing/profile loop.</video:description>
+      <video:thumbnail_loc>https://calebgridley.com/loops/caleb-gridley-poster.webp</video:thumbnail_loc>
+      <video:content_loc>https://cdn.calebgridley.com/caleb-gridley-loop-1080.webm</video:content_loc>
+      <video:duration>17</video:duration>
+      <video:publication_date>2025-09-07T12:00:00-05:00</video:publication_date>
+    </video:video>
+  </url>
+
+  <!-- Caleb Gridley (work page) -->
+  <url>
+    <loc>https://calebgridley.com/work/caleb-gridley/</loc>
+    <video:video>
+      <video:title>Caleb Gridley — Loop</video:title>
+      <video:description>Landing/profile teaser loop.</video:description>
+      <video:thumbnail_loc>https://calebgridley.com/loops/caleb-gridley-poster.webp</video:thumbnail_loc>
+      <video:content_loc>https://cdn.calebgridley.com/caleb-gridley-loop-1080.webm</video:content_loc>
+      <video:duration>17</video:duration>
+      <video:publication_date>2025-09-07T12:00:00-05:00</video:publication_date>
+    </video:video>
+  </url>
+
+  <!-- Augmentations -->
+  <url>
+    <loc>https://calebgridley.com/work/augmentations/</loc>
+    <video:video>
+      <video:title>Augmentations — Loop</video:title>
+      <video:description>Teaser loop; full piece on watch page.</video:description>
+      <video:thumbnail_loc>https://calebgridley.com/loops/augmentations-poster.webp</video:thumbnail_loc>
+      <video:content_loc>https://cdn.calebgridley.com/augmentations-loop-1080.webm</video:content_loc>
+      <video:duration>19</video:duration>
+      <video:publication_date>2025-09-07T12:00:00-05:00</video:publication_date>
+    </video:video>
+  </url>
+
+  <!-- Not Warhol -->
+  <url>
+    <loc>https://calebgridley.com/work/not-warhol/</loc>
+    <video:video>
+      <video:title>Not Warhol — Loop</video:title>
+      <video:description>Teaser loop; full piece on watch page.</video:description>
+      <video:thumbnail_loc>https://calebgridley.com/loops/not-warhol-poster.webp</video:thumbnail_loc>
+      <video:content_loc>https://cdn.calebgridley.com/not-warhol-loop-1080.webm</video:content_loc>
+      <video:duration>19</video:duration>
+      <video:publication_date>2025-09-07T12:00:00-05:00</video:publication_date>
+    </video:video>
+  </url>
+
+  <!-- Body of Work -->
+  <url>
+    <loc>https://calebgridley.com/work/body-of-work/</loc>
+    <video:video>
+      <video:title>Body of Work — Loop</video:title>
+      <video:description>Teaser loop; full piece on watch page.</video:description>
+      <video:thumbnail_loc>https://calebgridley.com/loops/body-of-work-poster.webp</video:thumbnail_loc>
+      <video:content_loc>https://cdn.calebgridley.com/body-of-work-loop-1080.webm</video:content_loc>
+      <video:duration>10</video:duration>
+      <video:publication_date>2025-09-07T12:00:00-05:00</video:publication_date>
+    </video:video>
+  </url>
+</urlset>

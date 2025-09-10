@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+
+  <!-- Home poster -->
+  <url>
+    <loc>https://calebgridley.com/</loc>
+    <image:image>
+      <image:loc>https://calebgridley.com/loops/caleb-gridley-poster.webp</image:loc>
+      <image:title>Caleb Gridley — Landing Poster</image:title>
+    </image:image>
+  </url>
+
+  <!-- Caleb Gridley work page -->
+  <url>
+    <loc>https://calebgridley.com/work/caleb-gridley/</loc>
+    <image:image>
+      <image:loc>https://calebgridley.com/loops/caleb-gridley-poster.webp</image:loc>
+      <image:title>Caleb Gridley — Poster</image:title>
+    </image:image>
+  </url>
+
+  <!-- Augmentations -->
+  <url>
+    <loc>https://calebgridley.com/work/augmentations/</loc>
+    <image:image>
+      <image:loc>https://calebgridley.com/loops/augmentations-poster.webp</image:loc>
+      <image:title>Augmentations — Poster</image:title>
+    </image:image>
+  </url>
+
+  <!-- Not Warhol -->
+  <url>
+    <loc>https://calebgridley.com/work/not-warhol/</loc>
+    <image:image>
+      <image:loc>https://calebgridley.com/loops/not-warhol-poster.webp</image:loc>
+      <image:title>Not Warhol — Poster</image:title>
+    </image:image>
+  </url>
+
+  <!-- Body of Work -->
+  <url>
+    <loc>https://calebgridley.com/work/body-of-work/</loc>
+    <image:image>
+      <image:loc>https://calebgridley.com/loops/body-of-work-poster.webp</image:loc>
+      <image:title>Body of Work — Poster</image:title>
+    </image:image>
+  </url>
+</urlset>
