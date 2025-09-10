@@ -25,7 +25,9 @@ export default function RootLayout({ children }) {
         <link rel="preload" as="image" href="https://cdn.calebgridley.com/not-warhol-poster.webp" crossOrigin="" />
         <link rel="preload" as="image" href="https://cdn.calebgridley.com/augmentations-poster.webp" crossOrigin="" />
 
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        {/* IMPORTANT: allow safe-area insets (fixes iOS bottom chrome overlap) */}
+        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+
         <meta name="color-scheme" content="dark light" />
         <meta name="theme-color" content="#000000" />
       </head>

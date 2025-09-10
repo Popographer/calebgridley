@@ -163,7 +163,7 @@ export default function ReelSnap({
         aria-hidden="true"
       />
 
-      {/* bottom-right index (no background, larger, no period) */}
+      {/* bottom-right index */}
       <div className="group fixed bottom-6 right-6 z-40 select-none flex flex-col items-end gap-1">
         <button
           className="pointer-events-auto text-white/90 font-mono text-base tracking-[0.15em] transition-opacity group-hover:opacity-0"
@@ -210,7 +210,7 @@ export default function ReelSnap({
             />
             <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
             {showTitle && (
-              <div className="absolute bottom-16 left-6 right-6 text-white">
+              <div className="absolute left-6 right-6 text-white md:bottom-16 bottom-[calc(4rem+env(safe-area-inset-bottom))]">
                 <h2 className="text-4xl md:text-6xl font-semibold drop-shadow uppercase">
                   {popUrl ? (
                     <a
