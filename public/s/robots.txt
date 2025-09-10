@@ -2,6 +2,6 @@ User-agent: *
 Allow: /
 
 Sitemap: https://calebgridley.com/sitemap.xml
-Sitemap: https://calebgridley.com/s/pages.xml
-Sitemap: https://calebgridley.com/s/imagesitemap.xml
-Sitemap: https://calebgridley.com/s/videositemap.xml
+Sitemap: https://calebgridley.com/pages.xml
+Sitemap: https://calebgridley.com/imagesitemap.xml
+Sitemap: https://calebgridley.com/videositemap.xml
