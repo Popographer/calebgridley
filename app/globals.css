@@ -66,3 +66,17 @@ img { display:block; }
     }
   }
 }
+
+/* Larger bottom padding that also respects iOS safe area */
+@media (max-width: 767.98px){
+  .safe-b-plus {
+    padding-bottom: calc(2.25rem + env(safe-area-inset-bottom, 0px));
+  }
+}
+@supports (padding: constant(safe-area-inset-bottom)) {
+  @media (max-width: 767.98px){
+    .safe-b-plus {
+      padding-bottom: calc(2.25rem + constant(safe-area-inset-bottom));
+    }
+  }
+}
