@@ -82,7 +82,7 @@ export default function ReelSnap({
           videoRefs.current.forEach((el, idx) => {
             if (!el) return;
             if (idx === bestIdx && bestRatio >= visibilityThreshold) {
-              el.muted = true;
+              el.muted = true; // keep silent autoplay consistent
               el.play().catch(() => {});
             } else if (!el.paused) {
               el.pause();
@@ -209,8 +209,9 @@ export default function ReelSnap({
               preload={i === 0 ? "auto" : "metadata"} // eager on first
             />
             <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+
             {showTitle && (
-              <div className="absolute left-6 right-6 text-white md:bottom-16 bottom-[calc(4rem+env(safe-area-inset-bottom))]">
+              <div className="absolute left-6 right-6 text-white md:bottom-16 bottom-16 safe-title">
                 <h2 className="text-4xl md:text-6xl font-semibold drop-shadow uppercase">
                   {popUrl ? (
                     <a
@@ -238,7 +239,7 @@ export default function ReelSnap({
         );
       })}
 
-      {footer ? <section className="relative w-full snap-start bg-black">{footer}</section> : null}
+      {footer ? <section className="relative w-full snap-start bg-black safe-b">{footer}</section> : null}
     </div>
   );
 }

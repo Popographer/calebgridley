@@ -43,8 +43,8 @@ export default function WorkPage() {
   return (
     <>
       <Header />
-      <main className="min-h-screen bg-white text-black">
-        <section className="px-6 pt-28 pb-16">
+      <main className="min-h-[100svh] bg-black text-white md:bg-white md:text-black">
+        <section className="px-6 pt-28 pb-16 safe-b">
           <h1 className="text-3xl md:text-4xl font-semibold tracking-tight">Selected Works</h1>
 
           <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">

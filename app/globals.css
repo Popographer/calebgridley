@@ -45,3 +45,24 @@ img { display:block; }
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
+/* ── iOS safe-area helpers (titles & footer) ─────────────────────────────── */
+.safe-b {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+@supports (padding: constant(safe-area-inset-bottom)) {
+  .safe-b { padding-bottom: constant(safe-area-inset-bottom); }
+}
+
+/* On small screens, position titles above the bottom chrome */
+@media (max-width: 767.98px) {
+  .safe-title {
+    bottom: calc(3.5rem + env(safe-area-inset-bottom, 0px));
+  }
+}
+@supports (bottom: constant(safe-area-inset-bottom)) {
+  @media (max-width: 767.98px) {
+    .safe-title {
+      bottom: calc(3.5rem + constant(safe-area-inset-bottom));
+    }
+  }
+}
