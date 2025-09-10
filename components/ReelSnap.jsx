@@ -80,12 +80,9 @@ export default function ReelSnap({
           }
           videoRefs.current.forEach((el, idx) => {
             if (!el) return;
-            // Only try to play when a panel is sufficiently visible
             if (idx === bestIdx && bestRatio >= visibilityThreshold) {
               el.muted = true;
               el.playsInline = true;
-              // For non-first reels, play() is triggered by scrolling (user action),
-              // which satisfies autoplay policies.
               el.play().catch(() => {});
             } else if (!el.paused) {
               el.pause();
@@ -148,7 +145,7 @@ export default function ReelSnap({
     return () => document.removeEventListener("visibilitychange", onVisible);
   }, [activeIndex]);
 
-  // One-time kickstart fallback — now **only for the first video**
+  // One-time kickstart fallback — only for the first video
   useEffect(() => {
     const kickstart = () => {
       const v0 = videoRefs.current[0];
@@ -162,7 +159,6 @@ export default function ReelSnap({
       window.removeEventListener("keydown", kickstart);
       window.removeEventListener("wheel", kickstart);
     };
-    // Only attach if first is active or near-first-load scenario
     if (activeIndex === 0) {
       window.addEventListener("touchstart", kickstart, { once: true, passive: true });
       window.addEventListener("mousedown", kickstart, { once: true });
@@ -240,33 +236,36 @@ export default function ReelSnap({
               preload={i === 0 ? "auto" : "metadata"}
               fetchPriority={i === 0 ? "high" : "auto"}
             />
-            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
 
-            {/* Title/meta (uppercased) */}
-            {showTitle && (
-              <div className="absolute title-pad md:bottom-16 left-6 right-6 text-white">
-                <h2 className="text-4xl md:text-6xl font-semibold drop-shadow uppercase">
-                  {popUrl ? (
-                    <a
-                      href={popUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="pointer-events-auto inline-block hover:opacity-90 focus:opacity-90 focus:outline-none"
-                      aria-label={`${it.title} — view on Popographer`}
-                    >
+            <div className="pointer-events-none absolute inset-0 flex flex-col justify-end">
+              {showTitle && (
+                <div className="title-pad md:pb-16 px-6 text-white">
+                  <h2 className="pointer-events-auto text-4xl md:text-6xl font-semibold drop-shadow uppercase">
+                    {popUrl ? (
+                      <a
+                        href={popUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="hover:opacity-90 focus:opacity-90 focus:outline-none"
+                        aria-label={`${it.title} — view on Popographer`}
+                      >
+                        <TitleAnimated text={it.title} />
+                      </a>
+                    ) : (
                       <TitleAnimated text={it.title} />
-                    </a>
-                  ) : (
-                    <TitleAnimated text={it.title} />
+                    )}
+                  </h2>
+                  {(it.role || it.year) && (
+                    <p className="mt-2 text-neutral-200">
+                      {it.role}{it.year ? ` • ${it.year}` : ""}
+                    </p>
                   )}
-                </h2>
-                {(it.role || it.year) && (
-                  <p className="mt-2 text-neutral-200">
-                    {it.role}{it.year ? ` • ${it.year}` : ""}
-                  </p>
-                )}
-              </div>
-            )}
+                </div>
+              )}
+            </div>
+
+            {/* subtle bottom fade */}
+            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
           </section>
         );
       })}

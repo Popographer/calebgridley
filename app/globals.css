@@ -53,20 +53,6 @@ img { display:block; }
   .safe-b { padding-bottom: constant(safe-area-inset-bottom); }
 }
 
-/* On small screens, position titles above the bottom chrome */
-@media (max-width: 767.98px) {
-  .safe-title {
-    bottom: calc(3.5rem + env(safe-area-inset-bottom, 0px));
-  }
-}
-@supports (bottom: constant(safe-area-inset-bottom)) {
-  @media (max-width: 767.98px) {
-    .safe-title {
-      bottom: calc(3.5rem + constant(safe-area-inset-bottom));
-    }
-  }
-}
-
 /* Larger bottom padding that also respects iOS safe area */
 @media (max-width: 767.98px){
   .safe-b-plus {
@@ -81,23 +67,25 @@ img { display:block; }
   }
 }
 
-/* Use dynamic viewport height where supported to avoid iOS toolbar jumps */
+/* Sections use dynamic viewport height to avoid iOS toolbar jumps */
 .reel-section { height: 100svh; }
 @supports (height: 100dvh) {
   .reel-section { height: 100dvh; }
 }
 
-/* Mobile title padding: keep text above iOS bottom bars (and our footer) */
+/* Title padding: keep text above iOS bars using safe-area
+   (padding, not bottom, avoids reflow glitches on toolbar show/hide) */
 @media (max-width: 767.98px){
   .title-pad {
-    /* ≈72px above bottom + safe-area (works when toolbars show/hide) */
-    bottom: calc(72px + env(safe-area-inset-bottom, 0px));
+    /* ≈72px above bottom + safe-area */
+    padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px));
   }
 }
+/* Older iOS fallback */
 @supports (padding: constant(safe-area-inset-bottom)) {
   @media (max-width: 767.98px){
     .title-pad {
-      bottom: calc(72px + constant(safe-area-inset-bottom));
+      padding-bottom: calc(72px + constant(safe-area-inset-bottom));
     }
   }
 }
