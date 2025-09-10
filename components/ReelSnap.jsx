@@ -127,13 +127,11 @@ export default function ReelSnap({
     return () => el.removeEventListener("keydown", onKey);
   }, [items?.length, toIndex]);
 
-  // Nudge the very first video to start shortly after mount (in case it's visible)
   useEffect(() => {
     const v0 = videoRefs.current[0];
     if (v0) setTimeout(() => v0.play().catch(() => {}), 60);
   }, []);
 
-  // Resume play for the current video when returning to the tab
   useEffect(() => {
     const onVisible = () => {
       if (document.visibilityState === "visible") {
@@ -145,7 +143,6 @@ export default function ReelSnap({
     return () => document.removeEventListener("visibilitychange", onVisible);
   }, [activeIndex]);
 
-  // One-time kickstart fallback — only for the first video
   useEffect(() => {
     const kickstart = () => {
       const v0 = videoRefs.current[0];
@@ -234,11 +231,9 @@ export default function ReelSnap({
               className="h-full w-full"
               sources={buildSources(loop)}
               loop
-              /* Only the first reel truly autoplays from paint */
               autoPlay={i === 0}
               muted
               playsInline
-              /* eager first reel, lighter others */
               preload={i === 0 ? "auto" : "metadata"}
               fetchPriority={i === 0 ? "high" : "auto"}
             />
@@ -278,7 +273,7 @@ export default function ReelSnap({
 
       {/* Footer as its own snap target to avoid overpull + bleed */}
       {footer ? (
-        <section className="relative w-full snap-end snap-always bg-black safe-b-plus min-h-[30vh] md:min-h-[220px]">
+        <section className="relative w-full snap-end snap-always bg-black safe-b-plus min-h-[30vh] md:min-h-0">
           {footer}
         </section>
       ) : null}
