@@ -2,12 +2,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: "export",
-
   trailingSlash: true,
-
   reactStrictMode: true,
-
-  // We serve images as-is on Pages
   images: {
     unoptimized: true,
     remotePatterns: [
@@ -17,8 +13,6 @@ const nextConfig = {
       { protocol: "https", hostname: "cdn.calebgridley.com" }
     ]
   },
-
-  // Don’t block launch on lint warnings
   eslint: { ignoreDuringBuilds: true }
 };
 
