@@ -179,7 +179,7 @@ export default function ReelSnap({
     <div
       ref={containerRef}
       tabIndex={0}
-      className="h-screen w-full overflow-y-auto snap-y snap-mandatory scroll-smooth outline-none bg-black no-scrollbar"
+      className="h-screen w-full overflow-y-auto snap-y snap-mandatory scroll-smooth outline-none bg-black no-scrollbar no-bounce"
       style={{ WebkitOverflowScrolling: "touch" }}
     >
       <div
@@ -220,7 +220,7 @@ export default function ReelSnap({
             data-index={i}
             data-active={i === activeIndex}
             ref={(el) => (sectionRefs.current[i] = el)}
-            className="group relative reel-section w-full snap-start"
+            className="group relative reel-section w-full snap-start snap-always overflow-hidden"
           >
             <Video
               tagRef={(el) => (videoRefs.current[i] = el)}
