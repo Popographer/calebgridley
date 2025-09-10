@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <sitemap><loc>https://calebgridley.com/s/pages.xml</loc></sitemap>
-  <sitemap><loc>https://calebgridley.com/s/imagesitemap.xml</loc></sitemap>
-  <sitemap><loc>https://calebgridley.com/s/videositemap.xml</loc></sitemap>
+  <sitemap><loc>https://calebgridley.com/pages.xml</loc></sitemap>
+  <sitemap><loc>https://calebgridley.com/imagesitemap.xml</loc></sitemap>
+  <sitemap><loc>https://calebgridley.com/videositemap.xml</loc></sitemap>
 </sitemapindex>
