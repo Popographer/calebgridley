@@ -198,7 +198,7 @@ export default function ReelSnap({
             data-index={i}
             data-active={i === activeIndex}
             ref={(el) => (sectionRefs.current[i] = el)}
-            className="group relative h-screen w-full snap-start"
+            className="group relative reel-section w-full snap-start"
           >
             <Video
               tagRef={(el) => (videoRefs.current[i] = el)}
@@ -210,8 +210,9 @@ export default function ReelSnap({
             />
             <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
 
+            {/* Title/meta (uppercased) */}
             {showTitle && (
-              <div className="absolute left-6 right-6 text-white md:bottom-16 bottom-16 safe-title">
+              <div className="absolute title-pad md:bottom-16 left-6 right-6 text-white">
                 <h2 className="text-4xl md:text-6xl font-semibold drop-shadow uppercase">
                   {popUrl ? (
                     <a
