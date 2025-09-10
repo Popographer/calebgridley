@@ -60,8 +60,7 @@ export default function ReelSnap({
     const root = containerRef.current ?? null;
     const io = new IntersectionObserver(
       (entries) => {
-        let bestIdx = -1,
-          bestRatio = 0;
+        let bestIdx = -1, bestRatio = 0;
         for (const e of entries) {
           const i = Number(e.target.getAttribute("data-index"));
           if (e.intersectionRatio > bestRatio) {
@@ -81,8 +80,12 @@ export default function ReelSnap({
           }
           videoRefs.current.forEach((el, idx) => {
             if (!el) return;
+            // Only try to play when a panel is sufficiently visible
             if (idx === bestIdx && bestRatio >= visibilityThreshold) {
-              el.muted = true; // keep silent autoplay consistent
+              el.muted = true;
+              el.playsInline = true;
+              // For non-first reels, play() is triggered by scrolling (user action),
+              // which satisfies autoplay policies.
               el.play().catch(() => {});
             } else if (!el.paused) {
               el.pause();
@@ -103,14 +106,10 @@ export default function ReelSnap({
 
     const currentIndex = () => {
       const top = el.scrollTop;
-      let best = 0,
-        bestDist = Infinity;
+      let best = 0, bestDist = Infinity;
       sectionRefs.current.forEach((sec, i) => {
         const dist = Math.abs((sec?.offsetTop ?? 0) - top);
-        if (dist < bestDist) {
-          bestDist = dist;
-          best = i;
-        }
+        if (dist < bestDist) { bestDist = dist; best = i; }
       });
       return best;
     };
@@ -131,11 +130,13 @@ export default function ReelSnap({
     return () => el.removeEventListener("keydown", onKey);
   }, [items?.length, toIndex]);
 
+  // Nudge the very first video to start shortly after mount (in case it's visible)
   useEffect(() => {
     const v0 = videoRefs.current[0];
     if (v0) setTimeout(() => v0.play().catch(() => {}), 60);
   }, []);
 
+  // Resume play for the current video when returning to the tab
   useEffect(() => {
     const onVisible = () => {
       if (document.visibilityState === "visible") {
@@ -145,6 +146,35 @@ export default function ReelSnap({
     };
     document.addEventListener("visibilitychange", onVisible);
     return () => document.removeEventListener("visibilitychange", onVisible);
+  }, [activeIndex]);
+
+  // One-time kickstart fallback — now **only for the first video**
+  useEffect(() => {
+    const kickstart = () => {
+      const v0 = videoRefs.current[0];
+      if (v0 && v0.paused) {
+        v0.muted = true;
+        v0.playsInline = true;
+        v0.play().catch(() => {});
+      }
+      window.removeEventListener("touchstart", kickstart);
+      window.removeEventListener("mousedown", kickstart);
+      window.removeEventListener("keydown", kickstart);
+      window.removeEventListener("wheel", kickstart);
+    };
+    // Only attach if first is active or near-first-load scenario
+    if (activeIndex === 0) {
+      window.addEventListener("touchstart", kickstart, { once: true, passive: true });
+      window.addEventListener("mousedown", kickstart, { once: true });
+      window.addEventListener("keydown", kickstart, { once: true });
+      window.addEventListener("wheel", kickstart, { once: true, passive: true });
+      return () => {
+        window.removeEventListener("touchstart", kickstart);
+        window.removeEventListener("mousedown", kickstart);
+        window.removeEventListener("keydown", kickstart);
+        window.removeEventListener("wheel", kickstart);
+      };
+    }
   }, [activeIndex]);
 
   const panels = useMemo(() => items || [], [items]);
@@ -157,9 +187,7 @@ export default function ReelSnap({
       style={{ WebkitOverflowScrolling: "touch" }}
     >
       <div
-        className={`pointer-events-none fixed inset-0 z-30 bg-black transition-opacity duration-150 ${
-          crossfade ? "opacity-20" : "opacity-0"
-        }`}
+        className={`pointer-events-none fixed inset-0 z-30 bg-black transition-opacity duration-150 ${crossfade ? "opacity-20" : "opacity-0"}`}
         aria-hidden="true"
       />
 
@@ -177,9 +205,7 @@ export default function ReelSnap({
             <button
               key={i}
               onClick={() => toIndex(i)}
-              className={`font-mono text-base tracking-[0.15em] transition ${
-                i === activeIndex ? "text-white font-semibold" : "text-white/60 hover:text-white/90"
-              }`}
+              className={`font-mono text-base tracking-[0.15em] transition ${i === activeIndex ? "text-white font-semibold" : "text-white/60 hover:text-white/90"}`}
               aria-label={`Go to section ${i + 1}`}
             >
               {num(i)}
@@ -206,7 +232,13 @@ export default function ReelSnap({
               className="h-full w-full"
               sources={buildSources(loop)}
               loop
-              preload={i === 0 ? "auto" : "metadata"} // eager on first
+              /* Only the first reel truly autoplays from paint */
+              autoPlay={i === 0}
+              muted
+              playsInline
+              /* eager first reel, lighter others */
+              preload={i === 0 ? "auto" : "metadata"}
+              fetchPriority={i === 0 ? "high" : "auto"}
             />
             <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
 
@@ -230,8 +262,7 @@ export default function ReelSnap({
                 </h2>
                 {(it.role || it.year) && (
                   <p className="mt-2 text-neutral-200">
-                    {it.role}
-                    {it.year ? ` • ${it.year}` : ""}
+                    {it.role}{it.year ? ` • ${it.year}` : ""}
                   </p>
                 )}
               </div>
