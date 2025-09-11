@@ -13,6 +13,12 @@ export default function Video({
   autoPlay = true,
   preload = "metadata", // pass "auto" for the first reel
   tagRef,
+
+  // NEW: passthrough media events for orchestration
+  onEnded,
+  onTimeUpdate,
+  onPlay: onPlayProp,
+  onPause: onPauseProp,
 }) {
   const { muted } = React.useContext(SoundContext);
   const [ready, setReady] = React.useState(false);
@@ -87,6 +93,21 @@ export default function Video({
 
   const markReady = () => setReady(true);
 
+  // Wrap user event handlers so our internal logic still runs
+  const handlePlay = (e) => {
+    markReady();
+    onPlayProp?.(e);
+  };
+  const handlePause = (e) => {
+    onPauseProp?.(e);
+  };
+  const handleTimeUpdate = (e) => {
+    onTimeUpdate?.(e);
+  };
+  const handleEnded = (e) => {
+    onEnded?.(e);
+  };
+
   return (
     <div
       className={`relative ${className}`}
@@ -121,7 +142,10 @@ export default function Video({
         }}
         onLoadedData={markReady}
         onCanPlay={markReady}
-        onPlay={markReady}
+        onPlay={handlePlay}
+        onPause={handlePause}
+        onTimeUpdate={handleTimeUpdate}
+        onEnded={handleEnded}
         onError={() => setReady(false)}
       >
         {Array.isArray(sources) && sources.length > 0 ? (

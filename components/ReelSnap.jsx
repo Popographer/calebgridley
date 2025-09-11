@@ -42,6 +42,11 @@ export default function ReelSnap({
   visibilityThreshold = 0.6,
   crossfadeMs = 140,
   footer = null,
+
+  // NEW feature flags
+  autoAdvance = true,            // advance to next reel when current ends
+  wrapAround = true,             // last reel -> back to first
+  autoAdvanceSkipFooter = true,  // never auto-advance onto the footer
 }) {
   const containerRef = useRef(null);
   const sectionRefs = useRef([]);
@@ -51,11 +56,28 @@ export default function ReelSnap({
   const [activeIndex, setActiveIndex] = useState(0);
   const [crossfade, setCrossfade] = useState(false);
 
+  // Track recent manual scroll so we don't fight the user (cooldown)
+  const lastUserScrollTsRef = useRef(0);
+  // Prevent repeatedly bumping preload for the same "next" reel
+  const nextPreloadBumpedForIdxRef = useRef(-1);
+
   const toIndex = useCallback((idx) => {
     const sec = sectionRefs.current[idx];
     if (sec) sec.scrollIntoView({ behavior: "smooth", block: "start" });
   }, []);
 
+  // Observe manual scroll to apply cooldown
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const onScroll = () => {
+      lastUserScrollTsRef.current = Date.now();
+    };
+    el.addEventListener("scroll", onScroll, { passive: true });
+    return () => el.removeEventListener("scroll", onScroll);
+  }, []);
+
+  // IntersectionObserver handles play/pause based on visibility
   useEffect(() => {
     const root = containerRef.current ?? null;
     const io = new IntersectionObserver(
@@ -97,6 +119,7 @@ export default function ReelSnap({
     return () => io.disconnect();
   }, [visibilityThreshold, crossfadeMs]);
 
+  // Keyboard navigation helpers
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
@@ -127,11 +150,13 @@ export default function ReelSnap({
     return () => el.removeEventListener("keydown", onKey);
   }, [items?.length, toIndex]);
 
+  // Nudge the very first video to start shortly after mount (in case it's visible)
   useEffect(() => {
     const v0 = videoRefs.current[0];
     if (v0) setTimeout(() => v0.play().catch(() => {}), 60);
   }, []);
 
+  // Resume play for the current video when returning to the tab
   useEffect(() => {
     const onVisible = () => {
       if (document.visibilityState === "visible") {
@@ -143,6 +168,7 @@ export default function ReelSnap({
     return () => document.removeEventListener("visibilitychange", onVisible);
   }, [activeIndex]);
 
+  // One-time kickstart fallback — only for the first video
   useEffect(() => {
     const kickstart = () => {
       const v0 = videoRefs.current[0];
@@ -171,6 +197,46 @@ export default function ReelSnap({
   }, [activeIndex]);
 
   const panels = useMemo(() => items || [], [items]);
+  const lastIndex = panels.length - 1;
+
+  // Helpers for auto-advance
+  const advanceFrom = (i) => {
+    // Respect manual scroll cooldown (don't fight the user)
+    const sinceScroll = Date.now() - lastUserScrollTsRef.current;
+    if (sinceScroll < 800) return;
+
+    const isLast = i >= lastIndex;
+    if (isLast) {
+      if (wrapAround) {
+        toIndex(0);
+      } else if (!autoAdvanceSkipFooter && footer) {
+        // Scroll to the footer section if allowed
+        // footer section is rendered after all panels, so index = panels.length
+        toIndex(panels.length);
+      } // else do nothing (end of playlist)
+    } else {
+      toIndex(i + 1);
+    }
+  };
+
+  const maybePreloadNext = (i, e) => {
+    if (!autoAdvance) return;
+    const v = e?.currentTarget;
+    if (!v || !Number.isFinite(v.duration) || v.duration <= 0) return;
+    // When ~2s remain, bump the next reel's preload to "auto"
+    const remaining = v.duration - v.currentTime;
+    const nextIdx = i >= lastIndex ? (wrapAround ? 0 : null) : i + 1;
+    if (nextIdx === null) return;
+    if (remaining <= 2.0 && nextPreloadBumpedForIdxRef.current !== nextIdx) {
+      const nextEl = videoRefs.current[nextIdx];
+      if (nextEl) {
+        try {
+          nextEl.setAttribute("preload", "auto");
+        } catch {}
+      }
+      nextPreloadBumpedForIdxRef.current = nextIdx;
+    }
+  };
 
   return (
     <div
@@ -217,6 +283,7 @@ export default function ReelSnap({
         const loop = it.loop;
         const showTitle = showCaptions && it.slug !== "caleb-gridley";
         const popUrl = POP_WORK_URLS[it.slug];
+
         return (
           <section
             key={it.slug}
@@ -230,12 +297,18 @@ export default function ReelSnap({
               poster={loop?.poster || it.heroVideo?.src}
               className="h-full w-full"
               sources={buildSources(loop)}
-              loop
+              /* IMPORTANT: allow video to "end" so auto-advance can fire */
+              loop={autoAdvance ? false : true}
+              /* Only the first reel truly autoplays from paint */
               autoPlay={i === 0}
               muted
               playsInline
+              /* eager first reel, lighter others */
               preload={i === 0 ? "auto" : "metadata"}
               fetchPriority={i === 0 ? "high" : "auto"}
+              /* NEW: orchestration hooks */
+              onEnded={() => autoAdvance && advanceFrom(i)}
+              onTimeUpdate={(e) => maybePreloadNext(i, e)}
             />
 
             <div className="pointer-events-none absolute inset-0 flex flex-col justify-end">
