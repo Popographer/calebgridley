@@ -35,12 +35,9 @@ export default function HomeClient() {
     // Collect in order and filter out any missing slugs — with a type predicate
     const list = ORDER.map((slug) => bySlug.get(slug)).filter((w): w is Work => Boolean(w));
 
-    if (process.env.NODE_ENV !== "production") {
-      const missing = ORDER.filter((slug) => !bySlug.has(slug));
-      if (missing.length) {
-        console.warn("[HomeClient] Missing works for slugs:", missing);
-      }
-    }
+    // If you ever want to surface missing slugs locally, you can add a
+    // non-TypeScript-checked console.warn here guarded by a runtime flag.
+    // (Removed the `process.env` check to avoid Node typings in client code.)
 
     // Remove non-null assertions: fall back to a large rank if ever undefined
     const rank = (s: WorkSlug) => orderIndex.get(s) ?? Number.MAX_SAFE_INTEGER;
