@@ -39,8 +39,6 @@ export const metadata: Metadata = {
 };
 
 // ────────────────────────────────────────────────────────────────────────────
-// Helpers
-// ────────────────────────────────────────────────────────────────────────────
 /** Prefix relative (site-hosted) paths with the site origin. */
 function absOnSite(url?: string | null): string | undefined {
   if (!url) return undefined;
@@ -164,8 +162,7 @@ function JsonLdProfile() {
 }
 
 // ────────────────────────────────────────────────────────────────────────────
-// Expanded VideoObject schema for landing + each work
-// ────────────────────────────────────────────────────────────────────────────
+/** Expanded VideoObject schema for landing + each work */
 function JsonLdVideos() {
   const graph: Array<Record<string, unknown>> = [];
 
@@ -200,7 +197,7 @@ function JsonLdVideos() {
 
   // Works — prefer webm1080 -> webm720 -> mp4720 -> mp41080; list all encodes present
   for (const w of WORKS as Work[]) {
-    const v: LoopSource = w.loop; // ← strong typing (no `{}` fallback)
+    const v: LoopSource = w.loop;
 
     const primaryWebm = v.webm1080 || v.webm720;
     const primaryMp4 = v.mp4720 || v.mp41080;
