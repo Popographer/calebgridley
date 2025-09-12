@@ -1,7 +1,7 @@
 // /app/page.tsx
 import type { Metadata } from "next";
-import Script from "next/script";
 import HomeClient from "../components/HomeClient";
+import JsonLd from "../components/JsonLd";
 import { WORKS } from "../lib/works";
 import type { Work, LoopSource } from "../lib/types";
 import {
@@ -21,7 +21,7 @@ export const dynamic = "force-static";
 export const revalidate = false as const;
 
 // ────────────────────────────────────────────────────────────────────────────
-// Metadata (server) — App Router safe
+// Metadata
 // ────────────────────────────────────────────────────────────────────────────
 export const metadata: Metadata = {
   title: `${PERSON_NAME} — Artist & Director`,
@@ -90,26 +90,18 @@ function compact<T>(val: T): T {
 }
 
 // ────────────────────────────────────────────────────────────────────────────
-// Profile + Breadcrumbs + Organization + Person (JSON-LD)
+// JSON-LD graphs
 // ────────────────────────────────────────────────────────────────────────────
-function JsonLdProfile() {
+function ProfileGraph() {
   const jsonld = compact({
     "@context": "https://schema.org",
     "@graph": [
-      // ✅ Declare a WebSite parent node
-      {
-        "@type": "WebSite",
-        "@id": `${SITE_ORIGIN}/#website`,
-        url: `${SITE_ORIGIN}/`,
-        name: `${PERSON_NAME} — Official Site`,
-        publisher: { "@id": ORG_ID },
-      },
       {
         "@type": ["WebPage", "ProfilePage"],
         "@id": `${SITE_ORIGIN}/#webpage`,
         url: `${SITE_ORIGIN}/`,
         name: `${PERSON_NAME} — Artist & Director`,
-        isPartOf: { "@id": `${SITE_ORIGIN}/#website` }, // ✅ point to declared WebSite
+        isPartOf: { "@id": `${SITE_ORIGIN}/` },
         breadcrumb: { "@id": `${SITE_ORIGIN}/#breadcrumbs` },
         mainEntity: { "@id": PERSON_ID },
       },
@@ -162,22 +154,15 @@ function JsonLdProfile() {
     ],
   });
 
-  return (
-    <Script id="ld-profile" type="application/ld+json" strategy="afterInteractive">
-      {JSON.stringify(jsonld)}
-    </Script>
-  );
+  return <JsonLd id="ld-profile" data={jsonld} />;
 }
 
-// ────────────────────────────────────────────────────────────────────────────
-/** Expanded VideoObject schema for landing + each work */
-function JsonLdVideos() {
+function VideosGraph() {
   const graph: Array<Record<string, unknown>> = [];
 
-  // Keep publisher minimal; full Organization is defined in JsonLdProfile()
   const publisher = { "@type": "Organization", "@id": ORG_ID };
 
-  // Landing (Caleb Gridley) — 1080 WebM primary; also list 720 WebM + 720 MP4
+  // Landing video
   graph.push(
     compact({
       "@type": "VideoObject",
@@ -203,7 +188,7 @@ function JsonLdVideos() {
     })
   );
 
-  // Works — prefer webm1080 -> webm720 -> mp4720 -> mp41080; list all encodes present
+  // Work videos
   for (const w of WORKS as Work[]) {
     const v: LoopSource = w.loop;
 
@@ -239,18 +224,14 @@ function JsonLdVideos() {
     );
   }
 
-  return (
-    <Script id="ld-videos" type="application/ld+json" strategy="afterInteractive">
-      {JSON.stringify({ "@context": "https://schema.org", "@graph": graph })}
-    </Script>
-  );
+  return <JsonLd id="ld-videos" data={{ "@context": "https://schema.org", "@graph": graph }} />;
 }
 
 export default function Page() {
   return (
     <>
-      <JsonLdProfile />
-      <JsonLdVideos />
+      <ProfileGraph />
+      <VideosGraph />
       <HomeClient />
     </>
   );

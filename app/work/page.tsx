@@ -1,8 +1,8 @@
 // /app/work/page.tsx
 import type { Metadata } from "next";
 import Image from "next/image";
-import Script from "next/script";
 import Header from "../../components/Header";
+import JsonLd from "../../components/JsonLd";
 import { WORKS, type Work } from "../../lib/works";
 import {
   SITE_ORIGIN,
@@ -87,14 +87,6 @@ function JsonLdWorkIndex({ items }: { items: Work[] }) {
   const json = compact({
     "@context": "https://schema.org",
     "@graph": [
-      // ✅ Declare the site-level WebSite node (same @id used site-wide)
-      {
-        "@type": "WebSite",
-        "@id": `${SITE_ORIGIN}/#website`,
-        url: `${SITE_ORIGIN}/`,
-        name: `${ORG_NAME} — Site`,
-        publisher: { "@id": ORG_ID },
-      },
       {
         "@type": "BreadcrumbList",
         "@id": `${SITE_ORIGIN}/work/#breadcrumbs`,
@@ -108,7 +100,7 @@ function JsonLdWorkIndex({ items }: { items: Work[] }) {
         "@id": `${SITE_ORIGIN}/work/#webpage`,
         url: `${SITE_ORIGIN}/work/`,
         name: "Selected Works",
-        isPartOf: { "@id": `${SITE_ORIGIN}/#website` }, // ✅ point to declared WebSite
+        isPartOf: { "@id": `${SITE_ORIGIN}/` },
         breadcrumb: { "@id": `${SITE_ORIGIN}/work/#breadcrumbs` },
         about: { "@id": PERSON_ID },
         publisher: { "@id": ORG_ID },
@@ -117,7 +109,7 @@ function JsonLdWorkIndex({ items }: { items: Work[] }) {
         "@type": "ItemList",
         "@id": `${SITE_ORIGIN}/work/#selected-works`,
         name: "Selected Works",
-        mainEntityOfPage: { "@id": `${SITE_ORIGIN}/work/#webpage` }, // ✅ declared above
+        mainEntityOfPage: { "@id": `${SITE_ORIGIN}/work/#webpage` },
         itemListElement: items.map((w, i) => ({
           "@type": "ListItem",
           position: i + 1,
@@ -133,18 +125,13 @@ function JsonLdWorkIndex({ items }: { items: Work[] }) {
     ],
   });
 
-  return (
-    <Script id="ld-work-index" type="application/ld+json" strategy="afterInteractive">
-      {JSON.stringify(json)}
-    </Script>
-  );
+  return <JsonLd id="ld-work-index" data={json} />;
 }
 
 // ────────────────────────────────────────────────────────────────────────────
 // Page
 // ────────────────────────────────────────────────────────────────────────────
 export default function WorkPage() {
-  // Exclude the landing reel (Caleb Gridley)
   const GRID = WORKS.filter((w) => w.slug !== "caleb-gridley");
 
   return (
