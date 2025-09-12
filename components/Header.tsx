@@ -7,8 +7,11 @@ import { usePathname } from "next/navigation";
 
 export default function Header() {
   const [open, setOpen] = useState<boolean>(false);
+
+  // Explicitly typed refs
   const dialogRef = useRef<HTMLDivElement | null>(null);
   const closeBtnRef = useRef<HTMLButtonElement | null>(null);
+
   const pathname = usePathname();
 
   // Close on route change
@@ -30,7 +33,11 @@ export default function Header() {
     body.style.overflow = "hidden";
     if (scrollbarWidth > 0) body.style.paddingRight = `${scrollbarWidth}px`;
 
-    requestAnimationFrame(() => closeBtnRef.current?.focus());
+    // Focus the close button after paint (explicit type)
+    requestAnimationFrame(() => {
+      const btn: HTMLButtonElement | null = closeBtnRef.current;
+      btn?.focus();
+    });
 
     return () => {
       body.style.overflow = prevOverflow;
@@ -48,36 +55,40 @@ export default function Header() {
     return () => window.removeEventListener("keydown", onKey);
   }, [open]);
 
-  // Focus trap (strictly typed, no any casts)
+  // Focus trap (strictly typed)
   useEffect(() => {
     if (!open) return;
-    const container = dialogRef.current;
+
+    const container: HTMLDivElement | null = dialogRef.current;
     if (!container) return;
 
-    const isVisible = (el: HTMLElement) => {
+    const isVisible = (el: HTMLElement): boolean => {
       const s = window.getComputedStyle(el);
       return s.visibility !== "hidden" && s.display !== "none";
     };
 
-    const getFocusable = () => {
+    const getFocusable = (): HTMLElement[] => {
       const sel =
         'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"]), input, select, textarea';
+      // Keep element type via querySelectorAll generic
       return Array.from(container.querySelectorAll<HTMLElement>(sel)).filter(
         (el) => !el.hasAttribute("disabled") && el.tabIndex !== -1 && isVisible(el)
       );
     };
 
-    const onKeyDown: (this: HTMLDivElement, e: KeyboardEvent) => void = function (e) {
+    const onKeyDown = (e: KeyboardEvent): void => {
       if (e.key !== "Tab") return;
+
       const focusables = getFocusable();
       if (!focusables.length) return;
 
-      const first = focusables[0];
-      const last = focusables[focusables.length - 1];
-      const active = document.activeElement as HTMLElement | null;
+      const first: HTMLElement = focusables[0]!;
+      const last: HTMLElement = focusables[focusables.length - 1]!;
+      const active: HTMLElement | null = document.activeElement as HTMLElement | null;
 
+      // If focus is outside container on Shift+Tab, wrap to last
       if (e.shiftKey) {
-        if (active === first || !container.contains(active)) {
+        if (active === first || !active || !container.contains(active)) {
           e.preventDefault();
           last.focus();
         }
@@ -131,7 +142,9 @@ export default function Header() {
           role="dialog"
           aria-modal="true"
           aria-labelledby="main-menu-title"
-          onMouseDown={(e) => {
+          // Make the dialog programmatically focusable for key handling
+          tabIndex={-1}
+          onMouseDown={(e: React.MouseEvent<HTMLDivElement>) => {
             if (e.target === e.currentTarget) setOpen(false); // backdrop click
           }}
           className={[

@@ -1,6 +1,7 @@
 // /app/layout.tsx
 import type { Metadata } from "next";
-import "./globals.css"; // ✅ fixed: relative import for CSS
+import type { ReactNode } from "react";
+import "./globals.css";
 import { Inter } from "next/font/google";
 
 const inter = Inter({ subsets: ["latin"], display: "swap" });
@@ -11,7 +12,7 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://calebgridley.com"),
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" dir="ltr">
       <head>
@@ -47,14 +48,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           crossOrigin="anonymous"
         />
 
-        {/* Allow safe-area insets (fixes iOS bottom chrome overlap) */}
+        {/* Viewport / theme */}
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
         <meta name="color-scheme" content="dark light" />
         <meta name="theme-color" content="#000000" />
       </head>
 
       <body className={`${inter.className} antialiased bg-black text-white min-h-screen flex flex-col`}>
-        {/* Hide skip-to-content anchor (you’re not rendering one) */}
+        {/* Hide skip-to-content anchor (none rendered) */}
         <style>{`a[href="#content"], .skip-to-content { display: none !important; }`}</style>
         {children}
       </body>
