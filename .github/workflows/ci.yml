@@ -1,0 +1,58 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - "**/*.md"
+      - ".github/**"
+  pull_request:
+    branches: [main]
+    paths-ignore:
+      - "**/*.md"
+      - ".github/**"
+
+# Cancel older runs of the same branch/PR if a new one starts
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify-and-build:
+    runs-on: ubuntu-latest
+    env:
+      CI: "true"
+      NEXT_TELEMETRY_DISABLED: "1"
+      NODE_ENV: production
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"      # LTS; matches your Cloudflare setting
+          cache: npm
+
+      - name: Install deps (clean)
+        run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build (static export)
+        run: npm run build
+
+      # Optional: keep the built /out as an artifact for quick inspection
+      - name: Upload static artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: static-out-${{ github.sha }}
+          path: out
+          if-no-files-found: ignore
+          retention-days: 7
