@@ -1,90 +1,124 @@
-// app/page.jsx
+// /app/page.tsx
+import type { Metadata } from "next";
 import Script from "next/script";
 import HomeClient from "../components/HomeClient";
 import { WORKS } from "../lib/works";
+import type { Work, LoopSource } from "../lib/types";
 import {
-  PERSON_ID, PERSON_NAME, PERSON_ROLES, PERSON_SAME_AS,
-  PERSON_CONTACT_EMAIL, ORG_ID, ORG_NAME, ORG_LOGO_URL
+  SITE_ORIGIN,
+  PERSON_ID,
+  PERSON_NAME,
+  PERSON_ROLES,
+  PERSON_SAME_AS,
+  emailForSchema,
+  ORG_ID,
+  ORG_NAME,
+  ORG_LOGO_URL,
 } from "../lib/identity";
+
+/** Force full SSG for static export and disable ISR. */
+export const dynamic = "force-static";
+export const revalidate = false;
 
 // ────────────────────────────────────────────────────────────────────────────
 // Metadata (server) — App Router safe
 // ────────────────────────────────────────────────────────────────────────────
-export const metadata = {
+export const metadata: Metadata = {
   title: `${PERSON_NAME} — Artist & Director`,
   description:
     "Visual artist, photographer, art film director. Selected works and links to Popographer.",
-  alternates: { canonical: "https://calebgridley.com/" },
+  alternates: { canonical: `${SITE_ORIGIN}/` },
   openGraph: {
     type: "website",
-    url: "https://calebgridley.com/",
+    url: `${SITE_ORIGIN}/`,
     title: `${PERSON_NAME} — Artist & Director`,
     description:
       "Visual artist, photographer, art film director. Selected works and links to Popographer.",
   },
-  robots: { index: true, follow: true }
+  robots: { index: true, follow: true },
 };
 
 // ────────────────────────────────────────────────────────────────────────────
 // Helpers
 // ────────────────────────────────────────────────────────────────────────────
-const SITE = "https://calebgridley.com";
-
 /** Prefix relative (site-hosted) paths with the site origin. */
-const absOnSite = (url) => {
-  if (!url) return url;
-  return /^https?:\/\//i.test(url) ? url : `${SITE}${url}`;
-};
+function absOnSite(url?: string | null): string | undefined {
+  if (!url) return undefined;
+  return /^https?:\/\//i.test(url) ? url : `${SITE_ORIGIN}${url}`;
+}
 
 /** ISO string with local timezone offset (e.g., 2025-09-07T12:00:00-05:00). */
-function isoWithTZ(d = new Date()) {
-  const pad = (n) => `${Math.floor(Math.abs(n))}`.padStart(2, "0");
+function isoWithTZ(d: Date = new Date()): string {
+  const pad2 = (n: number) => `${Math.floor(Math.abs(n))}`.padStart(2, "0");
   const tz = -d.getTimezoneOffset();
   const sign = tz >= 0 ? "+" : "-";
-  const hh = pad(tz / 60);
-  const mm = pad(tz % 60);
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}${sign}${hh}:${mm}`;
+  const hh = pad2(tz / 60);
+  const mm = pad2(tz % 60);
+  return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}T${pad2(
+    d.getHours()
+  )}:${pad2(d.getMinutes())}:${pad2(d.getSeconds())}${sign}${hh}:${mm}`;
 }
 
 /** Build a schema.org encoding array from multiple sources (keeps exact URLs). */
-function encodings(...sources) {
-  const arr = [];
+function encodings(
+  ...sources: Array<{ url?: string | null; type?: string | null } | undefined>
+) {
+  const arr: Array<{ "@type": "MediaObject"; contentUrl: string; encodingFormat?: string }> = [];
   for (const s of sources) {
-    if (s && s.url) {
-      arr.push({ "@type": "MediaObject", contentUrl: s.url, encodingFormat: s.type });
+    if (s?.url) {
+      arr.push({ "@type": "MediaObject", contentUrl: s.url, encodingFormat: s.type || undefined });
     }
   }
   return arr;
 }
 
-/** Ensure email is mailto: for schema. */
-const emailForSchema = PERSON_CONTACT_EMAIL?.startsWith("mailto:")
-  ? PERSON_CONTACT_EMAIL
-  : `mailto:${PERSON_CONTACT_EMAIL}`;
+/** Remove undefined keys from objects/arrays (for clean JSON-LD). */
+function compact<T>(val: T): T {
+  if (Array.isArray(val as unknown)) {
+    const arr = (val as unknown as unknown[])
+      .map((v) => compact(v))
+      .filter((v) => v !== undefined);
+    return arr as unknown as T;
+  }
+  if (val && typeof val === "object") {
+    const out: Record<string, unknown> = {};
+    for (const [k, v] of Object.entries(val as Record<string, unknown>)) {
+      const cleaned = compact(v);
+      if (cleaned !== undefined) out[k] = cleaned;
+    }
+    return out as unknown as T;
+  }
+  return val;
+}
 
 // ────────────────────────────────────────────────────────────────────────────
 // Profile + Breadcrumbs + Organization + Person (JSON-LD)
 // ────────────────────────────────────────────────────────────────────────────
 function JsonLdProfile() {
-  const jsonld = {
+  const jsonld = compact({
     "@context": "https://schema.org",
     "@graph": [
       {
         "@type": ["WebPage", "ProfilePage"],
-        "@id": `${SITE}/#webpage`,
-        url: `${SITE}/`,
+        "@id": `${SITE_ORIGIN}/#webpage`,
+        url: `${SITE_ORIGIN}/`,
         name: `${PERSON_NAME} — Artist & Director`,
-        isPartOf: { "@id": `${SITE}/` },
-        breadcrumb: { "@id": `${SITE}/#breadcrumbs` },
-        mainEntity: { "@id": PERSON_ID }
+        isPartOf: { "@id": `${SITE_ORIGIN}/` },
+        breadcrumb: { "@id": `${SITE_ORIGIN}/#breadcrumbs` },
+        mainEntity: { "@id": PERSON_ID },
       },
       {
         "@type": "BreadcrumbList",
-        "@id": `${SITE}/#breadcrumbs`,
+        "@id": `${SITE_ORIGIN}/#breadcrumbs`,
         itemListElement: [
-          { "@type": "ListItem", position: 1, name: "Home", item: `${SITE}/` },
-          { "@type": "ListItem", position: 2, name: "About @ Popographer", item: "https://popographer.com/about/" }
-        ]
+          { "@type": "ListItem", position: 1, name: "Home", item: `${SITE_ORIGIN}/` },
+          {
+            "@type": "ListItem",
+            position: 2,
+            name: "About @ Popographer",
+            item: "https://popographer.com/about/",
+          },
+        ],
       },
       {
         "@type": "Organization",
@@ -94,33 +128,33 @@ function JsonLdProfile() {
         logo: {
           "@type": "ImageObject",
           "@id": "https://popographer.com/#logo",
-          url: ORG_LOGO_URL
-        }
+          url: ORG_LOGO_URL,
+        },
       },
       {
         "@type": "Person",
         "@id": PERSON_ID,
         name: PERSON_NAME,
-        url: `${SITE}/`,
+        url: `${SITE_ORIGIN}/`,
         worksFor: { "@id": ORG_ID },
         sameAs: PERSON_SAME_AS,
         email: emailForSchema,
         hasOccupation: PERSON_ROLES.map((r) => ({ "@type": "Occupation", name: r })),
-        mainEntityOfPage: { "@id": `${SITE}/#webpage` }
+        mainEntityOfPage: { "@id": `${SITE_ORIGIN}/#webpage` },
       },
       {
         "@type": "ItemList",
-        "@id": `${SITE}/#selected-works`,
+        "@id": `${SITE_ORIGIN}/#selected-works`,
         name: "Selected Works",
-        itemListElement: WORKS.map((w, i) => ({
+        itemListElement: (WORKS as Work[]).map((w, i) => ({
           "@type": "ListItem",
           position: i + 1,
           url: absOnSite(w.canonicalUrl),
-          name: w.title
-        }))
-      }
-    ]
-  };
+          name: w.title,
+        })),
+      },
+    ],
+  });
 
   return (
     <Script id="ld-profile" type="application/ld+json" strategy="afterInteractive">
@@ -130,74 +164,74 @@ function JsonLdProfile() {
 }
 
 // ────────────────────────────────────────────────────────────────────────────
-/* Expanded VideoObject schema for landing + each work
-   - thumbnailUrl: on SITE
-   - contentUrl/encoding: use the exact CDN URLs in WORKS.loop.webm / WORKS.loop.mp4
-   - uploadDate: with timezone
-   - includes license + copyrightHolder
-*/
+// Expanded VideoObject schema for landing + each work
 // ────────────────────────────────────────────────────────────────────────────
 function JsonLdVideos() {
-  const graph = [];
+  const graph: Array<Record<string, unknown>> = [];
 
-  // Keep publisher minimal; the full Organization (with logo URL) is defined in JsonLdProfile()
+  // Keep publisher minimal; full Organization is defined in JsonLdProfile()
   const publisher = { "@type": "Organization", "@id": ORG_ID };
 
   // Landing (Caleb Gridley) — 1080 WebM primary; also list 720 WebM + 720 MP4
-  graph.push({
-    "@type": "VideoObject",
-    "@id": `${SITE}/#landing-video`,
-    name: `${PERSON_NAME} — Landing Loop`,
-    description: "Landing/profile loop.",
-    inLanguage: "en",
-    uploadDate: isoWithTZ(),
-    duration: "PT17S",
-    thumbnailUrl: absOnSite("/loops/caleb-gridley-poster.webp"),
-    mainEntityOfPage: { "@id": `${SITE}/#webpage` },
-    publisher,
-    creator: { "@id": PERSON_ID },
-    author:  { "@id": PERSON_ID },
-    copyrightHolder: { "@id": PERSON_ID },
-    license: "https://popographer.com/licensing/",
-    contentUrl: "https://cdn.calebgridley.com/caleb-gridley-loop-1080.webm",
-    encoding: encodings(
-      { url: "https://cdn.calebgridley.com/caleb-gridley-loop-720.mp4",  type: "video/mp4"  },
-      { url: "https://cdn.calebgridley.com/caleb-gridley-loop-1080.webm", type: "video/webm" },
-      { url: "https://cdn.calebgridley.com/caleb-gridley-loop-720.webm",  type: "video/webm" }
-    )
-  });
-
-  // Works — prefer webm1080 -> webm720 -> mp4720 -> mp41080; list all encodes present
-  for (const w of WORKS) {
-    const v = w.loop || {};
-    const primaryWebm = v.webm1080 || v.webm720; // (expected absolute CDN URL)
-    const primaryMp4  = v.mp4720 || v.mp41080;   // prefer smaller MP4 for Safari
-
-    const enc = encodings(
-      { url: v.mp4720,   type: "video/mp4"  },
-      { url: v.mp41080,  type: "video/mp4"  },
-      { url: v.webm1080, type: "video/webm" },
-      { url: v.webm720,  type: "video/webm" }
-    );
-
-    graph.push({
+  graph.push(
+    compact({
       "@type": "VideoObject",
-      "@id": `${SITE}${w.canonicalUrl}#video`,
-      name: w.title,
-      description: w.description,
+      "@id": `${SITE_ORIGIN}/#landing-video`,
+      name: `${PERSON_NAME} — Landing Loop`,
+      description: "Landing/profile loop.",
       inLanguage: "en",
       uploadDate: isoWithTZ(),
-      duration: v.duration ? `PT${v.duration}S` : undefined,
-      thumbnailUrl: absOnSite(v.poster),
-      mainEntityOfPage: { "@id": `${SITE}${w.canonicalUrl}` },
+      duration: "PT17S",
+      thumbnailUrl: absOnSite("/loops/caleb-gridley-poster.webp"),
+      mainEntityOfPage: { "@id": `${SITE_ORIGIN}/#webpage` },
       publisher,
       creator: { "@id": PERSON_ID },
-      author:  { "@id": PERSON_ID },
+      author: { "@id": PERSON_ID },
       copyrightHolder: { "@id": PERSON_ID },
-      license: v.license || "https://popographer.com/licensing/",
-      contentUrl: primaryWebm || primaryMp4,
-      encoding: enc
-    });
+      license: "https://popographer.com/licensing/",
+      contentUrl: "https://cdn.calebgridley.com/caleb-gridley-loop-1080.webm",
+      encoding: encodings(
+        { url: "https://cdn.calebgridley.com/caleb-gridley-loop-720.mp4", type: "video/mp4" },
+        { url: "https://cdn.calebgridley.com/caleb-gridley-loop-1080.webm", type: "video/webm" },
+        { url: "https://cdn.calebgridley.com/caleb-gridley-loop-720.webm", type: "video/webm" }
+      ),
+    })
+  );
+
+  // Works — prefer webm1080 -> webm720 -> mp4720 -> mp41080; list all encodes present
+  for (const w of WORKS as Work[]) {
+    const v: LoopSource = w.loop; // ← strong typing (no `{}` fallback)
+
+    const primaryWebm = v.webm1080 || v.webm720;
+    const primaryMp4 = v.mp4720 || v.mp41080;
+
+    const enc = encodings(
+      { url: v.mp4720, type: "video/mp4" },
+      { url: v.mp41080, type: "video/mp4" },
+      { url: v.webm1080, type: "video/webm" },
+      { url: v.webm720, type: "video/webm" }
+    );
+
+    graph.push(
+      compact({
+        "@type": "VideoObject",
+        "@id": `${SITE_ORIGIN}${w.canonicalUrl}#video`,
+        name: w.title,
+        description: w.description,
+        inLanguage: "en",
+        uploadDate: isoWithTZ(),
+        duration: v.duration ? `PT${v.duration}S` : undefined,
+        thumbnailUrl: absOnSite(v.poster),
+        mainEntityOfPage: { "@id": `${SITE_ORIGIN}${w.canonicalUrl}` },
+        publisher,
+        creator: { "@id": PERSON_ID },
+        author: { "@id": PERSON_ID },
+        copyrightHolder: { "@id": PERSON_ID },
+        license: v.license || "https://popographer.com/licensing/",
+        contentUrl: primaryWebm || primaryMp4,
+        encoding: enc,
+      })
+    );
   }
 
   return (

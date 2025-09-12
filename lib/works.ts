@@ -1,82 +1,108 @@
-// /lib/works.js
+// /lib/works.ts
+import type { Work, WorkSlug, LoopSource } from "./types";
 
-export const WORKS = [
-  // 1) Caleb Gridley — landing
+/** Export types here too so pages can import from either module */
+export type { Work, WorkSlug, LoopSource };
+
+// ── Works data
+export const WORKS: Readonly<Work[]> = [
   {
     slug: "caleb-gridley",
     title: "Caleb Gridley",
     description: "Landing/profile teaser loop.",
     canonicalUrl: "/work/caleb-gridley/",
-    heroVideo: { kind: "image", src: "https://cdn.calebgridley.com/caleb-gridley-poster.webp" },
+    heroVideo: {
+      kind: "image",
+      src: "https://cdn.calebgridley.com/caleb-gridley-poster.webp",
+    },
     loop: {
-      // CDN primary sources
-      webm1080: "https://cdn.calebgridley.com/caleb-gridley-loop-1080.webm", // 17s · 15.7 MB
-      webm720:  "https://cdn.calebgridley.com/caleb-gridley-loop-720.webm",  // 17s · 3.73 MB
-      // Prefer smaller MP4 fallback for Safari/iOS
-      mp4720:   "https://cdn.calebgridley.com/caleb-gridley-loop-720.mp4",   // 17s · 7.48 MB
-      // Optional (heavy): mp41080
-      // mp41080: "https://cdn.calebgridley.com/caleb-gridley-loop-1080.mp4", // 17s · 94 MB
+      webm1080: "https://cdn.calebgridley.com/caleb-gridley-loop-1080.webm",
+      webm720:  "https://cdn.calebgridley.com/caleb-gridley-loop-720.webm",
+      mp4720:   "https://cdn.calebgridley.com/caleb-gridley-loop-720.mp4",
       poster:   "https://cdn.calebgridley.com/caleb-gridley-poster.webp",
       duration: 17,
-      license:  "https://popographer.com/licensing/"
+      license:  "https://popographer.com/licensing/",
     },
-    watchPath: "/work/caleb-gridley/"
+    watchPath: "/work/caleb-gridley/",
   },
-
-  // 2) Body of Work
   {
     slug: "body-of-work",
     title: "Body of Work",
     description: "Teaser loop; full piece on watch page.",
     canonicalUrl: "/work/body-of-work/",
-    heroVideo: { kind: "image", src: "https://cdn.calebgridley.com/body-of-work-poster.webp" },
+    heroVideo: {
+      kind: "image",
+      src: "https://cdn.calebgridley.com/body-of-work-poster.webp",
+    },
     loop: {
-      webm1080: "https://cdn.calebgridley.com/body-of-work-loop-1080.webm", // 10s · 11.4 MB
-      webm720:  "https://cdn.calebgridley.com/body-of-work-loop-720.webm",  // 10s · 1.25 MB
-      mp41080:  "https://cdn.calebgridley.com/body-of-work-loop-1080.mp4",  // 10s · 6.53 MB
-      mp4720:   "https://cdn.calebgridley.com/body-of-work-loop-720.mp4",   // 10s · 3.33 MB
+      webm1080: "https://cdn.calebgridley.com/body-of-work-loop-1080.webm",
+      webm720:  "https://cdn.calebgridley.com/body-of-work-loop-720.webm",
+      mp41080:  "https://cdn.calebgridley.com/body-of-work-loop-1080.mp4",
+      mp4720:   "https://cdn.calebgridley.com/body-of-work-loop-720.mp4",
       poster:   "https://cdn.calebgridley.com/body-of-work-poster.webp",
       duration: 10,
-      license:  "https://popographer.com/licensing/"
+      license:  "https://popographer.com/licensing/",
     },
-    watchPath: "/work/body-of-work/"
+    watchPath: "/work/body-of-work/",
   },
-
-  // 3) Not Warhol
   {
     slug: "not-warhol",
     title: "Not Warhol",
     description: "Teaser loop; full piece on watch page.",
     canonicalUrl: "/work/not-warhol/",
-    heroVideo: { kind: "image", src: "https://cdn.calebgridley.com/not-warhol-poster.webp" },
+    heroVideo: {
+      kind: "image",
+      src: "https://cdn.calebgridley.com/not-warhol-poster.webp",
+    },
     loop: {
-      webm1080: "https://cdn.calebgridley.com/not-warhol-loop-1080.webm", // 19s · 19.7 MB
-      webm720:  "https://cdn.calebgridley.com/not-warhol-loop-720.webm",  // 19s · 4.30 MB
-      mp41080:  "https://cdn.calebgridley.com/not-warhol-loop-1080.mp4",  // 19s · 13.2 MB
-      mp4720:   "https://cdn.calebgridley.com/not-warhol-loop-720.mp4",   // 19s · 7.10 MB
+      webm1080: "https://cdn.calebgridley.com/not-warhol-loop-1080.webm",
+      webm720:  "https://cdn.calebgridley.com/not-warhol-loop-720.webm",
+      mp41080:  "https://cdn.calebgridley.com/not-warhol-loop-1080.mp4",
+      mp4720:   "https://cdn.calebgridley.com/not-warhol-loop-720.mp4",
       poster:   "https://cdn.calebgridley.com/not-warhol-poster.webp",
       duration: 19,
-      license:  "https://popographer.com/licensing/"
+      license:  "https://popographer.com/licensing/",
     },
-    watchPath: "/work/not-warhol/"
+    watchPath: "/work/not-warhol/",
   },
-
-  // 4) Augmentations
   {
     slug: "augmentations",
     title: "Augmentations",
     description: "Teaser loop; full piece on watch page.",
     canonicalUrl: "/work/augmentations/",
-    heroVideo: { kind: "image", src: "https://cdn.calebgridley.com/augmentations-poster.webp" },
+    heroVideo: {
+      kind: "image",
+      src: "https://cdn.calebgridley.com/augmentations-poster.webp",
+    },
     loop: {
-      webm1080: "https://cdn.calebgridley.com/augmentations-loop-1080.webm", // 19s · 15.7 MB
-      webm720:  "https://cdn.calebgridley.com/augmentations-loop-720.webm",  // 19s · 2.90 MB
-      mp41080:  "https://cdn.calebgridley.com/augmentations-loop-1080.mp4",  // 19s · 12.5 MB
-      mp4720:   "https://cdn.calebgridley.com/augmentations-loop-720.mp4",   // 19s · 8.16 MB
+      webm1080: "https://cdn.calebgridley.com/augmentations-loop-1080.webm",
+      webm720:  "https://cdn.calebgridley.com/augmentations-loop-720.webm",
+      mp41080:  "https://cdn.calebgridley.com/augmentations-loop-1080.mp4",
+      mp4720:   "https://cdn.calebgridley.com/augmentations-loop-720.mp4",
       poster:   "https://cdn.calebgridley.com/augmentations-poster.webp",
       duration: 19,
-      license:  "https://popographer.com/licensing/"
+      license:  "https://popographer.com/licensing/",
     },
-    watchPath: "/work/augmentations/"
-  }
-];
+    watchPath: "/work/augmentations/",
+  },
+] as const;
+
+// ── Helper: lookup by slug
+export const getWorkBySlug = (slug: WorkSlug) =>
+  WORKS.find((w) => w.slug === slug);
+
+// ── Helpers: index + circular navigation (for auto-advance + looping)
+export const getIndexBySlug = (slug: WorkSlug) =>
+  WORKS.findIndex((w) => w.slug === slug);
+
+export const nextWorkSlug = (current: WorkSlug): WorkSlug | undefined => {
+  const i = getIndexBySlug(current);
+  if (i < 0) return undefined;
+  return WORKS[(i + 1) % WORKS.length].slug;
+};
+
+export const prevWorkSlug = (current: WorkSlug): WorkSlug | undefined => {
+  const i = getIndexBySlug(current);
+  if (i < 0) return undefined;
+  return WORKS[(i - 1 + WORKS.length) % WORKS.length].slug;
+};

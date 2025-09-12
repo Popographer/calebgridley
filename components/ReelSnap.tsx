@@ -1,14 +1,15 @@
-// components/ReelSnap.jsx
+// components/ReelSnap.tsx
 "use client";
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import Video from "./Video";
-import { SoundContext } from "./SoundContext";
+import Video, { type VideoSource } from "./Video";
 import { POP_WORK_URLS } from "../lib/identity";
+import type { Work, LoopSource } from "../lib/types";
 
-function buildSources(loop) {
+// Build <source> list for <video>
+function buildSources(loop?: LoopSource): VideoSource[] {
   if (!loop) return [];
-  const s = [];
+  const s: VideoSource[] = [];
   if (loop.webm1080) s.push({ src: loop.webm1080, type: "video/webm" });
   if (loop.mp41080) s.push({ src: loop.mp41080, type: "video/mp4" });
   else if (loop.mp4720) s.push({ src: loop.mp4720, type: "video/mp4" });
@@ -17,9 +18,9 @@ function buildSources(loop) {
   return s;
 }
 
-const num = (i) => `${String(i + 1).padStart(2, "0")}`;
+const num = (i: number) => `${String(i + 1).padStart(2, "0")}`;
 
-function TitleAnimated({ text }) {
+function TitleAnimated({ text }: { text?: string }) {
   const chars = React.useMemo(() => (text || "").toUpperCase().split(""), [text]);
   return (
     <div className="group-data-[active=true]:opacity-100 opacity-0 transition-opacity duration-150">
@@ -36,37 +37,43 @@ function TitleAnimated({ text }) {
   );
 }
 
+export interface ReelSnapProps {
+  items?: Work[];
+  showCaptions?: boolean;
+  visibilityThreshold?: number;
+  crossfadeMs?: number;
+  footer?: React.ReactNode;
+  autoAdvance?: boolean;
+  wrapAround?: boolean;
+  autoAdvanceSkipFooter?: boolean;
+}
+
 export default function ReelSnap({
   items,
   showCaptions = true,
   visibilityThreshold = 0.6,
   crossfadeMs = 140,
   footer = null,
-
-  // NEW feature flags
-  autoAdvance = true,            // advance to next reel when current ends
-  wrapAround = true,             // last reel -> back to first
-  autoAdvanceSkipFooter = true,  // never auto-advance onto the footer
-}) {
-  const containerRef = useRef(null);
-  const sectionRefs = useRef([]);
-  const videoRefs = useRef([]);
-  const { muted } = React.useContext(SoundContext);
+  autoAdvance = true,
+  wrapAround = true,
+  autoAdvanceSkipFooter = true,
+}: ReelSnapProps) {
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const sectionRefs = useRef<HTMLElement[]>([]);
+  const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
 
   const [activeIndex, setActiveIndex] = useState(0);
   const [crossfade, setCrossfade] = useState(false);
 
-  // Track recent manual scroll so we don't fight the user (cooldown)
   const lastUserScrollTsRef = useRef(0);
-  // Prevent repeatedly bumping preload for the same "next" reel
   const nextPreloadBumpedForIdxRef = useRef(-1);
 
-  const toIndex = useCallback((idx) => {
+  const toIndex = useCallback((idx: number) => {
     const sec = sectionRefs.current[idx];
     if (sec) sec.scrollIntoView({ behavior: "smooth", block: "start" });
   }, []);
 
-  // Observe manual scroll to apply cooldown
+  // Track manual scroll (cooldown for auto-advance)
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
@@ -77,19 +84,23 @@ export default function ReelSnap({
     return () => el.removeEventListener("scroll", onScroll);
   }, []);
 
-  // IntersectionObserver handles play/pause based on visibility
+  // IntersectionObserver orchestrates play/pause & active section
   useEffect(() => {
     const root = containerRef.current ?? null;
     const io = new IntersectionObserver(
       (entries) => {
-        let bestIdx = -1, bestRatio = 0;
+        let bestIdx = -1;
+        let bestRatio = 0;
+
         for (const e of entries) {
-          const i = Number(e.target.getAttribute("data-index"));
-          if (e.intersectionRatio > bestRatio) {
+          const ds = e.target.getAttribute("data-index");
+          const i = ds ? Number(ds) : -1;
+          if (i >= 0 && e.intersectionRatio > bestRatio) {
             bestRatio = e.intersectionRatio;
             bestIdx = i;
           }
         }
+
         if (bestIdx >= 0) {
           if (bestRatio >= visibilityThreshold) {
             setActiveIndex((prev) => {
@@ -100,12 +111,13 @@ export default function ReelSnap({
               return bestIdx;
             });
           }
+
           videoRefs.current.forEach((el, idx) => {
             if (!el) return;
             if (idx === bestIdx && bestRatio >= visibilityThreshold) {
               el.muted = true;
               el.playsInline = true;
-              el.play().catch(() => {});
+              void el.play()?.catch(() => {});
             } else if (!el.paused) {
               el.pause();
             }
@@ -119,22 +131,26 @@ export default function ReelSnap({
     return () => io.disconnect();
   }, [visibilityThreshold, crossfadeMs]);
 
-  // Keyboard navigation helpers
+  // Keyboard navigation (strictly typed; no any casts)
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
 
     const currentIndex = () => {
       const top = el.scrollTop;
-      let best = 0, bestDist = Infinity;
+      let best = 0;
+      let bestDist = Infinity;
       sectionRefs.current.forEach((sec, i) => {
         const dist = Math.abs((sec?.offsetTop ?? 0) - top);
-        if (dist < bestDist) { bestDist = dist; best = i; }
+        if (dist < bestDist) {
+          bestDist = dist;
+          best = i;
+        }
       });
       return best;
     };
 
-    const onKey = (e) => {
+    const onKey: (this: HTMLDivElement, e: KeyboardEvent) => void = function (e) {
       const keys = ["ArrowUp", "ArrowDown", "PageUp", "PageDown", "Home", "End"];
       if (!keys.includes(e.key)) return;
       e.preventDefault();
@@ -150,32 +166,32 @@ export default function ReelSnap({
     return () => el.removeEventListener("keydown", onKey);
   }, [items?.length, toIndex]);
 
-  // Nudge the very first video to start shortly after mount (in case it's visible)
+  // Nudge first video shortly after mount
   useEffect(() => {
     const v0 = videoRefs.current[0];
-    if (v0) setTimeout(() => v0.play().catch(() => {}), 60);
+    if (v0) setTimeout(() => { void v0.play()?.catch(() => {}); }, 60);
   }, []);
 
-  // Resume play for the current video when returning to the tab
+  // Resume current video when tab is visible again
   useEffect(() => {
     const onVisible = () => {
       if (document.visibilityState === "visible") {
         const v = videoRefs.current[activeIndex];
-        v?.play().catch(() => {});
+        if (v) { void v.play()?.catch(() => {}); }
       }
     };
     document.addEventListener("visibilitychange", onVisible);
     return () => document.removeEventListener("visibilitychange", onVisible);
   }, [activeIndex]);
 
-  // One-time kickstart fallback — only for the first video
+  // One-time kickstart fallback for first video
   useEffect(() => {
     const kickstart = () => {
       const v0 = videoRefs.current[0];
       if (v0 && v0.paused) {
         v0.muted = true;
         v0.playsInline = true;
-        v0.play().catch(() => {});
+        void v0.play()?.catch(() => {});
       }
       window.removeEventListener("touchstart", kickstart);
       window.removeEventListener("mousedown", kickstart);
@@ -196,47 +212,82 @@ export default function ReelSnap({
     }
   }, [activeIndex]);
 
-  const panels = useMemo(() => items || [], [items]);
+  const panels = useMemo<Work[]>(() => items || [], [items]);
   const lastIndex = panels.length - 1;
 
-  // Helpers for auto-advance
-  const advanceFrom = (i) => {
-    // Respect manual scroll cooldown (don't fight the user)
-    const sinceScroll = Date.now() - lastUserScrollTsRef.current;
-    if (sinceScroll < 800) return;
+  // Auto-advance helpers
+  const advanceFrom = useCallback(
+    (i: number) => {
+      if (!autoAdvance) return;
+      const sinceScroll = Date.now() - lastUserScrollTsRef.current;
+      if (sinceScroll < 800) return;
 
-    const isLast = i >= lastIndex;
-    if (isLast) {
-      if (wrapAround) {
-        toIndex(0);
-      } else if (!autoAdvanceSkipFooter && footer) {
-        // Scroll to the footer section if allowed
-        // footer section is rendered after all panels, so index = panels.length
-        toIndex(panels.length);
-      } // else do nothing (end of playlist)
-    } else {
-      toIndex(i + 1);
-    }
-  };
-
-  const maybePreloadNext = (i, e) => {
-    if (!autoAdvance) return;
-    const v = e?.currentTarget;
-    if (!v || !Number.isFinite(v.duration) || v.duration <= 0) return;
-    // When ~2s remain, bump the next reel's preload to "auto"
-    const remaining = v.duration - v.currentTime;
-    const nextIdx = i >= lastIndex ? (wrapAround ? 0 : null) : i + 1;
-    if (nextIdx === null) return;
-    if (remaining <= 2.0 && nextPreloadBumpedForIdxRef.current !== nextIdx) {
-      const nextEl = videoRefs.current[nextIdx];
-      if (nextEl) {
-        try {
-          nextEl.setAttribute("preload", "auto");
-        } catch {}
+      const isLast = i >= lastIndex;
+      if (isLast) {
+        if (wrapAround) {
+          toIndex(0);
+        } else if (!autoAdvanceSkipFooter && footer) {
+          toIndex(panels.length); // footer section
+        }
+      } else {
+        toIndex(i + 1);
       }
-      nextPreloadBumpedForIdxRef.current = nextIdx;
-    }
-  };
+    },
+    [autoAdvance, autoAdvanceSkipFooter, wrapAround, footer, lastIndex, panels.length, toIndex]
+  );
+
+  const maybePreloadNext = useCallback(
+    (i: number, v: HTMLVideoElement) => {
+      if (!autoAdvance || !v || !Number.isFinite(v.duration) || v.duration <= 0) return;
+      const remaining = v.duration - v.currentTime;
+      const nextIdx = i >= lastIndex ? (wrapAround ? 0 : null) : i + 1;
+      if (nextIdx === null) return;
+      if (remaining <= 2.0 && nextPreloadBumpedForIdxRef.current !== nextIdx) {
+        const nextEl = videoRefs.current[nextIdx];
+        if (nextEl) {
+          try {
+            nextEl.setAttribute("preload", "auto");
+          } catch {
+            /* noop: attribute may be unsupported */
+          }
+        }
+        nextPreloadBumpedForIdxRef.current = nextIdx;
+      }
+    },
+    [autoAdvance, lastIndex, wrapAround]
+  );
+
+  // Wire up native video events for every panel
+  useEffect(() => {
+    const cleanups: Array<() => void> = [];
+    panels.forEach((_, i) => {
+      const el = videoRefs.current[i];
+      if (!el) return;
+
+      const onEnded = () => advanceFrom(i);
+      const onTime = () => maybePreloadNext(i, el);
+
+      el.addEventListener("ended", onEnded);
+      el.addEventListener("timeupdate", onTime);
+
+      cleanups.push(() => {
+        el.removeEventListener("ended", onEnded);
+        el.removeEventListener("timeupdate", onTime);
+      });
+    });
+
+    return () => {
+      cleanups.forEach((fn) => fn());
+    };
+  }, [panels, advanceFrom, maybePreloadNext]);
+
+  // typed ref helper
+  const setVideoRef = useCallback(
+    (index: number) => (el: HTMLVideoElement | null) => {
+      videoRefs.current[index] = el;
+    },
+    []
+  );
 
   return (
     <div
@@ -251,12 +302,15 @@ export default function ReelSnap({
       "
       style={{ WebkitOverflowScrolling: "touch" }}
     >
+      {/* subtle crossfade veil when switching sections */}
       <div
-        className={`pointer-events-none fixed inset-0 z-30 bg-black transition-opacity duration-150 ${crossfade ? "opacity-20" : "opacity-0"}`}
+        className={`pointer-events-none fixed inset-0 z-30 bg-black transition-opacity duration-150 ${
+          crossfade ? "opacity-20" : "opacity-0"
+        }`}
         aria-hidden="true"
       />
 
-      {/* bottom-right index */}
+      {/* bottom-right index switcher */}
       <div className="group fixed bottom-6 right-6 z-40 select-none flex flex-col items-end gap-1">
         <button
           className="pointer-events-auto text-white/90 font-mono text-base tracking-[0.15em] transition-opacity group-hover:opacity-0"
@@ -270,7 +324,9 @@ export default function ReelSnap({
             <button
               key={i}
               onClick={() => toIndex(i)}
-              className={`font-mono text-base tracking-[0.15em] transition ${i === activeIndex ? "text-white font-semibold" : "text-white/60 hover:text-white/90"}`}
+              className={`font-mono text-base tracking-[0.15em] transition ${
+                i === activeIndex ? "text-white font-semibold" : "text-white/60 hover:text-white/90"
+              }`}
               aria-label={`Go to section ${i + 1}`}
             >
               {num(i)}
@@ -282,33 +338,30 @@ export default function ReelSnap({
       {panels.map((it, i) => {
         const loop = it.loop;
         const showTitle = showCaptions && it.slug !== "caleb-gridley";
-        const popUrl = POP_WORK_URLS[it.slug];
+        const popUrl = (POP_WORK_URLS as Record<string, string | undefined>)[it.slug];
 
         return (
           <section
             key={it.slug}
             data-index={i}
             data-active={i === activeIndex}
-            ref={(el) => (sectionRefs.current[i] = el)}
+            ref={(el) => {
+              if (el) sectionRefs.current[i] = el;
+            }}
             className="group relative reel-section w-full snap-start snap-always overflow-hidden"
           >
             <Video
-              tagRef={(el) => (videoRefs.current[i] = el)}
+              ref={setVideoRef(i)}
               poster={loop?.poster || it.heroVideo?.src}
               className="h-full w-full"
               sources={buildSources(loop)}
-              /* IMPORTANT: allow video to "end" so auto-advance can fire */
+              // allow video to end so auto-advance can trigger
               loop={autoAdvance ? false : true}
-              /* Only the first reel truly autoplays from paint */
+              // only the first reel truly autoplays from paint
               autoPlay={i === 0}
               muted
               playsInline
-              /* eager first reel, lighter others */
               preload={i === 0 ? "auto" : "metadata"}
-              fetchPriority={i === 0 ? "high" : "auto"}
-              /* NEW: orchestration hooks */
-              onEnded={() => autoAdvance && advanceFrom(i)}
-              onTimeUpdate={(e) => maybePreloadNext(i, e)}
             />
 
             <div className="pointer-events-none absolute inset-0 flex flex-col justify-end">
@@ -331,20 +384,21 @@ export default function ReelSnap({
                   </h2>
                   {(it.role || it.year) && (
                     <p className="mt-2 text-neutral-200">
-                      {it.role}{it.year ? ` • ${it.year}` : ""}
+                      {it.role}
+                      {it.year ? ` • ${it.year}` : ""}
                     </p>
                   )}
                 </div>
               )}
             </div>
 
-            {/* subtle bottom fade */}
+            {/* subtle bottom fade over video */}
             <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
           </section>
         );
       })}
 
-      {/* Footer as its own snap target to avoid overpull + bleed */}
+      {/* Footer snap target */}
       {footer ? (
         <section className="relative w-full snap-end snap-always bg-black safe-b-plus min-h-[30vh] md:min-h-0">
           {footer}

@@ -1,35 +1,64 @@
-// components/HomeClient.jsx
+// components/HomeClient.tsx
 "use client";
 
+import React from "react";
 import Header from "./Header";
 import ReelSnap from "./ReelSnap";
 import SiteFooter from "./SiteFooter";
 import { WORKS } from "../lib/works";
+import type { Work, WorkSlug } from "../lib/types";
 import { SoundContext, useSoundController } from "./SoundContext";
+
+/** Desired order of reels on the homepage (stable, typed) */
+const ORDER = [
+  "caleb-gridley",
+  "body-of-work",
+  "not-warhol",
+  "augmentations",
+] as const satisfies Readonly<WorkSlug[]>;
 
 export default function HomeClient() {
   const sound = useSoundController();
 
-  // Order: caleb-gridley (landing), then body-of-work, not-warhol, augmentations
-  const REEL = [
-    "caleb-gridley",
-    "body-of-work",
-    "not-warhol",
-    "augmentations",
-  ]
-    .map((slug) => WORKS.find((w) => w.slug === slug))
-    .filter(Boolean);
+  // Build a stable ordering map once
+  const orderIndex = React.useMemo(() => {
+    const map = new Map<WorkSlug, number>();
+    ORDER.forEach((slug, i) => map.set(slug, i));
+    return map;
+  }, []);
+
+  // Deterministic reel list (sorted by ORDER)
+  const REEL = React.useMemo<Work[]>(() => {
+    const bySlug = new Map<WorkSlug, Work>();
+    for (const w of WORKS) bySlug.set(w.slug, w);
+
+    // Collect in order and filter out any missing slugs — with a type predicate
+    const list = ORDER.map((slug) => bySlug.get(slug)).filter((w): w is Work => Boolean(w));
+
+    if (process.env.NODE_ENV !== "production") {
+      const missing = ORDER.filter((slug) => !bySlug.has(slug));
+      if (missing.length) {
+        console.warn("[HomeClient] Missing works for slugs:", missing);
+      }
+    }
+
+    // Remove non-null assertions: fall back to a large rank if ever undefined
+    const rank = (s: WorkSlug) => orderIndex.get(s) ?? Number.MAX_SAFE_INTEGER;
+    return list.sort((a, b) => rank(a.slug) - rank(b.slug));
+  }, [orderIndex]);
 
   return (
     <SoundContext.Provider value={sound}>
       <Header />
-      {/* Main can be plain now; the inner scroller handles snap & footer */}
       <main className="bg-black">
         <ReelSnap
           items={REEL}
           showCaptions
           visibilityThreshold={0.62}
           crossfadeMs={140}
+          autoAdvance
+          wrapAround
+          autoAdvanceSkipFooter
           footer={<SiteFooter />}
         />
       </main>

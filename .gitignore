@@ -1,24 +1,30 @@
+# ────────────────────────────────
 # Dependencies
 node_modules/
 pnpm-lock.yaml
 
+# ────────────────────────────────
 # Next.js build / export
 .next/
 out/
 
+# ────────────────────────────────
 # TypeScript
 *.tsbuildinfo
 
-# Env files
+# ────────────────────────────────
+# Env files (keep example tracked)
 .env*
 !.env.example
 
+# ────────────────────────────────
 # Logs
 npm-debug.log*
 yarn-debug.log*
 pnpm-debug.log*
 *.log
 
+# ────────────────────────────────
 # Editors / OS
 .vscode/
 .idea/
