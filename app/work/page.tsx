@@ -14,7 +14,7 @@ import {
 
 /** Static export: force SSG and disable ISR */
 export const dynamic = "force-static";
-export const revalidate = false;
+export const revalidate = false as const;
 
 // ────────────────────────────────────────────────────────────────────────────
 // Metadata
@@ -68,10 +68,8 @@ function isPlainObject(x: unknown): x is Record<string, unknown> {
 /** Remove undefined keys from objects/arrays (for clean JSON-LD). */
 function compact<T>(val: T): T {
   if (Array.isArray(val)) {
-    // Cast to unknown[] before mapping to avoid "any" inference
     const arr: unknown[] = (val as unknown[]).map((v) => compact(v)).filter((v) => v !== undefined);
-    const res = arr as unknown as T; // typed back to original shape
-    return res;
+    return arr as unknown as T;
   }
   if (isPlainObject(val)) {
     const out: Record<string, unknown> = {};
@@ -79,8 +77,7 @@ function compact<T>(val: T): T {
       const cleaned = compact(v);
       if (cleaned !== undefined) out[k] = cleaned;
     }
-    const res = out as unknown as T; // typed back to original shape
-    return res;
+    return out as unknown as T;
   }
   return val;
 }
@@ -90,6 +87,14 @@ function JsonLdWorkIndex({ items }: { items: Work[] }) {
   const json = compact({
     "@context": "https://schema.org",
     "@graph": [
+      // ✅ Declare the site-level WebSite node (same @id used site-wide)
+      {
+        "@type": "WebSite",
+        "@id": `${SITE_ORIGIN}/#website`,
+        url: `${SITE_ORIGIN}/`,
+        name: `${ORG_NAME} — Site`,
+        publisher: { "@id": ORG_ID },
+      },
       {
         "@type": "BreadcrumbList",
         "@id": `${SITE_ORIGIN}/work/#breadcrumbs`,
@@ -103,7 +108,7 @@ function JsonLdWorkIndex({ items }: { items: Work[] }) {
         "@id": `${SITE_ORIGIN}/work/#webpage`,
         url: `${SITE_ORIGIN}/work/`,
         name: "Selected Works",
-        isPartOf: { "@id": `${SITE_ORIGIN}/` },
+        isPartOf: { "@id": `${SITE_ORIGIN}/#website` }, // ✅ point to declared WebSite
         breadcrumb: { "@id": `${SITE_ORIGIN}/work/#breadcrumbs` },
         about: { "@id": PERSON_ID },
         publisher: { "@id": ORG_ID },
@@ -112,7 +117,7 @@ function JsonLdWorkIndex({ items }: { items: Work[] }) {
         "@type": "ItemList",
         "@id": `${SITE_ORIGIN}/work/#selected-works`,
         name: "Selected Works",
-        mainEntityOfPage: { "@id": `${SITE_ORIGIN}/work/#webpage` },
+        mainEntityOfPage: { "@id": `${SITE_ORIGIN}/work/#webpage` }, // ✅ declared above
         itemListElement: items.map((w, i) => ({
           "@type": "ListItem",
           position: i + 1,

@@ -18,7 +18,7 @@ import {
 
 /** Force full SSG for static export and disable ISR. */
 export const dynamic = "force-static";
-export const revalidate = false;
+export const revalidate = false as const;
 
 // ────────────────────────────────────────────────────────────────────────────
 // Metadata (server) — App Router safe
@@ -96,12 +96,20 @@ function JsonLdProfile() {
   const jsonld = compact({
     "@context": "https://schema.org",
     "@graph": [
+      // ✅ Declare a WebSite parent node
+      {
+        "@type": "WebSite",
+        "@id": `${SITE_ORIGIN}/#website`,
+        url: `${SITE_ORIGIN}/`,
+        name: `${PERSON_NAME} — Official Site`,
+        publisher: { "@id": ORG_ID },
+      },
       {
         "@type": ["WebPage", "ProfilePage"],
         "@id": `${SITE_ORIGIN}/#webpage`,
         url: `${SITE_ORIGIN}/`,
         name: `${PERSON_NAME} — Artist & Director`,
-        isPartOf: { "@id": `${SITE_ORIGIN}/` },
+        isPartOf: { "@id": `${SITE_ORIGIN}/#website` }, // ✅ point to declared WebSite
         breadcrumb: { "@id": `${SITE_ORIGIN}/#breadcrumbs` },
         mainEntity: { "@id": PERSON_ID },
       },
