@@ -12,7 +12,6 @@ on:
       - "**/*.md"
       - ".github/**"
 
-# Cancel older runs of the same branch/PR if a new one starts
 concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
@@ -32,11 +31,16 @@ jobs:
       - name: Use Node
         uses: actions/setup-node@v4
         with:
-          node-version: "20"      # LTS; matches your Cloudflare setting
+          node-version: "20"
           cache: npm
 
       - name: Install deps (clean)
-        run: npm ci
+        env:
+          NPM_CONFIG_PRODUCTION: "false"
+        run: npm ci --include=dev --no-audit --no-fund
+
+      - name: Verify eslint is present
+        run: npx --no eslint -v
 
       - name: Typecheck
         run: npm run typecheck
@@ -47,7 +51,6 @@ jobs:
       - name: Build (static export)
         run: npm run build
 
-      # Optional: keep the built /out as an artifact for quick inspection
       - name: Upload static artifact
         if: always()
         uses: actions/upload-artifact@v4
