@@ -9,10 +9,8 @@ on:
     branches: [main]
     paths-ignore:
       - "**/*.md"
-  # Manual trigger from the Actions tab
   workflow_dispatch:
 
-# Cancel older runs of same ref
 concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
@@ -23,7 +21,6 @@ jobs:
     env:
       CI: "true"
       NEXT_TELEMETRY_DISABLED: "1"
-      NODE_ENV: production
 
     steps:
       - name: Checkout
@@ -32,16 +29,15 @@ jobs:
       - name: Use Node
         uses: actions/setup-node@v4
         with:
-          # LTS, matches your Cloudflare setting
           node-version: "20"
           cache: npm
 
+      # Install *dev* deps so eslint/typescript are present
       - name: Install deps (clean)
-        # npm ci installs devDependencies by default
-        run: npm ci
+        run: npm ci --include=dev --no-audit --no-fund
 
       - name: Verify eslint is present
-        run: npx --no eslint -v
+        run: npx --yes eslint -v
 
       - name: Typecheck
         run: npm run typecheck
@@ -49,7 +45,10 @@ jobs:
       - name: Lint
         run: npm run lint
 
+      # Build in production mode only for this step
       - name: Build (static export)
+        env:
+          NODE_ENV: production
         run: npm run build
 
       - name: Upload static artifact
