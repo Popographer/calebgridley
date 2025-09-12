@@ -5,13 +5,14 @@ on:
     branches: [main]
     paths-ignore:
       - "**/*.md"
-      - ".github/**"
   pull_request:
     branches: [main]
     paths-ignore:
       - "**/*.md"
-      - ".github/**"
+  # Manual trigger from the Actions tab
+  workflow_dispatch:
 
+# Cancel older runs of same ref
 concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
@@ -31,13 +32,13 @@ jobs:
       - name: Use Node
         uses: actions/setup-node@v4
         with:
+          # LTS, matches your Cloudflare setting
           node-version: "20"
           cache: npm
 
       - name: Install deps (clean)
-        env:
-          NPM_CONFIG_PRODUCTION: "false"
-        run: npm ci --include=dev --no-audit --no-fund
+        # npm ci installs devDependencies by default
+        run: npm ci
 
       - name: Verify eslint is present
         run: npx --no eslint -v
