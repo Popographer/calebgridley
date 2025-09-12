@@ -82,9 +82,13 @@ export default function Header() {
       const focusables = getFocusable();
       if (!focusables.length) return;
 
-      const first: HTMLElement = focusables[0]!;
-      const last: HTMLElement = focusables[focusables.length - 1]!;
-      const active: HTMLElement | null = document.activeElement as HTMLElement | null;
+      const first = focusables[0]!;
+      const last = focusables[focusables.length - 1]!;
+
+      // Narrow active element without assertions
+      const candidate = document.activeElement;
+      const active: HTMLElement | null =
+        candidate instanceof HTMLElement ? candidate : null;
 
       // If focus is outside container on Shift+Tab, wrap to last
       if (e.shiftKey) {

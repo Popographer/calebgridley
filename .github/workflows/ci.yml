@@ -5,12 +5,16 @@ on:
     branches: [main]
     paths-ignore:
       - "**/*.md"
+      - ".github/**"
   pull_request:
     branches: [main]
     paths-ignore:
       - "**/*.md"
+      - ".github/**"
+  # allow manual runs
   workflow_dispatch:
 
+# Cancel older runs of the same ref
 concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
@@ -32,12 +36,9 @@ jobs:
           node-version: "20"
           cache: npm
 
-      # Install *dev* deps so eslint/typescript are present
+      # Install ALL deps (dev + prod) for lint/tsc
       - name: Install deps (clean)
-        run: npm ci --include=dev --no-audit --no-fund
-
-      - name: Verify eslint is present
-        run: npx --yes eslint -v
+        run: npm ci --no-audit --no-fund
 
       - name: Typecheck
         run: npm run typecheck
@@ -45,7 +46,7 @@ jobs:
       - name: Lint
         run: npm run lint
 
-      # Build in production mode only for this step
+      # Build with prod env ONLY for this step
       - name: Build (static export)
         env:
           NODE_ENV: production
