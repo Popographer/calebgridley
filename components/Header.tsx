@@ -8,6 +8,7 @@ import { usePathname } from "next/navigation";
 export default function Header() {
   const [open, setOpen] = useState(false);
 
+  // Explicitly typed refs
   const dialogRef = useRef<HTMLDivElement | null>(null);
   const closeBtnRef = useRef<HTMLButtonElement | null>(null);
 
@@ -34,7 +35,8 @@ export default function Header() {
 
     // Focus the close button after paint
     requestAnimationFrame(() => {
-      closeBtnRef.current?.focus();
+      const btn = closeBtnRef.current;
+      btn?.focus();
     });
 
     return () => {
@@ -53,45 +55,45 @@ export default function Header() {
     return () => window.removeEventListener("keydown", onKey);
   }, [open]);
 
-  // Focus trap (no type assertions)
+  // Focus trap (no assertions)
   useEffect(() => {
     if (!open) return;
 
     const container = dialogRef.current;
     if (!container) return;
 
-    const isVisible = (el: HTMLElement) => {
+    const isVisible = (el: HTMLElement): boolean => {
       const s = window.getComputedStyle(el);
       return s.visibility !== "hidden" && s.display !== "none";
     };
 
-    const getFocusable = () =>
-      Array.from(
-        container.querySelectorAll<HTMLElement>(
-          'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"]), input, select, textarea'
-        )
-      ).filter((el) => !el.hasAttribute("disabled") && el.tabIndex !== -1 && isVisible(el));
+    const getFocusable = (): HTMLElement[] => {
+      const sel =
+        'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"]), input, select, textarea';
+      return Array.from(container.querySelectorAll<HTMLElement>(sel)).filter(
+        (el) => !el.hasAttribute("disabled") && el.tabIndex !== -1 && isVisible(el)
+      );
+    };
 
-    const onKeyDown = (e: KeyboardEvent) => {
+    const onKeyDown = (e: KeyboardEvent): void => {
       if (e.key !== "Tab") return;
 
       const focusables = getFocusable();
       if (focusables.length === 0) return;
 
-      const first = focusables[0]!;
-      const last = focusables[focusables.length - 1]!;
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
 
-      const active =
-        document.activeElement instanceof HTMLElement ? document.activeElement : null;
+      const activeEl = document.activeElement;
+      const active = activeEl instanceof HTMLElement ? activeEl : null;
 
       if (e.shiftKey) {
-        // wrap to last if focus is outside or at the first
-        if (!active || !container.contains(active) || active === first) {
+        // If focus is outside container or at first, wrap to last
+        if (active === first || !active || !container.contains(active)) {
           e.preventDefault();
           last.focus();
         }
       } else {
-        // wrap to first if at the last
         if (active === last) {
           e.preventDefault();
           first.focus();
@@ -142,7 +144,7 @@ export default function Header() {
           aria-modal="true"
           aria-labelledby="main-menu-title"
           tabIndex={-1}
-          onMouseDown={(e) => {
+          onMouseDown={(e: React.MouseEvent<HTMLDivElement>) => {
             if (e.target === e.currentTarget) setOpen(false); // backdrop click
           }}
           className={[
