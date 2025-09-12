@@ -14,7 +14,7 @@ import {
 
 /** Static export: force SSG and disable ISR */
 export const dynamic = "force-static";
-export const revalidate = false as const;
+export const revalidate = false;
 
 // ────────────────────────────────────────────────────────────────────────────
 // Metadata
