@@ -6,9 +6,8 @@ import React, { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 
 export default function Header() {
-  const [open, setOpen] = useState<boolean>(false);
+  const [open, setOpen] = useState(false);
 
-  // Explicitly typed refs
   const dialogRef = useRef<HTMLDivElement | null>(null);
   const closeBtnRef = useRef<HTMLButtonElement | null>(null);
 
@@ -33,10 +32,9 @@ export default function Header() {
     body.style.overflow = "hidden";
     if (scrollbarWidth > 0) body.style.paddingRight = `${scrollbarWidth}px`;
 
-    // Focus the close button after paint (explicit type)
+    // Focus the close button after paint
     requestAnimationFrame(() => {
-      const btn: HTMLButtonElement | null = closeBtnRef.current;
-      btn?.focus();
+      closeBtnRef.current?.focus();
     });
 
     return () => {
@@ -55,48 +53,45 @@ export default function Header() {
     return () => window.removeEventListener("keydown", onKey);
   }, [open]);
 
-  // Focus trap (strictly typed)
+  // Focus trap (no type assertions)
   useEffect(() => {
     if (!open) return;
 
-    const container: HTMLDivElement | null = dialogRef.current;
+    const container = dialogRef.current;
     if (!container) return;
 
-    const isVisible = (el: HTMLElement): boolean => {
+    const isVisible = (el: HTMLElement) => {
       const s = window.getComputedStyle(el);
       return s.visibility !== "hidden" && s.display !== "none";
     };
 
-    const getFocusable = (): HTMLElement[] => {
-      const sel =
-        'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"]), input, select, textarea';
-      // Keep element type via querySelectorAll generic
-      return Array.from(container.querySelectorAll<HTMLElement>(sel)).filter(
-        (el) => !el.hasAttribute("disabled") && el.tabIndex !== -1 && isVisible(el)
-      );
-    };
+    const getFocusable = () =>
+      Array.from(
+        container.querySelectorAll<HTMLElement>(
+          'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"]), input, select, textarea'
+        )
+      ).filter((el) => !el.hasAttribute("disabled") && el.tabIndex !== -1 && isVisible(el));
 
-    const onKeyDown = (e: KeyboardEvent): void => {
+    const onKeyDown = (e: KeyboardEvent) => {
       if (e.key !== "Tab") return;
 
       const focusables = getFocusable();
-      if (!focusables.length) return;
+      if (focusables.length === 0) return;
 
       const first = focusables[0]!;
       const last = focusables[focusables.length - 1]!;
 
-      // Narrow active element without assertions
-      const candidate = document.activeElement;
-      const active: HTMLElement | null =
-        candidate instanceof HTMLElement ? candidate : null;
+      const active =
+        document.activeElement instanceof HTMLElement ? document.activeElement : null;
 
-      // If focus is outside container on Shift+Tab, wrap to last
       if (e.shiftKey) {
-        if (active === first || !active || !container.contains(active)) {
+        // wrap to last if focus is outside or at the first
+        if (!active || !container.contains(active) || active === first) {
           e.preventDefault();
           last.focus();
         }
       } else {
+        // wrap to first if at the last
         if (active === last) {
           e.preventDefault();
           first.focus();
@@ -146,14 +141,12 @@ export default function Header() {
           role="dialog"
           aria-modal="true"
           aria-labelledby="main-menu-title"
-          // Make the dialog programmatically focusable for key handling
           tabIndex={-1}
-          onMouseDown={(e: React.MouseEvent<HTMLDivElement>) => {
+          onMouseDown={(e) => {
             if (e.target === e.currentTarget) setOpen(false); // backdrop click
           }}
           className={[
             "fixed inset-0 z-50 text-white",
-            // transparent glass so reels are visible underneath
             "bg-black/70 supports-[backdrop-filter]:backdrop-blur-sm",
             prefersReducedMotion ? "" : "animate-fadeIn",
           ].join(" ")}
@@ -180,22 +173,12 @@ export default function Header() {
           <nav className="min-h-[calc(100vh-80px)] flex items-center">
             <ul className="px-6 space-y-6 text-3xl">
               <li>
-                <Link
-                  href="/"
-                  onClick={() => setOpen(false)}
-                  className="block hover:opacity-80"
-                  prefetch
-                >
+                <Link href="/" onClick={() => setOpen(false)} className="block hover:opacity-80" prefetch>
                   Home
                 </Link>
               </li>
               <li>
-                <Link
-                  href="/work"
-                  onClick={() => setOpen(false)}
-                  className="block hover:opacity-80"
-                  prefetch
-                >
+                <Link href="/work" onClick={() => setOpen(false)} className="block hover:opacity-80" prefetch>
                   Work
                 </Link>
               </li>
