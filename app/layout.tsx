@@ -61,7 +61,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
 
         {children}
 
-        {/* GLOBAL JSON-LD: WebSite + Person + Organization */}
+        {/* GLOBAL JSON-LD: WebSite (host), Person (authoritative), Organization (ref) */}
         <Script
           id="sitewide-jsonld"
           type="application/ld+json"
@@ -72,21 +72,56 @@ export default function RootLayout({ children }: { children: ReactNode }) {
               "@graph": [
                 {
                   "@type": "WebSite",
-                  "@id": "https://calebgridley.com/#website",
-                  url: "https://calebgridley.com/",
-                  name: "Caleb Gridley",
-                  inLanguage: "en",
-                  publisher: { "@id": "https://popographer.com/#org" }
+                  "@id": "https://calebgridley.com/#website/",
+                  "url": "https://calebgridley.com/",
+                  "name": "Caleb Gridley",
+                  "inLanguage": "en",
+                  "publisher": { "@id": "https://popographer.com/#org/" }
                 },
+
                 {
                   "@type": "Person",
-                  "@id": "https://calebgridley.com/#person",
-                  name: "Caleb Gridley",
-                  alternateName: "Popographer",
-                  url: "https://calebgridley.com/",
-                  description: "American visual artist, photographer, and art film director.",
-                  worksFor: { "@id": "https://popographer.com/#org" },
-                  sameAs: [
+                  "@id": "https://calebgridley.com/#person/",
+                  "name": "Caleb Gridley",
+                  "alternateName": "Popographer",
+                  "url": "https://calebgridley.com/",
+                  "image": { "@id": "https://calebgridley.com/identity/#hero" },
+                  "description": "Caleb Gridley is a visual artist, photographer, and art film director whose practice under Popographer explores celebrity, digital identity, and cultural transformation.",
+                  "jobTitle": ["Visual Artist","Photographer","Art Film Director"],
+                  "worksFor": { "@id": "https://popographer.com/#org/" },
+                  "brand": { "@id": "https://popographer.com/#org/" },
+                  "alumniOf": {
+                    "@type": "CollegeOrUniversity",
+                    "name": "Louisiana State University",
+                    "sameAs": "https://design.lsu.edu/"
+                  },
+                  "birthPlace": {
+                    "@type": "Place",
+                    "address": { "@type": "PostalAddress", "addressRegion": "LA", "addressCountry": { "@type": "Country", "name": "US" } }
+                  },
+                  "homeLocation": {
+                    "@type": "Place",
+                    "address": { "@type": "PostalAddress", "addressRegion": "LA", "addressCountry": { "@type": "Country", "name": "US" } }
+                  },
+                  "knowsLanguage": ["en"],
+                  "knowsAbout": [
+                    "Fashion","Photography","Art Film Direction","Performance Art",
+                    "Digital Identity","Pop Culture","Conceptual Art","Surrealism",
+                    "Costume Design","3D Modeling"
+                  ],
+                  "notableWork": [
+                    { "@id": "https://popographer.com/artwork/not-warhol/#work/" },
+                    { "@id": "https://popographer.com/artwork/augmentations/#work/" },
+                    { "@id": "https://popographer.com/artwork/anointing-the-artifice/#work/" },
+                    { "@id": "https://popographer.com/artwork/body-of-work/#work/" }
+                  ],
+                  "subjectOf": [
+                    { "@id": "https://popographer.com/press/#ext-canvasrebel/" },
+                    { "@id": "https://popographer.com/press/#ext-charliefeet/" },
+                    { "@id": "https://popographer.com/press/#ext-225mag/" },
+                    { "@id": "https://popographer.com/press/#ext-advocate/" }
+                  ],
+                  "sameAs": [
                     // Owned domains
                     "https://calebgridley.com/",
                     "https://popographer.com/",
@@ -94,32 +129,40 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                     "https://popograph.com/",
                     "https://pop-ographer.com/",
                     "https://popographer.co/",
-                    // Socials
+                    // Socials / profiles
                     "https://www.instagram.com/thepopographer/",
                     "https://www.youtube.com/@popographer",
-                    "https://vimeo.com/popographer"
+                    "https://vimeo.com/popographer",
+                    "https://www.facebook.com/Popographer/",
+                    "https://www.flickr.com/photos/201678917@N06/",
+                    // Credits
+                    "https://www.discogs.com/release/34065559-Arcade-Fire-Pink-Elephant",
+                    "https://www.discogs.com/release/33932553-Arcade-Fire-Pink-Elephant"
                   ],
-                  mainEntityOfPage: { "@id": "https://calebgridley.com/#website" }
+                  // Make identity page the canonical page for this Person
+                  "mainEntityOfPage": { "@id": "https://calebgridley.com/identity/#webpage" }
                 },
+
                 {
                   "@type": "Organization",
-                  "@id": "https://popographer.com/#org",
-                  name: "Popographer LLC",
-                  legalName: "Popographer LLC",
-                  url: "https://popographer.com/",
-                  foundingLocation: {
+                  "@id": "https://popographer.com/#org/",
+                  "name": "Popographer LLC",
+                  "legalName": "Popographer LLC",
+                  "url": "https://popographer.com/",
+                  "foundingLocation": {
                     "@type": "Place",
-                    address: { "@type": "PostalAddress", addressRegion: "LA", addressCountry: "US" }
+                    "address": { "@type": "PostalAddress", "addressRegion": "LA", "addressCountry": "US" }
                   },
-                  sameAs: [
-                    // Domains (mirrored)
+                  "founder": { "@id": "https://calebgridley.com/#person/" },
+                  "sameAs": [
+                    // Domains
                     "https://calebgridley.com/",
                     "https://popographer.com/",
                     "https://notwarhol.com/",
                     "https://popograph.com/",
                     "https://pop-ographer.com/",
                     "https://popographer.co/",
-                    // Socials (brand-level)
+                    // Brand socials
                     "https://www.instagram.com/thepopographer/",
                     "https://www.youtube.com/@popographer",
                     "https://vimeo.com/popographer"

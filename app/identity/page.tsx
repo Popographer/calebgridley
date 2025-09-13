@@ -45,57 +45,57 @@ export default function IdentityPage() {
     "@graph": [
       {
         "@type": ["WebPage", "ProfilePage"],
-        "@id": "https://calebgridley.com/identity/#webpage",
-        url: "https://calebgridley.com/identity/",
-        name: "Identity",
-        description:
+        "@id": "https://calebgridley.com/identity/#webpage/",
+        "url": "https://calebgridley.com/identity/",
+        "name": "Identity",
+        "description":
           "Identity information for Caleb Gridley. Official domains, socials, press, exhibitions, and legal notes.",
-        isPartOf: { "@id": "https://calebgridley.com/#website" },
-        breadcrumb: { "@id": "https://calebgridley.com/identity/#breadcrumbs" },
-        about: { "@id": "https://calebgridley.com/#person" },
-        mainEntity: { "@id": "https://calebgridley.com/#person" },
-        publisher: { "@id": "https://popographer.com/#org" },
-        primaryImageOfPage: { "@id": "https://calebgridley.com/identity/#hero" },
-        inLanguage: "en",
-        dateModified
+        "isPartOf": { "@id": "https://calebgridley.com/#website/" },
+        "breadcrumb": { "@id": "https://calebgridley.com/identity/#breadcrumbs/" },
+        "about": { "@id": "https://calebgridley.com/#person/" },
+        "mainEntity": { "@id": "https://calebgridley.com/#person/" }, // ← two-way bind (page → person)
+        "publisher": { "@id": "https://popographer.com/#org/" },
+        "primaryImageOfPage": { "@id": "https://calebgridley.com/identity/#hero/" },
+        "inLanguage": "en",
+        "dateModified": dateModified
       },
       {
         "@type": "BreadcrumbList",
-        "@id": "https://calebgridley.com/identity/#breadcrumbs",
-        name: "Breadcrumbs",
-        itemListElement: [
-          { "@type": "ListItem", position: 1, name: "Home", item: "https://calebgridley.com/" },
-          { "@type": "ListItem", position: 2, name: "Identity", item: "https://calebgridley.com/identity/" }
+        "@id": "https://calebgridley.com/identity/#breadcrumbs/",
+        "name": "Breadcrumbs",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://calebgridley.com/" },
+          { "@type": "ListItem", "position": 2, "name": "Identity", "item": "https://calebgridley.com/identity/" }
         ]
       },
       {
         "@type": "ImageObject",
-        "@id": "https://calebgridley.com/identity/#hero",
-        name: "Caleb Gridley",
-        caption: "Caleb Gridley",
-        contentUrl: HERO_URL,
-        url: HERO_URL,
-        encodingFormat: "image/webp",
-        width: 1820,
-        height: 1080,
-        representativeOfPage: true,
-        creditText: "Caleb Gridley (Popographer)",
-        creator: { "@id": "https://calebgridley.com/#person" },
-        copyrightHolder: { "@id": "https://calebgridley.com/#person" },
-        copyrightNotice: "© Caleb Gridley. All rights reserved.",
-        license: "https://popographer.com/licensing/",
-        acquireLicensePage: "https://popographer.com/licensing/"
+        "@id": "https://calebgridley.com/identity/#hero/",
+        "name": "Caleb Gridley",
+        "caption": "Caleb Gridley",
+        "contentUrl": HERO_URL,
+        "url": HERO_URL,
+        "encodingFormat": "image/webp",
+        "width": 1820,
+        "height": 1080,
+        "representativeOfPage": true,
+        "creditText": "Caleb Gridley (Popographer)",
+        "creator": { "@id": "https://calebgridley.com/#person/" },
+        "copyrightHolder": { "@id": "https://calebgridley.com/#person/" },
+        "copyrightNotice": "© Caleb Gridley. All rights reserved.",
+        "license": "https://popographer.com/licensing/",
+        "acquireLicensePage": "https://popographer.com/licensing/"
       },
       {
         "@type": "Person",
-        "@id": "https://calebgridley.com/#person",
-        name: "Caleb Gridley",
-        alternateName: "Popographer",
-        description: "American visual artist, photographer, and art film director.",
-        url: "https://calebgridley.com/",
-        worksFor: { "@id": "https://popographer.com/#org" },
-        identifier: [],
-        sameAs: [
+        "@id": "https://calebgridley.com/#person/",
+        "name": "Caleb Gridley",
+        "alternateName": "Popographer",
+        "description": "American visual artist, photographer, and art film director.",
+        "url": "https://calebgridley.com/",
+        "worksFor": { "@id": "https://popographer.com/#org/" },
+        "identifier": [],
+        "sameAs": [
           "https://calebgridley.com/",
           "https://popographer.com/",
           "https://notwarhol.com/",
@@ -106,44 +106,44 @@ export default function IdentityPage() {
           "https://www.youtube.com/@popographer",
           "https://vimeo.com/popographer"
         ],
-        subjectOf: [
+        "subjectOf": [
           {
             "@type": "WebPage",
             "@id": "https://popographer.com/press/#ext-canvasrebel/",
-            name: "Meet Caleb Gridley",
-            url: "https://canvasrebel.com/meet-caleb-gridley/",
-            mainEntityOfPage: "https://canvasrebel.com/meet-caleb-gridley/",
-            inLanguage: "en"
+            "name": "Meet Caleb Gridley",
+            "url": "https://canvasrebel.com/meet-caleb-gridley/",
+            "mainEntityOfPage": "https://canvasrebel.com/meet-caleb-gridley/",
+            "inLanguage": "en"
           },
           {
             "@type": "WebPage",
             "@id": "https://www.discogs.com/release/34065559-Arcade-Fire-Pink-Elephant",
-            name: "Arcade Fire — Pink Elephant (Discogs release; booklet credit)",
-            url: "https://www.discogs.com/release/34065559-Arcade-Fire-Pink-Elephant",
-            inLanguage: "en"
+            "name": "Arcade Fire — Pink Elephant (Discogs release; booklet credit)",
+            "url": "https://www.discogs.com/release/34065559-Arcade-Fire-Pink-Elephant",
+            "inLanguage": "en"
           }
         ],
-        mainEntityOfPage: { "@id": "https://calebgridley.com/identity/#webpage" }
+        "mainEntityOfPage": { "@id": "https://calebgridley.com/identity/#webpage/" } // ← two-way bind (person → page)
       },
       {
         "@type": "ItemList",
-        "@id": "https://calebgridley.com/identity/#selected-works",
-        name: "Selected works",
-        itemListOrder: "https://schema.org/ItemListOrderDescending",
-        itemListElement: [
-          { "@type": "ListItem", position: 1, name: "Not Warhol", item: { "@id": "https://popographer.com/artwork/not-warhol/#work" } },
-          { "@type": "ListItem", position: 2, name: "Anointing the Artifice", item: { "@id": "https://popographer.com/artwork/anointing-the-artifice/#work" } },
-          { "@type": "ListItem", position: 3, name: "Body of Work", item: { "@id": "https://popographer.com/artwork/body-of-work/#work" } },
-          { "@type": "ListItem", position: 4, name: "Augmentations", item: { "@id": "https://popographer.com/artwork/augmentations/#work" } }
+        "@id": "https://calebgridley.com/identity/#selected-works/",
+        "name": "Selected works",
+        "itemListOrder": "https://schema.org/ItemListOrderDescending",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "Not Warhol", "item": { "@id": "https://popographer.com/artwork/not-warhol/#work/" } },
+          { "@type": "ListItem", "position": 2, "name": "Anointing the Artifice", "item": { "@id": "https://popographer.com/artwork/anointing-the-artifice/#work/" } },
+          { "@type": "ListItem", "position": 3, "name": "Body of Work", "item": { "@id": "https://popographer.com/artwork/body-of-work/#work/" } },
+          { "@type": "ListItem", "position": 4, "name": "Augmentations", "item": { "@id": "https://popographer.com/artwork/augmentations/#work/" } }
         ]
       },
       {
         "@type": "Organization",
-        "@id": "https://popographer.com/#org",
-        name: "Popographer LLC",
-        legalName: "Popographer LLC",
-        url: "https://popographer.com/",
-        foundingLocation: {
+        "@id": "https://popographer.com/#org/",
+        "name": "Popographer LLC",
+        "legalName": "Popographer LLC",
+        "url": "https://popographer.com/",
+        "foundingLocation": {
           "@type": "Place",
           "address": {
             "@type": "PostalAddress",
@@ -151,7 +151,7 @@ export default function IdentityPage() {
             "addressCountry": "US"
           }
         },
-        sameAs: [
+        "sameAs": [
           "https://calebgridley.com/",
           "https://popographer.com/",
           "https://notwarhol.com/",
