@@ -1,6 +1,16 @@
+# robots.txt — calebgridley.com
+
 User-agent: *
+# Explicitly allow the identity page
+Allow: /identity/
+# Global allow
 Allow: /
 
+# Disallow: /api/private/
+# Disallow: /drafts/
+# Disallow: /internal/
+
+# Sitemaps
 Sitemap: https://calebgridley.com/sitemap.xml
 Sitemap: https://calebgridley.com/pages.xml
 Sitemap: https://calebgridley.com/imagesitemap.xml
