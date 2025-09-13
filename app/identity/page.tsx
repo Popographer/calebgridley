@@ -284,7 +284,7 @@ export default function IdentityPage() {
         </div>
 
         <p className="mt-16 text-xs text-neutral-500">
-          <strong>Legal note:</strong> Popographer® is the trade name of Popographer, LLC (Louisiana, USA).
+          <strong>Legal note:</strong> Popographer™ is the trade name of Popographer, LLC (Louisiana, USA).
         </p>
 
         {/* JSON-LD */}
