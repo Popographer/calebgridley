@@ -2,6 +2,7 @@
 import type { Metadata } from "next";
 import Script from "next/script";
 import Image from "next/image";
+import styles from "./identity.module.css"; // ← scoped styles for this route
 
 const HERO_URL = "https://cdn.calebgridley.com/augmentations-poster.webp"; // 1820x1080
 const CARD_PNG = "https://cdn.calebgridley.com/caleb-gridley_identity-card_1080x1080.png";
@@ -42,119 +43,107 @@ export default function IdentityPage() {
   const jsonLd = {
     "@context": "https://schema.org",
     "@graph": [
-      /* WebPage + ProfilePage */
       {
         "@type": ["WebPage", "ProfilePage"],
         "@id": "https://calebgridley.com/identity/#webpage",
-        "url": "https://calebgridley.com/identity/",
-        "name": "Identity",
-        "description": "Identity information for Caleb Gridley. Official domains, socials, press, exhibitions, and legal notes.",
-        "isPartOf": { "@id": "https://calebgridley.com/#website" },
-        "breadcrumb": { "@id": "https://calebgridley.com/identity/#breadcrumbs" },
-        "about": { "@id": "https://calebgridley.com/#person" },
-        "mainEntity": { "@id": "https://calebgridley.com/#person" },
-        "publisher": { "@id": "https://popographer.com/#org" },
-        "primaryImageOfPage": { "@id": "https://calebgridley.com/identity/#hero" },
-        "inLanguage": "en",
-        "dateModified": dateModified
+        url: "https://calebgridley.com/identity/",
+        name: "Identity",
+        description:
+          "Identity information for Caleb Gridley. Official domains, socials, press, exhibitions, and legal notes.",
+        isPartOf: { "@id": "https://calebgridley.com/#website" },
+        breadcrumb: { "@id": "https://calebgridley.com/identity/#breadcrumbs" },
+        about: { "@id": "https://calebgridley.com/#person" },
+        mainEntity: { "@id": "https://calebgridley.com/#person" },
+        publisher: { "@id": "https://popographer.com/#org" },
+        primaryImageOfPage: { "@id": "https://calebgridley.com/identity/#hero" },
+        inLanguage: "en",
+        dateModified
       },
-
-      /* Breadcrumbs */
       {
         "@type": "BreadcrumbList",
         "@id": "https://calebgridley.com/identity/#breadcrumbs",
-        "name": "Breadcrumbs",
-        "itemListElement": [
-          { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://calebgridley.com/" },
-          { "@type": "ListItem", "position": 2, "name": "Identity", "item": "https://calebgridley.com/identity/" }
+        name: "Breadcrumbs",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Home", item: "https://calebgridley.com/" },
+          { "@type": "ListItem", position: 2, name: "Identity", item: "https://calebgridley.com/identity/" }
         ]
       },
-
-      /* Hero image */
       {
         "@type": "ImageObject",
         "@id": "https://calebgridley.com/identity/#hero",
-        "name": "Caleb Gridley",
-        "caption": "Caleb Gridley",
-        "contentUrl": HERO_URL,
-        "url": HERO_URL,
-        "encodingFormat": "image/webp",
-        "width": 1820,
-        "height": 1080,
-        "representativeOfPage": true,
-        "creditText": "Caleb Gridley (Popographer)",
-        "creator": { "@id": "https://calebgridley.com/#person" },
-        "copyrightHolder": { "@id": "https://calebgridley.com/#person" },
-        "copyrightNotice": "© Caleb Gridley. All rights reserved.",
-        "license": "https://popographer.com/licensing/",
-        "acquireLicensePage": "https://popographer.com/licensing/"
+        name: "Caleb Gridley",
+        caption: "Caleb Gridley",
+        contentUrl: HERO_URL,
+        url: HERO_URL,
+        encodingFormat: "image/webp",
+        width: 1820,
+        height: 1080,
+        representativeOfPage: true,
+        creditText: "Caleb Gridley (Popographer)",
+        creator: { "@id": "https://calebgridley.com/#person" },
+        copyrightHolder: { "@id": "https://calebgridley.com/#person" },
+        copyrightNotice: "© Caleb Gridley. All rights reserved.",
+        license: "https://popographer.com/licensing/",
+        acquireLicensePage: "https://popographer.com/licensing/"
       },
-
-      /* Person (include ALL domains + socials) */
       {
         "@type": "Person",
         "@id": "https://calebgridley.com/#person",
-        "name": "Caleb Gridley",
-        "alternateName": "Popographer",
-        "description": "American visual artist, photographer, and art film director.",
-        "url": "https://calebgridley.com/",
-        "worksFor": { "@id": "https://popographer.com/#org" },
-        "identifier": [],
-        "sameAs": [
-          /* All owned domains (canonical + aliases) */
+        name: "Caleb Gridley",
+        alternateName: "Popographer",
+        description: "American visual artist, photographer, and art film director.",
+        url: "https://calebgridley.com/",
+        worksFor: { "@id": "https://popographer.com/#org" },
+        identifier: [],
+        sameAs: [
           "https://calebgridley.com/",
           "https://popographer.com/",
           "https://notwarhol.com/",
           "https://popograph.com/",
           "https://pop-ographer.com/",
           "https://popographer.co/",
-          /* Socials */
           "https://www.instagram.com/thepopographer/",
           "https://www.youtube.com/@popographer",
           "https://vimeo.com/popographer"
         ],
-        "subjectOf": [
+        subjectOf: [
           {
             "@type": "WebPage",
             "@id": "https://popographer.com/press/#ext-canvasrebel/",
-            "name": "Meet Caleb Gridley",
-            "url": "https://canvasrebel.com/meet-caleb-gridley/",
-            "mainEntityOfPage": "https://canvasrebel.com/meet-caleb-gridley/",
-            "inLanguage": "en"
+            name: "Meet Caleb Gridley",
+            url: "https://canvasrebel.com/meet-caleb-gridley/",
+            mainEntityOfPage: "https://canvasrebel.com/meet-caleb-gridley/",
+            inLanguage: "en"
           },
           {
             "@type": "WebPage",
             "@id": "https://www.discogs.com/release/34065559-Arcade-Fire-Pink-Elephant",
-            "name": "Arcade Fire — Pink Elephant (Discogs release; booklet credit)",
-            "url": "https://www.discogs.com/release/34065559-Arcade-Fire-Pink-Elephant",
-            "inLanguage": "en"
+            name: "Arcade Fire — Pink Elephant (Discogs release; booklet credit)",
+            url: "https://www.discogs.com/release/34065559-Arcade-Fire-Pink-Elephant",
+            inLanguage: "en"
           }
         ],
-        "mainEntityOfPage": { "@id": "https://calebgridley.com/identity/#webpage" }
+        mainEntityOfPage: { "@id": "https://calebgridley.com/identity/#webpage" }
       },
-
-      /* Selected works list (unchanged) */
       {
         "@type": "ItemList",
         "@id": "https://calebgridley.com/identity/#selected-works",
-        "name": "Selected works",
-        "itemListOrder": "https://schema.org/ItemListOrderDescending",
-        "itemListElement": [
-          { "@type": "ListItem", "position": 1, "name": "Not Warhol", "item": { "@id": "https://popographer.com/artwork/not-warhol/#work" } },
-          { "@type": "ListItem", "position": 2, "name": "Anointing the Artifice", "item": { "@id": "https://popographer.com/artwork/anointing-the-artifice/#work" } },
-          { "@type": "ListItem", "position": 3, "name": "Body of Work", "item": { "@id": "https://popographer.com/artwork/body-of-work/#work" } },
-          { "@type": "ListItem", "position": 4, "name": "Augmentations", "item": { "@id": "https://popographer.com/artwork/augmentations/#work" } }
+        name: "Selected works",
+        itemListOrder: "https://schema.org/ItemListOrderDescending",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Not Warhol", item: { "@id": "https://popographer.com/artwork/not-warhol/#work" } },
+          { "@type": "ListItem", position: 2, name: "Anointing the Artifice", item: { "@id": "https://popographer.com/artwork/anointing-the-artifice/#work" } },
+          { "@type": "ListItem", position: 3, name: "Body of Work", item: { "@id": "https://popographer.com/artwork/body-of-work/#work" } },
+          { "@type": "ListItem", position: 4, name: "Augmentations", item: { "@id": "https://popographer.com/artwork/augmentations/#work" } }
         ]
       },
-
-      /* Organization (Popographer LLC) with Louisiana foundingLocation + ALL domains + socials */
       {
         "@type": "Organization",
         "@id": "https://popographer.com/#org",
-        "name": "Popographer LLC",
-        "legalName": "Popographer LLC",
-        "url": "https://popographer.com/",
-        "foundingLocation": {
+        name: "Popographer LLC",
+        legalName: "Popographer LLC",
+        url: "https://popographer.com/",
+        foundingLocation: {
           "@type": "Place",
           "address": {
             "@type": "PostalAddress",
@@ -162,15 +151,13 @@ export default function IdentityPage() {
             "addressCountry": "US"
           }
         },
-        "sameAs": [
-          /* All owned domains */
+        sameAs: [
           "https://calebgridley.com/",
           "https://popographer.com/",
           "https://notwarhol.com/",
           "https://popograph.com/",
           "https://pop-ographer.com/",
           "https://popographer.co/",
-          /* Brand socials (mirrors Person where relevant) */
           "https://www.instagram.com/thepopographer/",
           "https://www.youtube.com/@popographer",
           "https://vimeo.com/popographer"
@@ -181,22 +168,23 @@ export default function IdentityPage() {
 
   return (
     <div className="bg-white text-neutral-900 font-sans">
-      {/* Accessibility + motion-reduction + smooth scroll */}
-      <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 bg-black text-white px-3 py-2 rounded">
+      {/* skip link */}
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 bg-black text-white px-3 py-2 rounded"
+      >
         Skip to content
       </a>
-      <style jsx global>{`
-        html:focus-within { scroll-behavior: smooth; }
-        @media (prefers-reduced-motion: reduce) {
-          * { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; scroll-behavior: auto !important; }
-        }
-        @keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-        .fade-up { animation: fadeUp .5s ease-out both; }
-      `}</style>
 
-      {/* Sticky minimalist header */}
-      <header className="sticky top-0 z-40 bg-white/85 backdrop-blur supports-[backdrop-filter]:backdrop-blur-md border-b border-neutral-200" aria-label="Primary">
-        <nav className="mx-auto max-w-5xl px-6 py-3 flex items-center justify-between" aria-label="Global">
+      {/* Header */}
+      <header
+        className="sticky top-0 z-40 bg-white/85 backdrop-blur supports-[backdrop-filter]:backdrop-blur-md border-b border-neutral-200"
+        aria-label="Primary"
+      >
+        <nav
+          className="mx-auto max-w-5xl px-6 py-3 flex items-center justify-between"
+          aria-label="Global"
+        >
           <span className="text-sm tracking-widest font-semibold">CALEB GRIDLEY</span>
           <ul className="flex gap-5 text-sm">
             <li><a href="#press" className="hover:text-gray-600 transition-colors">PRESS</a></li>
@@ -208,13 +196,13 @@ export default function IdentityPage() {
       </header>
 
       <main id="main-content" className="mx-auto max-w-5xl px-6 py-12">
-        <h1 className="text-4xl font-semibold tracking-tight uppercase fade-up">CALEB GRIDLEY</h1>
-        <p className="mt-3 text-lg fade-up" style={{ animationDelay: ".05s" }}>
+        <h1 className={`text-4xl font-semibold tracking-tight uppercase ${styles.fadeUp}`}>CALEB GRIDLEY</h1>
+        <p className={`mt-3 text-lg ${styles.fadeUp}`} style={{ animationDelay: ".05s" }}>
           American visual artist, photographer, and art film director. Also known as Popographer.
         </p>
 
-        {/* Visible hero */}
-        <figure className="mt-8 fade-up" style={{ animationDelay: ".1s" }}>
+        {/* Hero */}
+        <figure className={styles.fadeUp} style={{ animationDelay: ".1s" }}>
           <Image
             src={HERO_URL}
             alt="Caleb Gridley"
@@ -222,7 +210,7 @@ export default function IdentityPage() {
             height={1080}
             priority
             sizes="(max-width: 768px) 100vw, (max-width: 1280px) 90vw, 1200px"
-            className="w-full h-auto rounded-2xl shadow-sm"
+            className="mt-8 w-full h-auto rounded-2xl shadow-sm"
           />
           <figcaption className="mt-2 text-sm text-neutral-500">
             Caleb Gridley. © Caleb Gridley.
@@ -231,8 +219,7 @@ export default function IdentityPage() {
 
         {/* Content grid */}
         <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-12">
-          {/* Left column */}
-          <section id="domains" aria-labelledby="domains-h" className="fade-up" style={{ animationDelay: ".15s" }}>
+          <section id="domains" aria-labelledby="domains-h" className={styles.fadeUp} style={{ animationDelay: ".15s" }}>
             <h2 id="domains-h" className="text-sm font-semibold tracking-widest uppercase">OFFICIAL DOMAINS</h2>
             <ul className="mt-4 space-y-2">
               <li><a href="https://calebgridley.com/" className="underline underline-offset-2 hover:text-gray-600 transition-colors">CALEBGRIDLEY.COM</a></li>
@@ -241,7 +228,7 @@ export default function IdentityPage() {
             </ul>
           </section>
 
-          <section aria-labelledby="socials-h" className="fade-up" style={{ animationDelay: ".2s" }}>
+          <section aria-labelledby="socials-h" className={styles.fadeUp} style={{ animationDelay: ".2s" }}>
             <h2 id="socials-h" className="text-sm font-semibold tracking-widest uppercase">SOCIALS</h2>
             <ul className="mt-4 space-y-2">
               <li><a href="https://www.instagram.com/thepopographer/" className="underline underline-offset-2 hover:text-gray-600 transition-colors" rel="me">INSTAGRAM @THEPOPOGRAPHER</a></li>
@@ -250,8 +237,7 @@ export default function IdentityPage() {
             </ul>
           </section>
 
-          {/* Right column */}
-          <section id="press" aria-labelledby="press-h" className="fade-up md:col-span-2" style={{ animationDelay: ".25s" }}>
+          <section id="press" aria-labelledby="press-h" className={`${styles.fadeUp} md:col-span-2`} style={{ animationDelay: ".25s" }}>
             <h2 id="press-h" className="text-sm font-semibold tracking-widest uppercase">PRESS AND INTERVIEWS</h2>
             <ul className="mt-4 space-y-2">
               <li><a href="https://canvasrebel.com/meet-caleb-gridley/" className="underline underline-offset-2 hover:text-gray-600 transition-colors">CanvasRebel — “Meet Caleb Gridley”</a></li>
@@ -264,7 +250,7 @@ export default function IdentityPage() {
             </p>
           </section>
 
-          <section id="exhibitions" aria-labelledby="exhibitions-h" className="fade-up md:col-span-2" style={{ animationDelay: ".3s" }}>
+          <section id="exhibitions" aria-labelledby="exhibitions-h" className={`${styles.fadeUp} md:col-span-2`} style={{ animationDelay: ".3s" }}>
             <h2 id="exhibitions-h" className="text-sm font-semibold tracking-widest uppercase">EXHIBITIONS</h2>
             <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-8">
               <div>
@@ -289,7 +275,7 @@ export default function IdentityPage() {
             </div>
           </section>
 
-          <section id="credits" aria-labelledby="credits-h" className="fade-up md:col-span-2" style={{ animationDelay: ".35s" }}>
+          <section id="credits" aria-labelledby="credits-h" className={`${styles.fadeUp} md:col-span-2`} style={{ animationDelay: ".35s" }}>
             <h2 id="credits-h" className="text-sm font-semibold tracking-widest uppercase">CREDITS</h2>
             <ul className="mt-4 space-y-2">
               <li><a href="https://www.discogs.com/release/34065559-Arcade-Fire-Pink-Elephant" className="underline underline-offset-2 hover:text-gray-600 transition-colors">Discogs — Arcade Fire “Pink Elephant” release</a></li>
@@ -302,7 +288,11 @@ export default function IdentityPage() {
         </p>
 
         {/* JSON-LD */}
-        <Script id="identity-jsonld" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+        <Script
+          id="identity-jsonld"
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
       </main>
     </div>
   );
