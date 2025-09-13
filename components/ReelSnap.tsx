@@ -289,6 +289,21 @@ export default function ReelSnap({
     []
   );
 
+  // ---------- NEW: default footer (only if none is provided) ----------
+  const year = new Date().getFullYear();
+  const defaultFooter = (
+    <footer>
+      <div style={{ padding: "24px" }}>
+        <p>
+          © {year} Popographer. All rights reserved.{" "}
+          <a href="/identity/" aria-label="Identity page">Identity</a>.{" "}
+          Popographer™ is the trade name of Popographer, LLC (Louisiana, USA).
+        </p>
+      </div>
+    </footer>
+  );
+  // --------------------------------------------------------------------
+
   return (
     <div
       ref={containerRef}
@@ -399,11 +414,9 @@ export default function ReelSnap({
       })}
 
       {/* Footer snap target */}
-      {footer ? (
-        <section className="relative w-full snap-end snap-always bg-black safe-b-plus min-h-[30vh] md:min-h-0">
-          {footer}
-        </section>
-      ) : null}
+      <section className="relative w-full snap-end snap-always bg-black safe-b-plus min-h-[30vh] md:min-h-0">
+        {footer ?? defaultFooter}
+      </section>
     </div>
   );
 }
