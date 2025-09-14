@@ -187,6 +187,7 @@ export default function IdentityPage() {
         >
           <span className="text-sm tracking-widest font-semibold">CALEB GRIDLEY</span>
           <ul className="flex gap-5 text-sm">
+            <li><a href="#works" className="hover:text-gray-600 transition-colors">WORKS</a></li>
             <li><a href="#press" className="hover:text-gray-600 transition-colors">PRESS</a></li>
             <li><a href="#exhibitions" className="hover:text-gray-600 transition-colors">EXHIBITIONS</a></li>
             <li><a href="#domains" className="hover:text-gray-600 transition-colors">DOMAINS</a></li>
@@ -234,6 +235,33 @@ export default function IdentityPage() {
               <li><a href="https://www.instagram.com/thepopographer/" className="underline underline-offset-2 hover:text-gray-600 transition-colors" rel="me">INSTAGRAM @THEPOPOGRAPHER</a></li>
               <li><a href="https://www.youtube.com/@popographer" className="underline underline-offset-2 hover:text-gray-600 transition-colors" rel="me">YOUTUBE @POPOGRAPHER</a></li>
               <li><a href="https://vimeo.com/popographer" className="underline underline-offset-2 hover:text-gray-600 transition-colors" rel="me">VIMEO @POPOGRAPHER</a></li>
+            </ul>
+          </section>
+
+          {/* Notable works */}
+          <section id="works" aria-labelledby="works-h" className={`${styles.fadeUp} md:col-span-2`} style={{ animationDelay: ".24s" }}>
+            <h2 id="works-h" className="text-sm font-semibold tracking-widest uppercase">NOTABLE WORKS</h2>
+            <ul className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <li>
+                <a href="https://popographer.com/artwork/not-warhol/" className="underline underline-offset-2 hover:text-gray-600 transition-colors">
+                  Not Warhol
+                </a>
+              </li>
+              <li>
+                <a href="https://popographer.com/artwork/anointing-the-artifice/" className="underline underline-offset-2 hover:text-gray-600 transition-colors">
+                  Anointing the Artifice
+                </a>
+              </li>
+              <li>
+                <a href="https://popographer.com/artwork/body-of-work/" className="underline underline-offset-2 hover:text-gray-600 transition-colors">
+                  Body of Work
+                </a>
+              </li>
+              <li>
+                <a href="https://popographer.com/artwork/augmentations/" className="underline underline-offset-2 hover:text-gray-600 transition-colors">
+                  Augmentations
+                </a>
+              </li>
             </ul>
           </section>
 
