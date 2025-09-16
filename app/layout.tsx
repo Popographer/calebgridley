@@ -134,7 +134,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                   "@type": "Person",
                   // FIX: canonical person @id from identity
                   "@id": PERSON_ID,
-                  name: "Caleb Gridley",
+                  name: PERSON_NAME, // ← use constant
                   alternateName: "Popographer",
                   url: `${SITE_ORIGIN}/`,
                   image: { "@id": "https://calebgridley.com/identity/#hero" }, // kept
@@ -185,8 +185,8 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                   "@type": "Organization",
                   // FIX: canonical org @id (fragment format)
                   "@id": ORG_ID,
-                  name: "Popographer LLC",
-                  legalName: "Popographer LLC",
+                  name: ORG_NAME,       // ← use constant
+                  legalName: ORG_NAME,  // ← use constant
                   url: "https://popographer.com/",
                   foundingLocation: {
                     "@type": "Place",
