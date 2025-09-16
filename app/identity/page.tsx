@@ -4,6 +4,17 @@ import Script from "next/script";
 import Image from "next/image";
 import styles from "./identity.module.css"; // ← scoped styles for this route
 
+// NEW: canonical identity constants and Wikidata refs
+import {
+  SITE_ORIGIN,
+  PERSON_ID,
+  ORG_ID,
+  PERSON_SAME_AS,
+  ORG_SAME_AS,
+  SUBJECT_OF_REFERENCES,
+  WD_PERSON_CALEB,
+} from "../../lib/identity";
+
 const HERO_URL = "https://cdn.calebgridley.com/augmentations-poster.webp"; // 1820x1080
 const CARD_PNG = "https://cdn.calebgridley.com/caleb-gridley_identity-card_1080x1080.png";
 const CARD_WEBP = "https://cdn.calebgridley.com/caleb-gridley_identity-card_1080x1080.webp";
@@ -12,9 +23,9 @@ export const metadata: Metadata = {
   title: "Identity | Caleb Gridley",
   description:
     "Official identity page for Caleb Gridley, visual artist, photographer, and art film director.",
-  alternates: { canonical: "https://calebgridley.com/identity/" },
+  alternates: { canonical: `${SITE_ORIGIN}/identity/` },
   openGraph: {
-    url: "https://calebgridley.com/identity/",
+    url: `${SITE_ORIGIN}/identity/`,
     title: "Identity | Caleb Gridley",
     description:
       "Official identity page for Caleb Gridley, visual artist, photographer, and art film director.",
@@ -40,37 +51,68 @@ export const metadata: Metadata = {
 export default function IdentityPage() {
   const dateModified = "2025-09-12";
 
+  // keep your originals; only add canonical constants and Wikidata
+  const personSameAs = [
+    // original set
+    "https://calebgridley.com/",
+    "https://popographer.com/",
+    "https://notwarhol.com/",
+    "https://popograph.com/",
+    "https://pop-ographer.com/",
+    "https://popographer.co/",
+    "https://www.instagram.com/thepopographer/",
+    "https://www.youtube.com/@popographer",
+    "https://vimeo.com/popographer",
+    // add canonical bundle (includes Wikidata person)
+    ...PERSON_SAME_AS,
+  ];
+
+  const orgSameAs = [
+    // original set
+    "https://calebgridley.com/",
+    "https://popographer.com/",
+    "https://notwarhol.com/",
+    "https://popograph.com/",
+    "https://pop-ographer.com/",
+    "https://popographer.co/",
+    "https://www.instagram.com/thepopographer/",
+    "https://www.youtube.com/@popographer",
+    "https://vimeo.com/popographer",
+    // add canonical bundle (includes Wikidata org)
+    ...ORG_SAME_AS,
+  ];
+
   const jsonLd = {
     "@context": "https://schema.org",
     "@graph": [
       {
         "@type": ["WebPage", "ProfilePage"],
-        "@id": "https://calebgridley.com/identity/#webpage/",
-        "url": "https://calebgridley.com/identity/",
+        "@id": `${SITE_ORIGIN}/identity/#webpage`,
+        "url": `${SITE_ORIGIN}/identity/`,
         "name": "Identity",
         "description":
           "Identity information for Caleb Gridley. Official domains, socials, press, exhibitions, and legal notes.",
-        "isPartOf": { "@id": "https://calebgridley.com/#website/" },
-        "breadcrumb": { "@id": "https://calebgridley.com/identity/#breadcrumbs/" },
-        "about": { "@id": "https://calebgridley.com/#person/" },
-        "mainEntity": { "@id": "https://calebgridley.com/#person/" }, // ← two-way bind (page → person)
-        "publisher": { "@id": "https://popographer.com/#org/" },
-        "primaryImageOfPage": { "@id": "https://calebgridley.com/identity/#hero/" },
+        "isPartOf": { "@id": `${SITE_ORIGIN}/#website` },
+        "breadcrumb": { "@id": `${SITE_ORIGIN}/identity/#breadcrumbs` },
+        "about": { "@id": PERSON_ID },
+        "mainEntity": { "@id": PERSON_ID }, // ← two-way bind (page → person)
+        "publisher": { "@id": ORG_ID },
+        "primaryImageOfPage": { "@id": `${SITE_ORIGIN}/identity/#hero` },
         "inLanguage": "en",
         "dateModified": dateModified
       },
       {
         "@type": "BreadcrumbList",
-        "@id": "https://calebgridley.com/identity/#breadcrumbs/",
+        "@id": `${SITE_ORIGIN}/identity/#breadcrumbs`,
         "name": "Breadcrumbs",
         "itemListElement": [
-          { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://calebgridley.com/" },
-          { "@type": "ListItem", "position": 2, "name": "Identity", "item": "https://calebgridley.com/identity/" }
+          { "@type": "ListItem", "position": 1, "name": "Home", "item": `${SITE_ORIGIN}/` },
+          { "@type": "ListItem", "position": 2, "name": "Identity", "item": `${SITE_ORIGIN}/identity/` }
         ]
       },
       {
         "@type": "ImageObject",
-        "@id": "https://calebgridley.com/identity/#hero/",
+        "@id": `${SITE_ORIGIN}/identity/#hero`,
         "name": "Caleb Gridley",
         "caption": "Caleb Gridley",
         "contentUrl": HERO_URL,
@@ -80,33 +122,36 @@ export default function IdentityPage() {
         "height": 1080,
         "representativeOfPage": true,
         "creditText": "Caleb Gridley (Popographer)",
-        "creator": { "@id": "https://calebgridley.com/#person/" },
-        "copyrightHolder": { "@id": "https://calebgridley.com/#person/" },
+        "creator": { "@id": PERSON_ID },
+        "copyrightHolder": { "@id": PERSON_ID },
         "copyrightNotice": "© Caleb Gridley. All rights reserved.",
         "license": "https://popographer.com/licensing/",
         "acquireLicensePage": "https://popographer.com/licensing/"
       },
       {
         "@type": "Person",
-        "@id": "https://calebgridley.com/#person/",
+        "@id": PERSON_ID,
         "name": "Caleb Gridley",
         "alternateName": "Popographer",
         "description": "American visual artist, photographer, and art film director.",
-        "url": "https://calebgridley.com/",
-        "worksFor": { "@id": "https://popographer.com/#org/" },
-        "identifier": [],
-        "sameAs": [
-          "https://calebgridley.com/",
-          "https://popographer.com/",
-          "https://notwarhol.com/",
-          "https://popograph.com/",
-          "https://pop-ographer.com/",
-          "https://popographer.co/",
-          "https://www.instagram.com/thepopographer/",
-          "https://www.youtube.com/@popographer",
-          "https://vimeo.com/popographer"
+        "url": `${SITE_ORIGIN}/`,
+        "worksFor": { "@id": ORG_ID },
+
+        // ADDED: Wikidata identifier while preserving your empty array intent
+        "identifier": [
+          {
+            "@type": "PropertyValue",
+            "propertyID": "Wikidata",
+            "value": WD_PERSON_CALEB
+          }
         ],
+
+        // merged sameAs (kept originals, added bundle)
+        "sameAs": personSameAs,
+
+        // kept your press links, ADDED canonical series/exhibition references
         "subjectOf": [
+          // existing press WebPages (kept)
           {
             "@type": "WebPage",
             "@id": "https://popographer.com/press/#ext-canvasrebel/",
@@ -121,13 +166,18 @@ export default function IdentityPage() {
             "name": "Arcade Fire — Pink Elephant (Discogs release; booklet credit)",
             "url": "https://www.discogs.com/release/34065559-Arcade-Fire-Pink-Elephant",
             "inLanguage": "en"
-          }
+          },
+          // ADDED: cross-domain canonical works/events (Wikidata/series IDs)
+          { "@type": "CreativeWorkSeries", "@id": SUBJECT_OF_REFERENCES.NOT_WARHOL_SERIES },
+          { "@type": "CreativeWorkSeries", "@id": SUBJECT_OF_REFERENCES.AUGMENTATIONS_SERIES },
+          { "@type": "ExhibitionEvent",   "@id": SUBJECT_OF_REFERENCES.ANOINTING_THE_ARTIFICE_EXHIBITION }
         ],
-        "mainEntityOfPage": { "@id": "https://calebgridley.com/identity/#webpage/" } // ← two-way bind (person → page)
+
+        "mainEntityOfPage": { "@id": `${SITE_ORIGIN}/identity/#webpage` } // ← two-way bind (person → page)
       },
       {
         "@type": "ItemList",
-        "@id": "https://calebgridley.com/identity/#selected-works/",
+        "@id": `${SITE_ORIGIN}/identity/#selected-works`,
         "name": "Selected works",
         "itemListOrder": "https://schema.org/ItemListOrderDescending",
         "itemListElement": [
@@ -139,7 +189,7 @@ export default function IdentityPage() {
       },
       {
         "@type": "Organization",
-        "@id": "https://popographer.com/#org/",
+        "@id": ORG_ID,
         "name": "Popographer LLC",
         "legalName": "Popographer LLC",
         "url": "https://popographer.com/",
@@ -151,17 +201,7 @@ export default function IdentityPage() {
             "addressCountry": "US"
           }
         },
-        "sameAs": [
-          "https://calebgridley.com/",
-          "https://popographer.com/",
-          "https://notwarhol.com/",
-          "https://popograph.com/",
-          "https://pop-ographer.com/",
-          "https://popographer.co/",
-          "https://www.instagram.com/thepopographer/",
-          "https://www.youtube.com/@popographer",
-          "https://vimeo.com/popographer"
-        ]
+        "sameAs": orgSameAs
       }
     ]
   };
@@ -223,7 +263,7 @@ export default function IdentityPage() {
           <section id="domains" aria-labelledby="domains-h" className={styles.fadeUp} style={{ animationDelay: ".15s" }}>
             <h2 id="domains-h" className="text-sm font-semibold tracking-widest uppercase">OFFICIAL DOMAINS</h2>
             <ul className="mt-4 space-y-2">
-              <li><a href="https://calebgridley.com/" className="underline underline-offset-2 hover:text-gray-600 transition-colors">CALEBGRIDLEY.COM</a></li>
+              <li><a href={`${SITE_ORIGIN}/`} className="underline underline-offset-2 hover:text-gray-600 transition-colors">CALEBGRIDLEY.COM</a></li>
               <li><a href="https://popographer.com/" className="underline underline-offset-2 hover:text-gray-600 transition-colors">POPOGRAPHER.COM</a></li>
               <li><a href="https://notwarhol.com/" className="underline underline-offset-2 hover:text-gray-600 transition-colors">NOTWARHOL.COM</a></li>
             </ul>

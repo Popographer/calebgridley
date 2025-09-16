@@ -10,6 +10,9 @@ import {
   PERSON_ID,
   ORG_ID,
   ORG_NAME,
+  // ADDED:
+  ORG_SAME_AS,
+  WIKIDATA_BY_SLUG,
 } from "../../lib/identity";
 
 /** Static export: force SSG and disable ISR */
@@ -84,6 +87,28 @@ function compact<T>(val: T): T {
 
 // ────────────────────────────────────────────────────────────────────────────
 function JsonLdWorkIndex({ items }: { items: Work[] }) {
+  // NEW: create minimal CreativeWorkSeries nodes for each item
+  const workSeriesNodes = items.map((w) => {
+    const popUrl = (POP_WORK_URLS as Record<string, string | undefined>)[w.slug];
+    if (!popUrl) return undefined;
+
+    // Prefer the canonical Popographer series anchor (#work/), consistent with your other pages.
+    const workId = `${popUrl}#work/`;
+    const sameAs = (WIKIDATA_BY_SLUG as Record<string, string | undefined>)[w.slug];
+
+    return compact({
+      "@type": "CreativeWorkSeries",
+      "@id": workId,
+      name: w.title,
+      description: w.description,
+      creator: { "@id": PERSON_ID },
+      author: { "@id": PERSON_ID },
+      publisher: { "@id": ORG_ID },
+      // add Wikidata only when present for the slug
+      sameAs: sameAs ? [sameAs] : undefined,
+    });
+  }).filter(Boolean);
+
   const json = compact({
     "@context": "https://schema.org",
     "@graph": [
@@ -110,18 +135,27 @@ function JsonLdWorkIndex({ items }: { items: Work[] }) {
         "@id": `${SITE_ORIGIN}/work/#selected-works`,
         name: "Selected Works",
         mainEntityOfPage: { "@id": `${SITE_ORIGIN}/work/#webpage` },
-        itemListElement: items.map((w, i) => ({
-          "@type": "ListItem",
-          position: i + 1,
-          url: absOnSite(w.canonicalUrl),
-          name: w.title,
-        })),
+        itemListElement: items.map((w, i) => {
+          const popUrl = (POP_WORK_URLS as Record<string, string | undefined>)[w.slug];
+          return compact({
+            "@type": "ListItem",
+            position: i + 1,
+            url: absOnSite(w.canonicalUrl),
+            name: w.title,
+            // ADDED: link each list entry to the canonical Popographer series node when known
+            item: popUrl ? { "@id": `${popUrl}#work/` } : undefined,
+          });
+        }),
       },
       {
         "@type": "Organization",
         "@id": ORG_ID,
         name: ORG_NAME,
+        // ADDED: authoritative org profiles (includes Wikidata)
+        sameAs: ORG_SAME_AS,
       },
+      // ADDED: per-work CreativeWorkSeries nodes (no removals)
+      ...workSeriesNodes,
     ],
   });
 
