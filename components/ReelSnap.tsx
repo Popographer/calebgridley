@@ -304,6 +304,16 @@ export default function ReelSnap({
   );
   // --------------------------------------------------------------------
 
+  // ---------- NEW (additive): Accessible carousel semantics ----------
+  const carouselLabel = "Featured works carousel";
+  const liveRegionText = useMemo(() => {
+    const total = panels.length || 1;
+    const current = Math.min(Math.max(activeIndex + 1, 1), total);
+    const currentTitle = panels[activeIndex]?.title || "Slide";
+    return `Slide ${current} of ${total}: ${currentTitle}`;
+  }, [activeIndex, panels]);
+  // -------------------------------------------------------------------
+
   return (
     <div
       ref={containerRef}
@@ -316,7 +326,16 @@ export default function ReelSnap({
         scroll-pb-[30vh] md:scroll-pb-0
       "
       style={{ WebkitOverflowScrolling: "touch" }}
+      // NEW: ARIA carousel wrapper
+      role="region"
+      aria-roledescription="carousel"
+      aria-label={carouselLabel}
     >
+      {/* NEW: SR-only live region announcing slide changes */}
+      <div className="sr-only" aria-live="polite" aria-atomic="true">
+        {liveRegionText}
+      </div>
+
       {/* subtle crossfade veil when switching sections */}
       <div
         className={`pointer-events-none fixed inset-0 z-30 bg-black transition-opacity duration-150 ${
@@ -326,7 +345,7 @@ export default function ReelSnap({
       />
 
       {/* bottom-right index switcher */}
-      <div className="group fixed bottom-6 right-6 z-40 select-none flex flex-col items-end gap-1">
+      <div className="group fixed bottom-6 right-6 z-40 select-none flex flex-col items-end gap-1" aria-label="Slide selector">
         <button
           className="pointer-events-auto text-white/90 font-mono text-base tracking-[0.15em] transition-opacity group-hover:opacity-0"
           aria-label={`Current section ${activeIndex + 1}`}
@@ -334,7 +353,7 @@ export default function ReelSnap({
         >
           {num(activeIndex)}
         </button>
-        <div className="pointer-events-auto hidden group-hover:flex flex-col items-end gap-1">
+        <div className="pointer-events-auto hidden group-hover:flex flex-col items-end gap-1" role="list" aria-label="Go to slide">
           {panels.map((_, i) => (
             <button
               key={i}
@@ -343,6 +362,7 @@ export default function ReelSnap({
                 i === activeIndex ? "text-white font-semibold" : "text-white/60 hover:text-white/90"
               }`}
               aria-label={`Go to section ${i + 1}`}
+              aria-current={i === activeIndex ? "true" : undefined}
             >
               {num(i)}
             </button>
@@ -364,6 +384,10 @@ export default function ReelSnap({
               if (el) sectionRefs.current[i] = el;
             }}
             className="group relative reel-section w-full snap-start snap-always overflow-hidden"
+            // NEW: ARIA slide semantics
+            role="group"
+            aria-roledescription="slide"
+            aria-label={`${it.title}${panels.length ? ` (${i + 1} of ${panels.length})` : ""}`}
           >
             <Video
               ref={setVideoRef(i)}

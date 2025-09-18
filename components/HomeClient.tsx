@@ -20,34 +20,33 @@ const ORDER = [
 export default function HomeClient() {
   const sound = useSoundController();
 
-  // Build a stable ordering map once
-  const orderIndex = React.useMemo(() => {
-    const map = new Map<WorkSlug, number>();
-    ORDER.forEach((slug, i) => map.set(slug, i));
+  // Build slug -> work map once
+  const bySlug = React.useMemo(() => {
+    const map = new Map<WorkSlug, Work>();
+    for (const w of WORKS) map.set(w.slug, w);
     return map;
   }, []);
 
-  // Deterministic reel list (sorted by ORDER)
+  // Deterministic reel list, already in ORDER (no sort needed)
   const REEL = React.useMemo<Work[]>(() => {
-    const bySlug = new Map<WorkSlug, Work>();
-    for (const w of WORKS) bySlug.set(w.slug, w);
-
-    // Collect in order and filter out any missing slugs — with a type predicate
     const list = ORDER.map((slug) => bySlug.get(slug)).filter((w): w is Work => Boolean(w));
 
-    // If you ever want to surface missing slugs locally, you can add a
-    // non-TypeScript-checked console.warn here guarded by a runtime flag.
-    // (Removed the `process.env` check to avoid Node typings in client code.)
+    // Dev-only visibility into missing slugs (no Node typings in client)
+    if (typeof window !== "undefined") {
+      const missing = ORDER.filter((slug) => !bySlug.has(slug));
+      if (missing.length) {
+        // eslint-disable-next-line no-console
+        console.warn("[HomeClient] Missing works for slugs:", missing);
+      }
+    }
 
-    // Remove non-null assertions: fall back to a large rank if ever undefined
-    const rank = (s: WorkSlug) => orderIndex.get(s) ?? Number.MAX_SAFE_INTEGER;
-    return list.sort((a, b) => rank(a.slug) - rank(b.slug));
-  }, [orderIndex]);
+    return list;
+  }, [bySlug]);
 
   return (
     <SoundContext.Provider value={sound}>
       <Header />
-      <main className="bg-black">
+      <main id="content" className="bg-black">
         <ReelSnap
           items={REEL}
           showCaptions

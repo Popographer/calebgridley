@@ -10,9 +10,9 @@ import {
   PERSON_ID,
   ORG_ID,
   ORG_NAME,
-  // ADDED:
   ORG_SAME_AS,
   WIKIDATA_BY_SLUG,
+  ORG_IDENTIFIERS, // ← ADDED
 } from "../../lib/identity";
 
 /** Static export: force SSG and disable ISR */
@@ -87,27 +87,27 @@ function compact<T>(val: T): T {
 
 // ────────────────────────────────────────────────────────────────────────────
 function JsonLdWorkIndex({ items }: { items: Work[] }) {
-  // NEW: create minimal CreativeWorkSeries nodes for each item
-  const workSeriesNodes = items.map((w) => {
-    const popUrl = (POP_WORK_URLS as Record<string, string | undefined>)[w.slug];
-    if (!popUrl) return undefined;
+  // Minimal CreativeWorkSeries nodes for each item (canonicalized to Popographer)
+  const workSeriesNodes = items
+    .map((w) => {
+      const popUrl = (POP_WORK_URLS as Record<string, string | undefined>)[w.slug];
+      if (!popUrl) return undefined;
 
-    // Prefer the canonical Popographer series anchor (#work/), consistent with your other pages.
-    const workId = `${popUrl}#work/`;
-    const sameAs = (WIKIDATA_BY_SLUG as Record<string, string | undefined>)[w.slug];
+      const workId = `${popUrl}#work`;
+      const sameAs = (WIKIDATA_BY_SLUG as Record<string, string | undefined>)[w.slug];
 
-    return compact({
-      "@type": "CreativeWorkSeries",
-      "@id": workId,
-      name: w.title,
-      description: w.description,
-      creator: { "@id": PERSON_ID },
-      author: { "@id": PERSON_ID },
-      publisher: { "@id": ORG_ID },
-      // add Wikidata only when present for the slug
-      sameAs: sameAs ? [sameAs] : undefined,
-    });
-  }).filter(Boolean);
+      return compact({
+        "@type": "CreativeWorkSeries",
+        "@id": workId,
+        "name": w.title,
+        "description": w.description,
+        "creator": { "@id": PERSON_ID },
+        "author": { "@id": PERSON_ID },
+        "publisher": { "@id": ORG_ID },
+        "sameAs": sameAs ? [sameAs] : undefined,
+      });
+    })
+    .filter(Boolean);
 
   const json = compact({
     "@context": "https://schema.org",
@@ -115,55 +115,54 @@ function JsonLdWorkIndex({ items }: { items: Work[] }) {
       {
         "@type": "BreadcrumbList",
         "@id": `${SITE_ORIGIN}/work/#breadcrumbs`,
-        itemListElement: [
-          { "@type": "ListItem", position: 1, name: "Home", item: `${SITE_ORIGIN}/` },
-          { "@type": "ListItem", position: 2, name: "Work", item: `${SITE_ORIGIN}/work/` },
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "Home", "item": `${SITE_ORIGIN}/` },
+          { "@type": "ListItem", "position": 2, "name": "Work", "item": `${SITE_ORIGIN}/work/` },
         ],
       },
       {
-        "@type": "CollectionPage",
+        "@type": ["WebPage", "CollectionPage"],
         "@id": `${SITE_ORIGIN}/work/#webpage`,
-        url: `${SITE_ORIGIN}/work/`,
-        name: "Selected Works",
-        isPartOf: { "@id": `${SITE_ORIGIN}/` },
-        breadcrumb: { "@id": `${SITE_ORIGIN}/work/#breadcrumbs` },
-        about: { "@id": PERSON_ID },
-        publisher: { "@id": ORG_ID },
+        "url": `${SITE_ORIGIN}/work/`,
+        "name": "Selected Works",
+        "inLanguage": "en",
+        "isPartOf": { "@id": `${SITE_ORIGIN}/#website` },
+        "breadcrumb": { "@id": `${SITE_ORIGIN}/work/#breadcrumbs` },
+        "about": { "@id": PERSON_ID },
+        "publisher": { "@id": ORG_ID }
       },
       {
         "@type": "ItemList",
         "@id": `${SITE_ORIGIN}/work/#selected-works`,
-        name: "Selected Works",
-        mainEntityOfPage: { "@id": `${SITE_ORIGIN}/work/#webpage` },
-        itemListElement: items.map((w, i) => {
+        "name": "Selected Works",
+        "mainEntityOfPage": { "@id": `${SITE_ORIGIN}/work/#webpage` },
+        "itemListElement": items.map((w, i) => {
           const popUrl = (POP_WORK_URLS as Record<string, string | undefined>)[w.slug];
           return compact({
             "@type": "ListItem",
-            position: i + 1,
-            url: absOnSite(w.canonicalUrl),
-            name: w.title,
-            // ADDED: link each list entry to the canonical Popographer series node when known
-            item: popUrl ? { "@id": `${popUrl}#work/` } : undefined,
+            "position": i + 1,
+            "url": absOnSite(w.canonicalUrl),
+            "name": w.title,
+            "item": popUrl ? { "@id": `${popUrl}#work` } : undefined,
           });
         }),
       },
       {
         "@type": "Organization",
         "@id": ORG_ID,
-        name: ORG_NAME,
-        // ADDED: authoritative org profiles (includes Wikidata)
-        sameAs: ORG_SAME_AS,
+        "name": ORG_NAME,
+        "url": "https://popographer.com/",
+        "sameAs": ORG_SAME_AS,
+        "identifier": ORG_IDENTIFIERS, // ← ADDED (ISNI as PropertyValue)
       },
-      // ADDED: per-work CreativeWorkSeries nodes (no removals)
+      // Per-work CreativeWorkSeries nodes
       ...workSeriesNodes,
     ],
   });
 
-  return <JsonLd id="ld-work-index" data={json} />;
+  return <JsonLd id="ld-work-index" data={json} dataPath="/work/" />;
 }
 
-// ────────────────────────────────────────────────────────────────────────────
-// Page
 // ────────────────────────────────────────────────────────────────────────────
 export default function WorkPage() {
   const GRID = WORKS.filter((w) => w.slug !== "caleb-gridley");

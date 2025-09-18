@@ -14,6 +14,7 @@ import {
   ORG_ID,
   ORG_NAME,
   ORG_LOGO_URL,
+  ORG_LOGO_ID,
 } from "../lib/identity";
 
 /** Force full SSG for static export and disable ISR. */
@@ -98,60 +99,60 @@ function ProfileGraph() {
     "@graph": [
       {
         "@type": ["WebPage", "ProfilePage"],
-        "@id": `${SITE_ORIGIN}/#webpage`,
-        url: `${SITE_ORIGIN}/`,
-        name: `${PERSON_NAME} — Artist & Director`,
-        isPartOf: { "@id": `${SITE_ORIGIN}/` },
-        breadcrumb: { "@id": `${SITE_ORIGIN}/#breadcrumbs` },
-        mainEntity: { "@id": PERSON_ID },
+        "@id": `${SITE_ORIGIN}/#webpage/`,
+        "url": `${SITE_ORIGIN}/`,
+        "name": `${PERSON_NAME} — Artist & Director`,
+        "isPartOf": { "@id": `${SITE_ORIGIN}/#website/` },
+        "breadcrumb": { "@id": `${SITE_ORIGIN}/#breadcrumbs/` },
+        "mainEntity": { "@id": PERSON_ID }
       },
       {
         "@type": "BreadcrumbList",
-        "@id": `${SITE_ORIGIN}/#breadcrumbs`,
-        itemListElement: [
-          { "@type": "ListItem", position: 1, name: "Home", item: `${SITE_ORIGIN}/` },
+        "@id": `${SITE_ORIGIN}/#breadcrumbs/`,
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "Home", "item": `${SITE_ORIGIN}/` },
           {
             "@type": "ListItem",
-            position: 2,
-            name: "About @ Popographer",
-            item: "https://popographer.com/about/",
-          },
-        ],
+            "position": 2,
+            "name": "About @ Popographer",
+            "item": "https://popographer.com/about/"
+          }
+        ]
       },
       {
         "@type": "Organization",
         "@id": ORG_ID,
-        name: ORG_NAME,
-        url: "https://popographer.com/",
-        logo: {
+        "name": ORG_NAME,
+        "url": "https://popographer.com/",
+        "logo": {
           "@type": "ImageObject",
-          "@id": "https://popographer.com/#logo",
-          url: ORG_LOGO_URL,
-        },
+          "@id": ORG_LOGO_ID,
+          "url": ORG_LOGO_URL
+        }
       },
       {
         "@type": "Person",
         "@id": PERSON_ID,
-        name: PERSON_NAME,
-        url: `${SITE_ORIGIN}/`,
-        worksFor: { "@id": ORG_ID },
-        sameAs: PERSON_SAME_AS,
-        email: emailForSchema,
-        hasOccupation: PERSON_ROLES.map((r) => ({ "@type": "Occupation", name: r })),
-        mainEntityOfPage: { "@id": `${SITE_ORIGIN}/#webpage` },
+        "name": PERSON_NAME,
+        "url": `${SITE_ORIGIN}/`,
+        "worksFor": { "@id": ORG_ID },
+        "sameAs": PERSON_SAME_AS,
+        "email": emailForSchema,
+        "hasOccupation": PERSON_ROLES.map((r) => ({ "@type": "Occupation", "name": r })),
+        "mainEntityOfPage": { "@id": `${SITE_ORIGIN}/#webpage/` }
       },
       {
         "@type": "ItemList",
-        "@id": `${SITE_ORIGIN}/#selected-works`,
-        name: "Selected Works",
-        itemListElement: (WORKS as Work[]).map((w, i) => ({
+        "@id": `${SITE_ORIGIN}/#selected-works/`,
+        "name": "Selected Works",
+        "itemListElement": (WORKS as Work[]).map((w, i) => ({
           "@type": "ListItem",
-          position: i + 1,
-          url: absOnSite(w.canonicalUrl),
-          name: w.title,
-        })),
-      },
-    ],
+          "position": i + 1,
+          "url": absOnSite(w.canonicalUrl),
+          "name": w.title
+        }))
+      }
+    ]
   });
 
   return <JsonLd id="ld-profile" data={jsonld} />;
@@ -160,31 +161,32 @@ function ProfileGraph() {
 function VideosGraph() {
   const graph: Array<Record<string, unknown>> = [];
 
+  // Publisher org (referenced by @id; Organization with logo is declared above)
   const publisher = { "@type": "Organization", "@id": ORG_ID };
 
   // Landing video
   graph.push(
     compact({
       "@type": "VideoObject",
-      "@id": `${SITE_ORIGIN}/#landing-video`,
-      name: `${PERSON_NAME} — Landing Loop`,
-      description: "Landing/profile loop.",
-      inLanguage: "en",
-      uploadDate: isoWithTZ(),
-      duration: "PT17S",
-      thumbnailUrl: absOnSite("/loops/caleb-gridley-poster.webp"),
-      mainEntityOfPage: { "@id": `${SITE_ORIGIN}/#webpage` },
-      publisher,
-      creator: { "@id": PERSON_ID },
-      author: { "@id": PERSON_ID },
-      copyrightHolder: { "@id": PERSON_ID },
-      license: "https://popographer.com/licensing/",
-      contentUrl: "https://cdn.calebgridley.com/caleb-gridley-loop-1080.webm",
-      encoding: encodings(
+      "@id": `${SITE_ORIGIN}/#landing-video/`,
+      "name": `${PERSON_NAME} — Landing Loop`,
+      "description": "Landing/profile loop.",
+      "inLanguage": "en",
+      "uploadDate": isoWithTZ(),
+      "duration": "PT17S",
+      "thumbnailUrl": absOnSite("/loops/caleb-gridley-poster.webp"),
+      "mainEntityOfPage": { "@id": `${SITE_ORIGIN}/#webpage/` },
+      "publisher": publisher,
+      "creator": { "@id": PERSON_ID },
+      "author": { "@id": PERSON_ID },
+      "copyrightHolder": { "@id": PERSON_ID },
+      "license": "https://popographer.com/licensing/",
+      "contentUrl": "https://cdn.calebgridley.com/caleb-gridley-loop-1080.webm",
+      "encoding": encodings(
         { url: "https://cdn.calebgridley.com/caleb-gridley-loop-720.mp4", type: "video/mp4" },
         { url: "https://cdn.calebgridley.com/caleb-gridley-loop-1080.webm", type: "video/webm" },
         { url: "https://cdn.calebgridley.com/caleb-gridley-loop-720.webm", type: "video/webm" }
-      ),
+      )
     })
   );
 
@@ -205,21 +207,21 @@ function VideosGraph() {
     graph.push(
       compact({
         "@type": "VideoObject",
-        "@id": `${SITE_ORIGIN}${w.canonicalUrl}#video`,
-        name: w.title,
-        description: w.description,
-        inLanguage: "en",
-        uploadDate: isoWithTZ(),
-        duration: v.duration ? `PT${v.duration}S` : undefined,
-        thumbnailUrl: absOnSite(v.poster),
-        mainEntityOfPage: { "@id": `${SITE_ORIGIN}${w.canonicalUrl}` },
-        publisher,
-        creator: { "@id": PERSON_ID },
-        author: { "@id": PERSON_ID },
-        copyrightHolder: { "@id": PERSON_ID },
-        license: v.license || "https://popographer.com/licensing/",
-        contentUrl: primaryWebm || primaryMp4,
-        encoding: enc,
+        "@id": `${SITE_ORIGIN}${w.canonicalUrl}#video/`,
+        "name": w.title,
+        "description": w.description,
+        "inLanguage": "en",
+        "uploadDate": isoWithTZ(),
+        "duration": v.duration ? `PT${v.duration}S` : undefined,
+        "thumbnailUrl": absOnSite(v.poster),
+        "mainEntityOfPage": { "@id": `${SITE_ORIGIN}${w.canonicalUrl}` },
+        "publisher": publisher,
+        "creator": { "@id": PERSON_ID },
+        "author": { "@id": PERSON_ID },
+        "copyrightHolder": { "@id": PERSON_ID },
+        "license": v.license || "https://popographer.com/licensing/",
+        "contentUrl": primaryWebm || primaryMp4,
+        "encoding": enc
       })
     );
   }

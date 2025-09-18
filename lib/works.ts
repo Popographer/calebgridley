@@ -4,13 +4,13 @@ import type { Work, WorkSlug, LoopSource } from "./types";
 /** Export types here too so pages can import from either module */
 export type { Work, WorkSlug, LoopSource };
 
-// ── Works data
+// ── Works data (absolute canonical URLs; trailing slashes everywhere)
 export const WORKS: Readonly<Work[]> = [
   {
     slug: "caleb-gridley",
     title: "Caleb Gridley",
     description: "Landing/profile teaser loop.",
-    canonicalUrl: "/work/caleb-gridley/",
+    canonicalUrl: "https://calebgridley.com/work/caleb-gridley/",
     heroVideo: {
       kind: "image",
       src: "https://cdn.calebgridley.com/caleb-gridley-poster.webp",
@@ -29,7 +29,7 @@ export const WORKS: Readonly<Work[]> = [
     slug: "body-of-work",
     title: "Body of Work",
     description: "Teaser loop; full piece on watch page.",
-    canonicalUrl: "/work/body-of-work/",
+    canonicalUrl: "https://calebgridley.com/work/body-of-work/",
     heroVideo: {
       kind: "image",
       src: "https://cdn.calebgridley.com/body-of-work-poster.webp",
@@ -49,7 +49,7 @@ export const WORKS: Readonly<Work[]> = [
     slug: "not-warhol",
     title: "Not Warhol",
     description: "Teaser loop; full piece on watch page.",
-    canonicalUrl: "/work/not-warhol/",
+    canonicalUrl: "https://calebgridley.com/work/not-warhol/",
     heroVideo: {
       kind: "image",
       src: "https://cdn.calebgridley.com/not-warhol-poster.webp",
@@ -69,7 +69,7 @@ export const WORKS: Readonly<Work[]> = [
     slug: "augmentations",
     title: "Augmentations",
     description: "Teaser loop; full piece on watch page.",
-    canonicalUrl: "/work/augmentations/",
+    canonicalUrl: "https://calebgridley.com/work/augmentations/",
     heroVideo: {
       kind: "image",
       src: "https://cdn.calebgridley.com/augmentations-poster.webp",

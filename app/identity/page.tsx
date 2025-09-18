@@ -1,10 +1,10 @@
-// app/identity/page.tsx
+// /app/identity/page.tsx
 import type { Metadata } from "next";
-import Script from "next/script";
 import Image from "next/image";
-import styles from "./identity.module.css"; // ← scoped styles for this route
+import styles from "./identity.module.css";
+import JsonLd from "../../components/JsonLd";
 
-// NEW: canonical identity constants and Wikidata refs
+// Canonical identity + Wikidata refs
 import {
   SITE_ORIGIN,
   PERSON_ID,
@@ -13,6 +13,7 @@ import {
   ORG_SAME_AS,
   SUBJECT_OF_REFERENCES,
   WD_PERSON_CALEB,
+  ORG_IDENTIFIERS,
 } from "../../lib/identity";
 
 const HERO_URL = "https://cdn.calebgridley.com/augmentations-poster.webp"; // 1820x1080
@@ -34,18 +35,18 @@ export const metadata: Metadata = {
     images: [
       { url: CARD_PNG, width: 1080, height: 1080, type: "image/png" },
       { url: CARD_WEBP, width: 1080, height: 1080, type: "image/webp" },
-      { url: HERO_URL, width: 1820, height: 1080 }
-    ]
+      { url: HERO_URL, width: 1820, height: 1080 },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "Identity | Caleb Gridley",
     description:
       "Official identity page for Caleb Gridley, visual artist, photographer, and art film director.",
-    images: [CARD_PNG, CARD_WEBP]
+    images: [CARD_PNG, CARD_WEBP],
   },
   robots: { index: true, follow: true },
-  themeColor: "#ffffff"
+  themeColor: "#ffffff",
 };
 
 export default function IdentityPage() {
@@ -53,7 +54,6 @@ export default function IdentityPage() {
 
   // keep your originals; only add canonical constants and Wikidata
   const personSameAs = [
-    // original set
     "https://calebgridley.com/",
     "https://popographer.com/",
     "https://notwarhol.com/",
@@ -68,7 +68,6 @@ export default function IdentityPage() {
   ];
 
   const orgSameAs = [
-    // original set
     "https://calebgridley.com/",
     "https://popographer.com/",
     "https://notwarhol.com/",
@@ -78,7 +77,7 @@ export default function IdentityPage() {
     "https://www.instagram.com/thepopographer/",
     "https://www.youtube.com/@popographer",
     "https://vimeo.com/popographer",
-    // add canonical bundle (includes Wikidata org)
+    // add canonical bundle (includes Wikidata org + ISNI resolver in identity.ts)
     ...ORG_SAME_AS,
   ];
 
@@ -88,122 +87,141 @@ export default function IdentityPage() {
       {
         "@type": ["WebPage", "ProfilePage"],
         "@id": `${SITE_ORIGIN}/identity/#webpage`,
-        "url": `${SITE_ORIGIN}/identity/`,
-        "name": "Identity",
-        "description":
+        url: `${SITE_ORIGIN}/identity/`,
+        name: "Identity",
+        description:
           "Identity information for Caleb Gridley. Official domains, socials, press, exhibitions, and legal notes.",
-        "isPartOf": { "@id": `${SITE_ORIGIN}/#website` },
-        "breadcrumb": { "@id": `${SITE_ORIGIN}/identity/#breadcrumbs` },
-        "about": { "@id": PERSON_ID },
-        "mainEntity": { "@id": PERSON_ID }, // ← two-way bind (page → person)
-        "publisher": { "@id": ORG_ID },
-        "primaryImageOfPage": { "@id": `${SITE_ORIGIN}/identity/#hero` },
-        "inLanguage": "en",
-        "dateModified": dateModified
+        isPartOf: { "@id": `${SITE_ORIGIN}/#website` },
+        breadcrumb: { "@id": `${SITE_ORIGIN}/identity/#breadcrumbs` },
+        about: { "@id": PERSON_ID },
+        mainEntity: { "@id": PERSON_ID }, // two-way bind (page → person)
+        publisher: { "@id": ORG_ID },
+        primaryImageOfPage: { "@id": `${SITE_ORIGIN}/identity/#hero` },
+        inLanguage: "en",
+        dateModified,
       },
       {
         "@type": "BreadcrumbList",
         "@id": `${SITE_ORIGIN}/identity/#breadcrumbs`,
-        "name": "Breadcrumbs",
-        "itemListElement": [
-          { "@type": "ListItem", "position": 1, "name": "Home", "item": `${SITE_ORIGIN}/` },
-          { "@type": "ListItem", "position": 2, "name": "Identity", "item": `${SITE_ORIGIN}/identity/` }
-        ]
+        name: "Breadcrumbs",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Home", item: `${SITE_ORIGIN}/` },
+          { "@type": "ListItem", position: 2, name: "Identity", item: `${SITE_ORIGIN}/identity/` },
+        ],
       },
       {
         "@type": "ImageObject",
         "@id": `${SITE_ORIGIN}/identity/#hero`,
-        "name": "Caleb Gridley",
-        "caption": "Caleb Gridley",
-        "contentUrl": HERO_URL,
-        "url": HERO_URL,
-        "encodingFormat": "image/webp",
-        "width": 1820,
-        "height": 1080,
-        "representativeOfPage": true,
-        "creditText": "Caleb Gridley (Popographer)",
-        "creator": { "@id": PERSON_ID },
-        "copyrightHolder": { "@id": PERSON_ID },
-        "copyrightNotice": "© Caleb Gridley. All rights reserved.",
-        "license": "https://popographer.com/licensing/",
-        "acquireLicensePage": "https://popographer.com/licensing/"
+        name: "Caleb Gridley",
+        caption: "Caleb Gridley",
+        contentUrl: HERO_URL,
+        url: HERO_URL,
+        encodingFormat: "image/webp",
+        width: 1820,
+        height: 1080,
+        representativeOfPage: true,
+        creditText: "Caleb Gridley (Popographer)",
+        creator: { "@id": PERSON_ID },
+        copyrightHolder: { "@id": PERSON_ID },
+        copyrightNotice: "© Caleb Gridley. All rights reserved.",
+        license: "https://popographer.com/licensing/",
+        acquireLicensePage: "https://popographer.com/licensing/",
       },
       {
         "@type": "Person",
         "@id": PERSON_ID,
-        "name": "Caleb Gridley",
-        "alternateName": "Popographer",
-        "description": "American visual artist, photographer, and art film director.",
-        "url": `${SITE_ORIGIN}/`,
-        "worksFor": { "@id": ORG_ID },
+        name: "Caleb Gridley",
+        alternateName: "Popographer",
+        description: "American visual artist, photographer, and art film director.",
+        url: `${SITE_ORIGIN}/`,
+        worksFor: { "@id": ORG_ID },
 
-        // ADDED: Wikidata identifier while preserving your empty array intent
-        "identifier": [
+        // Wikidata identifier (PropertyValue)
+        identifier: [
           {
             "@type": "PropertyValue",
-            "propertyID": "Wikidata",
-            "value": WD_PERSON_CALEB
-          }
+            propertyID: "Wikidata",
+            value: WD_PERSON_CALEB,
+          },
         ],
 
         // merged sameAs (kept originals, added bundle)
-        "sameAs": personSameAs,
+        sameAs: personSameAs,
 
-        // kept your press links, ADDED canonical series/exhibition references
-        "subjectOf": [
-          // existing press WebPages (kept)
+        // press + canonical works/events
+        subjectOf: [
           {
             "@type": "WebPage",
-            "@id": "https://popographer.com/press/#ext-canvasrebel/",
-            "name": "Meet Caleb Gridley",
-            "url": "https://canvasrebel.com/meet-caleb-gridley/",
-            "mainEntityOfPage": "https://canvasrebel.com/meet-caleb-gridley/",
-            "inLanguage": "en"
+            "@id": "https://popographer.com/press/#ext-canvasrebel",
+            name: "Meet Caleb Gridley",
+            url: "https://canvasrebel.com/meet-caleb-gridley/",
+            mainEntityOfPage: "https://canvasrebel.com/meet-caleb-gridley/",
+            inLanguage: "en",
           },
           {
             "@type": "WebPage",
             "@id": "https://www.discogs.com/release/34065559-Arcade-Fire-Pink-Elephant",
-            "name": "Arcade Fire — Pink Elephant (Discogs release; booklet credit)",
-            "url": "https://www.discogs.com/release/34065559-Arcade-Fire-Pink-Elephant",
-            "inLanguage": "en"
+            name: "Arcade Fire — Pink Elephant (Discogs release; booklet credit)",
+            url: "https://www.discogs.com/release/34065559-Arcade-Fire-Pink-Elephant",
+            inLanguage: "en",
           },
-          // ADDED: cross-domain canonical works/events (Wikidata/series IDs)
           { "@type": "CreativeWorkSeries", "@id": SUBJECT_OF_REFERENCES.NOT_WARHOL_SERIES },
           { "@type": "CreativeWorkSeries", "@id": SUBJECT_OF_REFERENCES.AUGMENTATIONS_SERIES },
-          { "@type": "ExhibitionEvent",   "@id": SUBJECT_OF_REFERENCES.ANOINTING_THE_ARTIFICE_EXHIBITION }
+          { "@type": "ExhibitionEvent", "@id": SUBJECT_OF_REFERENCES.ANOINTING_THE_ARTIFICE_EXHIBITION },
         ],
 
-        "mainEntityOfPage": { "@id": `${SITE_ORIGIN}/identity/#webpage` } // ← two-way bind (person → page)
+        mainEntityOfPage: { "@id": `${SITE_ORIGIN}/identity/#webpage` }, // two-way bind (person → page)
       },
       {
         "@type": "ItemList",
         "@id": `${SITE_ORIGIN}/identity/#selected-works`,
-        "name": "Selected works",
-        "itemListOrder": "https://schema.org/ItemListOrderDescending",
-        "itemListElement": [
-          { "@type": "ListItem", "position": 1, "name": "Not Warhol", "item": { "@id": "https://popographer.com/artwork/not-warhol/#work/" } },
-          { "@type": "ListItem", "position": 2, "name": "Anointing the Artifice", "item": { "@id": "https://popographer.com/artwork/anointing-the-artifice/#work/" } },
-          { "@type": "ListItem", "position": 3, "name": "Body of Work", "item": { "@id": "https://popographer.com/artwork/body-of-work/#work/" } },
-          { "@type": "ListItem", "position": 4, "name": "Augmentations", "item": { "@id": "https://popographer.com/artwork/augmentations/#work/" } }
-        ]
+        name: "Selected works",
+        itemListOrder: "https://schema.org/ItemListOrderDescending",
+        itemListElement: [
+          {
+            "@type": "ListItem",
+            position: 1,
+            name: "Not Warhol",
+            item: { "@id": "https://popographer.com/artwork/not-warhol/#work" },
+          },
+          {
+            "@type": "ListItem",
+            position: 2,
+            name: "Anointing the Artifice",
+            item: { "@id": "https://popographer.com/artwork/anointing-the-artifice/#work" },
+          },
+          {
+            "@type": "ListItem",
+            position: 3,
+            name: "Body of Work",
+            item: { "@id": "https://popographer.com/artwork/body-of-work/#work" },
+          },
+          {
+            "@type": "ListItem",
+            position: 4,
+            name: "Augmentations",
+            item: { "@id": "https://popographer.com/artwork/augmentations/#work" },
+          },
+        ],
       },
       {
         "@type": "Organization",
         "@id": ORG_ID,
-        "name": "Popographer LLC",
-        "legalName": "Popographer LLC",
-        "url": "https://popographer.com/",
-        "foundingLocation": {
+        name: "Popographer LLC",
+        legalName: "Popographer LLC",
+        url: "https://popographer.com/",
+        foundingLocation: {
           "@type": "Place",
-          "address": {
+          address: {
             "@type": "PostalAddress",
-            "addressRegion": "LA",
-            "addressCountry": "US"
-          }
+            addressRegion: "LA",
+            addressCountry: "US",
+          },
         },
-        "sameAs": orgSameAs
-      }
-    ]
+        sameAs: orgSameAs,
+        identifier: ORG_IDENTIFIERS, // ← ISNI + label from /lib/identity.ts
+      },
+    ],
   };
 
   return (
@@ -221,10 +239,7 @@ export default function IdentityPage() {
         className="sticky top-0 z-40 bg-white/85 backdrop-blur supports-[backdrop-filter]:backdrop-blur-md border-b border-neutral-200"
         aria-label="Primary"
       >
-        <nav
-          className="mx-auto max-w-5xl px-6 py-3 flex items-center justify-between"
-          aria-label="Global"
-        >
+        <nav className="mx-auto max-w-5xl px-6 py-3 flex items-center justify-between" aria-label="Global">
           <span className="text-sm tracking-widest font-semibold">CALEB GRIDLEY</span>
           <ul className="flex gap-5 text-sm">
             <li><a href="#works" className="hover:text-gray-600 transition-colors">WORKS</a></li>
@@ -278,25 +293,28 @@ export default function IdentityPage() {
             </ul>
           </section>
 
-          {/* Notable works */}
+          {/* Notable works — INLINE list with accessible separators */}
           <section id="works" aria-labelledby="works-h" className={`${styles.fadeUp} md:col-span-2`} style={{ animationDelay: ".24s" }}>
             <h2 id="works-h" className="text-sm font-semibold tracking-widest uppercase">NOTABLE WORKS</h2>
-            <ul className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <ul className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-base">
               <li>
                 <a href="https://popographer.com/artwork/not-warhol/" className="underline underline-offset-2 hover:text-gray-600 transition-colors">
                   Not Warhol
                 </a>
               </li>
+              <li aria-hidden="true" className="select-none opacity-50">•</li>
               <li>
                 <a href="https://popographer.com/artwork/anointing-the-artifice/" className="underline underline-offset-2 hover:text-gray-600 transition-colors">
                   Anointing the Artifice
                 </a>
               </li>
+              <li aria-hidden="true" className="select-none opacity-50">•</li>
               <li>
                 <a href="https://popographer.com/artwork/body-of-work/" className="underline underline-offset-2 hover:text-gray-600 transition-colors">
                   Body of Work
                 </a>
               </li>
+              <li aria-hidden="true" className="select-none opacity-50">•</li>
               <li>
                 <a href="https://popographer.com/artwork/augmentations/" className="underline underline-offset-2 hover:text-gray-600 transition-colors">
                   Augmentations
@@ -356,11 +374,7 @@ export default function IdentityPage() {
         </p>
 
         {/* JSON-LD */}
-        <Script
-          id="identity-jsonld"
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-        />
+        <JsonLd id="identity-jsonld" data={jsonLd} dataOwned="cg-o" dataPath="/identity/" />
       </main>
     </div>
   );

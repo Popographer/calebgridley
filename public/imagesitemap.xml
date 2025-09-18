@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+<urlset
+  xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+  xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
 
-  <!-- Home poster -->
+  <!-- Home -->
   <url>
     <loc>https://calebgridley.com/</loc>
     <image:image>
-      <image:loc>https://calebgridley.com/loops/caleb-gridley-poster.webp</image:loc>
-      <image:title>Caleb Gridley — Landing Poster</image:title>
+      <image:loc>https://cdn.calebgridley.com/caleb-gridley-poster.webp</image:loc>
     </image:image>
   </url>
 
@@ -15,8 +15,7 @@
   <url>
     <loc>https://calebgridley.com/work/caleb-gridley/</loc>
     <image:image>
-      <image:loc>https://calebgridley.com/loops/caleb-gridley-poster.webp</image:loc>
-      <image:title>Caleb Gridley — Poster</image:title>
+      <image:loc>https://cdn.calebgridley.com/caleb-gridley-poster.webp</image:loc>
     </image:image>
   </url>
 
@@ -24,8 +23,7 @@
   <url>
     <loc>https://calebgridley.com/work/augmentations/</loc>
     <image:image>
-      <image:loc>https://calebgridley.com/loops/augmentations-poster.webp</image:loc>
-      <image:title>Caleb Gridley — Augmentations Poster</image:title>
+      <image:loc>https://cdn.calebgridley.com/augmentations-poster.webp</image:loc>
     </image:image>
   </url>
 
@@ -33,8 +31,7 @@
   <url>
     <loc>https://calebgridley.com/work/not-warhol/</loc>
     <image:image>
-      <image:loc>https://calebgridley.com/loops/not-warhol-poster.webp</image:loc>
-      <image:title>Caleb Gridley — Not Warhol Poster</image:title>
+      <image:loc>https://cdn.calebgridley.com/not-warhol-poster.webp</image:loc>
     </image:image>
   </url>
 
@@ -42,25 +39,21 @@
   <url>
     <loc>https://calebgridley.com/work/body-of-work/</loc>
     <image:image>
-      <image:loc>https://calebgridley.com/loops/body-of-work-poster.webp</image:loc>
-      <image:title>Caleb Gridley — Body of Work Poster</image:title>
+      <image:loc>https://cdn.calebgridley.com/body-of-work-poster.webp</image:loc>
     </image:image>
   </url>
 
-  <!-- Identity page hero -->
+  <!-- Identity page hero(s) -->
   <url>
     <loc>https://calebgridley.com/identity/</loc>
     <image:image>
       <image:loc>https://cdn.calebgridley.com/augmentations-poster.webp</image:loc>
-      <image:title>Caleb Gridley — Augmentations Poster (Identity Hero)</image:title>
     </image:image>
     <image:image>
       <image:loc>https://cdn.calebgridley.com/caleb-gridley_identity-card_1080x1080.png</image:loc>
-      <image:title>Caleb Gridley — Identity Card (PNG)</image:title>
     </image:image>
     <image:image>
       <image:loc>https://cdn.calebgridley.com/caleb-gridley_identity-card_1080x1080.webp</image:loc>
-      <image:title>Caleb Gridley — Identity Card (WebP)</image:title>
     </image:image>
   </url>
 

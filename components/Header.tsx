@@ -109,6 +109,9 @@ export default function Header() {
     typeof window !== "undefined" &&
     window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
 
+  const isHome = pathname === "/" || pathname === "";
+  const isWork = pathname === "/work" || pathname === "/work/";
+
   return (
     <header>
       {/* Top bar */}
@@ -117,6 +120,7 @@ export default function Header() {
           href="/"
           className="text-white text-xl font-semibold tracking-tight"
           aria-label="Caleb Gridley | Home"
+          aria-current={isHome ? "page" : undefined}
           prefetch
         >
           Caleb Gridley
@@ -175,12 +179,24 @@ export default function Header() {
           <nav className="min-h-[calc(100vh-80px)] flex items-center">
             <ul className="px-6 space-y-6 text-3xl">
               <li>
-                <Link href="/" onClick={() => setOpen(false)} className="block hover:opacity-80" prefetch>
+                <Link
+                  href="/"
+                  onClick={() => setOpen(false)}
+                  className="block hover:opacity-80"
+                  aria-current={isHome ? "page" : undefined}
+                  prefetch
+                >
                   Home
                 </Link>
               </li>
               <li>
-                <Link href="/work" onClick={() => setOpen(false)} className="block hover:opacity-80" prefetch>
+                <Link
+                  href="/work/"
+                  onClick={() => setOpen(false)}
+                  className="block hover:opacity-80"
+                  aria-current={isWork ? "page" : undefined}
+                  prefetch
+                >
                   Work
                 </Link>
               </li>
