@@ -1,10 +1,9 @@
 // /app/identity/page.tsx
 import type { Metadata } from "next";
 import Image from "next/image";
+import Link from "next/link";
 import styles from "./identity.module.css";
 import JsonLd from "../../components/JsonLd";
-// NEW: Archivo Black for header + TOC links
-import { Archivo_Black } from "next/font/google";
 
 // Canonical identity + Wikidata refs
 import {
@@ -17,12 +16,6 @@ import {
   WD_PERSON_CALEB,
   ORG_IDENTIFIERS,
 } from "../../lib/identity";
-
-const archivoBlack = Archivo_Black({
-  weight: "400",
-  subsets: ["latin"],
-  display: "swap",
-});
 
 const HERO_URL = "https://cdn.calebgridley.com/augmentations-poster.webp"; // 1820x1080
 const CARD_PNG = "https://cdn.calebgridley.com/caleb-gridley_identity-card_1080x1080.png";
@@ -244,41 +237,35 @@ export default function IdentityPage() {
 
       {/* Header */}
       <header
-        className="sticky top-0 z-40 bg-white/85 backdrop-blur supports-[backdrop-filter]:backdrop-blur-md border-b border-neutral-200"
+        className="sticky top-0 z-40 bg-white/85 backdrop-blur supports-[backdrop-filter]:backdrop-blur-md"
         aria-label="Primary"
       >
         <nav className="mx-auto max-w-5xl px-6 py-3 flex items-center justify-between" aria-label="Global">
-          {/* Brand */}
-          <span className={`${archivoBlack.className} uppercase tracking-widest text-sm`}>
-            CALEB GRIDLEY
-          </span>
+          {/* Brand → link to home, same size/attributes */}
+          <Link
+            href="/"
+            aria-label="Home"
+            className="text-sm tracking-widest font-semibold uppercase hover:opacity-80 focus:outline-none focus:ring-2 focus:ring-neutral-900/10 rounded-sm"
+          >
+            POPOGRAPHER
+          </Link>
 
-          {/* TOC (top menu) */}
-          <ul className="flex gap-5">
-            {[
-              ["#works", "WORKS"],
-              ["#press", "PRESS"],
-              ["#exhibitions", "EXHIBITIONS"],
-              ["#domains", "DOMAINS"],
-              ["#credits", "CREDITS"],
-            ].map(([href, label]) => (
-              <li key={href}>
-                <a
-                  href={href}
-                  className={`${archivoBlack.className} uppercase text-xs tracking-[0.12em] relative underline-offset-4 hover:underline focus:underline transition-[text-decoration-color]`}
-                >
-                  {label}
-                </a>
-              </li>
-            ))}
+          {/* TOC (top menu) — default font restored */}
+          <ul className="flex gap-5 text-sm">
+            <li><a href="#works" className="hover:text-gray-600 transition-colors">WORKS</a></li>
+            <li><a href="#press" className="hover:text-gray-600 transition-colors">PRESS</a></li>
+            <li><a href="#exhibitions" className="hover:text-gray-600 transition-colors">EXHIBITIONS</a></li>
+            <li><a href="#domains" className="hover:text-gray-600 transition-colors">DOMAINS</a></li>
+            <li><a href="#credits" className="hover:text-gray-600 transition-colors">CREDITS</a></li>
           </ul>
         </nav>
       </header>
 
       <main id="main-content" className="mx-auto max-w-5xl px-6 py-12">
         <h1 className={`text-4xl font-semibold tracking-tight uppercase ${styles.fadeUp}`}>CALEB GRIDLEY</h1>
-
-        {/* REMOVED the descriptive line below the H1 per request */}
+        <p className={`mt-3 text-lg ${styles.fadeUp}`} style={{ animationDelay: ".05s" }}>
+          American visual artist, photographer, and art film director. Also known as Popographer.
+        </p>
 
         {/* Hero */}
         <figure className={`${styles.fadeUp}`} style={{ animationDelay: ".1s" }}>
