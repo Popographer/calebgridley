@@ -36,8 +36,9 @@ function stableStringify(value: unknown): string {
     } catch {}
 
     if (v instanceof Date) return v.toISOString();
-    // Guard for server envs
-    // @ts-expect-error: URL may not exist in some runtimes
+
+    // Guard for server envs where URL may not exist
+    // (no ts-expect-error needed since we check existence)
     if (typeof URL !== "undefined" && v instanceof URL) return v.toString();
 
     if (Array.isArray(v)) return v.map((item) => normalize(item));
