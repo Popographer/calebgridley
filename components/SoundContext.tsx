@@ -10,7 +10,9 @@ export interface SoundContextType {
 
 export const SoundContext = React.createContext<SoundContextType>({
   muted: true,
-  toggle: () => {},
+  toggle: () => {
+    /* noop: default context (replaced by provider) */
+  },
 });
 
 const STORAGE_KEY = "cg:soundMuted";
@@ -28,10 +30,15 @@ export function useSoundController(defaultMuted = true): SoundContextType {
   // Initialize from storage synchronously if possible
   const [muted, setMuted] = React.useState<boolean>(() => {
     try {
-      const raw = typeof window !== "undefined" ? localStorage.getItem(STORAGE_KEY) : null;
+      const raw =
+        typeof window !== "undefined"
+          ? localStorage.getItem(STORAGE_KEY)
+          : null;
       if (raw === "0" || raw === "false") return false;
       if (raw === "1" || raw === "true") return true;
-    } catch {}
+    } catch (_err) {
+      /* ignore: storage not available (SSR/private mode) */
+    }
     return defaultMuted;
   });
 
@@ -39,11 +46,18 @@ export function useSoundController(defaultMuted = true): SoundContextType {
   React.useEffect(() => {
     try {
       localStorage.setItem(STORAGE_KEY, muted ? "1" : "0");
-    } catch {}
+    } catch (_err) {
+      /* ignore: storage not available */
+    }
     // handy for CSS, tests, or quick inspection
     try {
-      document.documentElement.setAttribute("data-sound-muted", muted ? "1" : "0");
-    } catch {}
+      document.documentElement.setAttribute(
+        "data-sound-muted",
+        muted ? "1" : "0"
+      );
+    } catch (_err) {
+      /* ignore: document not available */
+    }
   }, [muted]);
 
   const toggle = React.useCallback(() => setMuted((m) => !m), []);
@@ -51,7 +65,10 @@ export function useSoundController(defaultMuted = true): SoundContextType {
   // Global “M” to toggle (ignores when focused in a form field)
   React.useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if ((e.key === "m" || e.key === "M") && !isFormField(document.activeElement)) {
+      if (
+        (e.key === "m" || e.key === "M") &&
+        !isFormField(document.activeElement)
+      ) {
         e.preventDefault();
         toggle();
       }
@@ -70,7 +87,9 @@ export function useSoundController(defaultMuted = true): SoundContextType {
  *   useSyncVideoMuted(ref);
  *   <video ref={ref} ... />
  */
-export function useSyncVideoMuted(ref: React.RefObject<HTMLVideoElement | null>) {
+export function useSyncVideoMuted(
+  ref: React.RefObject<HTMLVideoElement | null>
+) {
   const { muted } = React.useContext(SoundContext);
 
   React.useEffect(() => {
@@ -97,7 +116,9 @@ export function SoundProvider({
   defaultMuted?: boolean;
 }) {
   const controller = useSoundController(defaultMuted);
-  return <SoundContext.Provider value={controller}>{children}</SoundContext.Provider>;
+  return (
+    <SoundContext.Provider value={controller}>{children}</SoundContext.Provider>
+  );
 }
 
 export function SoundButton() {
