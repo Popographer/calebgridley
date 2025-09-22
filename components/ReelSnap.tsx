@@ -131,7 +131,7 @@ export default function ReelSnap({
     return () => io.disconnect();
   }, [visibilityThreshold, crossfadeMs]);
 
-  // Keyboard navigation
+  // Keyboard navigation (strictly typed; no any casts)
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
@@ -166,7 +166,7 @@ export default function ReelSnap({
     return () => el.removeEventListener("keydown", onKey);
   }, [items?.length, toIndex]);
 
-  // Nudge first video
+  // Nudge first video shortly after mount
   useEffect(() => {
     const v0 = videoRefs.current[0];
     if (v0) setTimeout(() => { void v0.play()?.catch(() => {}); }, 60);
@@ -184,7 +184,7 @@ export default function ReelSnap({
     return () => document.removeEventListener("visibilitychange", onVisible);
   }, [activeIndex]);
 
-  // One-time kickstart
+  // One-time kickstart fallback for first video
   useEffect(() => {
     const kickstart = () => {
       const v0 = videoRefs.current[0];
@@ -248,7 +248,7 @@ export default function ReelSnap({
           try {
             nextEl.setAttribute("preload", "auto");
           } catch {
-            /* noop */
+            /* noop: attribute may be unsupported */
           }
         }
         nextPreloadBumpedForIdxRef.current = nextIdx;
@@ -257,7 +257,7 @@ export default function ReelSnap({
     [autoAdvance, lastIndex, wrapAround]
   );
 
-  // Wire up native video events
+  // Wire up native video events for every panel
   useEffect(() => {
     const cleanups: Array<() => void> = [];
     panels.forEach((_, i) => {
@@ -289,130 +289,22 @@ export default function ReelSnap({
     []
   );
 
-  // ---------- DEFAULT FOOTER ----------
+  // ---------- default footer (only if none is provided) ----------
   const year = new Date().getFullYear();
-
-  const ISNI_CAL =
-    "https://isni.oclc.org/cbs/DB=1.2/CMD?ACT=SRCH&IKT=8006&TRM=ISN%3A0000000528217647&TERMS_OF_USE_AGREED=Y&terms_of_use_agree=send";
-  const ISNI_POP =
-    "https://isni.oclc.org/cbs/DB=1.2/CMD?ACT=SRCH&IKT=8006&TRM=ISN%3A0000000528230294&TERMS_OF_USE_AGREED=Y&terms_of_use_agree=send";
-
-  const footerLinks: ReadonlyArray<{ label: string; href: string }> = [
-    { label: "Shop", href: "/shop/" },
-    { label: "Contact", href: "/contact/" },
-    { label: "FAQ", href: "/faq/" },
-    { label: "Returns", href: "/returns/" },
-    { label: "Terms", href: "/terms/" },
-    { label: "Licensing", href: "/licensing/" },
-    { label: "License", href: "/license/" },
-    { label: "Press", href: "/press/" },
-    { label: "Imprint", href: "/imprint/" },
-  ];
-
   const defaultFooter = (
-    <footer className="border-t border-white/10 bg-black text-neutral-200">
-      <div className="mx-auto max-w-6xl px-6">
-        {/* Link row */}
-        <nav aria-label="Footer" className="py-6">
-          <ul className="flex flex-wrap items-center gap-x-10 gap-y-3 text-[15px]">
-            {footerLinks.map((l) => (
-              <li key={l.label}>
-                <a className="hover:text-white focus:text-white focus:outline-none" href={l.href}>
-                  {l.label}
-                </a>
-              </li>
-            ))}
-            {/* ALSO include Identity link in the nav */}
-            <li>
-              <a className="hover:text-white focus:text-white focus:outline-none" href="/identity/">
-                Identity
-              </a>
-            </li>
-          </ul>
-
-          {/* Search input */}
-          <form action="/search/" method="get" className="mt-4">
-            <label htmlFor="footer-search" className="sr-only">
-              Search
-            </label>
-            <div className="relative max-w-xl">
-              <div className="pointer-events-none absolute inset-y-0 left-3 flex items-center">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  aria-hidden="true"
-                  className="h-5 w-5"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth={2}
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-4.35-4.35M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15z" />
-                </svg>
-              </div>
-              <input
-                id="footer-search"
-                name="q"
-                type="search"
-                placeholder="Search"
-                className="w-full rounded-md border border-white/15 bg-transparent py-2.5 pl-10 pr-3 text-white placeholder:text-neutral-400 outline-none focus:border-white/40"
-                autoComplete="off"
-              />
-            </div>
-          </form>
-        </nav>
-
-        {/* Legal block */}
-        <div className="py-10 text-center text-sm leading-7">
-          <p>
-            © {year}, Caleb Gridley,{" "}
-            <a
-              href="https://popographer.com/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="underline decoration-white/40 underline-offset-2 hover:text-white"
-            >
-              Popographer
-            </a>
-            . All rights reserved.{" "}
-            {/* Identity link embedded in the legal line as well */}
-            <a href="/identity/" className="underline decoration-white/40 underline-offset-2 hover:text-white" aria-label="Identity">
-              Identity
-            </a>
-            .
-          </p>
-          <p>Popographer® is the trade name of Popographer LLC (Louisiana, USA).</p>
-
-          <ul className="mx-auto mt-4 list-inside list-disc space-y-1 text-left w-fit">
-            <li>
-              ISNI (Caleb Gridley):{" "}
-              <a
-                href={ISNI_CAL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="underline decoration-white/40 underline-offset-2 hover:text-white"
-              >
-                0000 0005 2821 7647
-              </a>
-            </li>
-            <li>
-              ISNI (Popographer LLC):{" "}
-              <a
-                href={ISNI_POP}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="underline decoration-white/40 underline-offset-2 hover:text-white"
-              >
-                0000 0005 2823 0294
-              </a>
-            </li>
-          </ul>
-        </div>
+    <footer>
+      <div style={{ padding: "24px" }}>
+        <p>
+          © {year} Popographer. All rights reserved.{" "}
+          <a href="/identity/" aria-label="Identity page">Identity</a>.{" "}
+          Popographer™ is the trade name of Popographer, LLC (Louisiana, USA).
+        </p>
       </div>
     </footer>
   );
-  // ------------------------------------
+  // ----------------------------------------------------------------
 
-  // Accessible carousel semantics
+  // ---------- Accessible carousel semantics ----------
   const carouselLabel = "Featured works carousel";
   const liveRegionText = useMemo(() => {
     const total = panels.length || 1;
@@ -420,6 +312,7 @@ export default function ReelSnap({
     const currentTitle = panels[activeIndex]?.title || "Slide";
     return `Slide ${current} of ${total}: ${currentTitle}`;
   }, [activeIndex, panels]);
+  // ---------------------------------------------------
 
   return (
     <div
@@ -437,12 +330,12 @@ export default function ReelSnap({
       aria-roledescription="carousel"
       aria-label={carouselLabel}
     >
-      {/* SR-only live region */}
+      {/* SR-only live region announcing slide changes */}
       <div className="sr-only" aria-live="polite" aria-atomic="true">
         {liveRegionText}
       </div>
 
-      {/* crossfade veil */}
+      {/* subtle crossfade veil when switching sections */}
       <div
         className={`pointer-events-none fixed inset-0 z-30 bg-black transition-opacity duration-150 ${
           crossfade ? "opacity-20" : "opacity-0"
@@ -450,8 +343,11 @@ export default function ReelSnap({
         aria-hidden="true"
       />
 
-      {/* index switcher */}
-      <div className="group fixed bottom-6 right-6 z-40 select-none flex flex-col items-end gap-1" aria-label="Slide selector">
+      {/* bottom-right index switcher */}
+      <div
+        className="group fixed bottom-6 right-6 z-40 select-none flex flex-col items-end gap-1"
+        aria-label="Slide selector"
+      >
         <button
           className="pointer-events-auto text-white/90 font-mono text-base tracking-[0.15em] transition-opacity group-hover:opacity-0"
           aria-label={`Current section ${activeIndex + 1}`}
@@ -459,7 +355,11 @@ export default function ReelSnap({
         >
           {num(activeIndex)}
         </button>
-        <div className="pointer-events-auto hidden group-hover:flex flex-col items-end gap-1" role="list" aria-label="Go to slide">
+        <div
+          className="pointer-events-auto hidden group-hover:flex flex-col items-end gap-1"
+          role="list"
+          aria-label="Go to slide"
+        >
           {panels.map((_, i) => (
             <button
               key={i}
@@ -499,7 +399,9 @@ export default function ReelSnap({
               poster={loop?.poster || it.heroVideo?.src}
               className="h-full w-full"
               sources={buildSources(loop)}
+              // allow video to end so auto-advance can trigger
               loop={autoAdvance ? false : true}
+              // only the first reel truly autoplays from paint
               autoPlay={i === 0}
               muted
               playsInline
@@ -534,7 +436,7 @@ export default function ReelSnap({
               )}
             </div>
 
-            {/* subtle bottom fade */}
+            {/* subtle bottom fade over video */}
             <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
           </section>
         );
