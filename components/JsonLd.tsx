@@ -3,29 +3,46 @@ import React from "react";
 
 type JsonLdProps = {
   id: string;
-  data: unknown;        // accept anything; we stringify safely below
-  nonce?: string;       // add this if you use a CSP
-  dataOwned?: string;   // optional marker
-  dataPath?: string;    // optional route hint
+  data: unknown;
+  nonce?: string;
+  dataOwned?: string;
+  dataPath?: string;
 };
 
-// JSON.stringify with a tiny replacer for common non-JSON values.
-// Then escape sequences that could prematurely end the script tag.
 function toJsonText(input: unknown): string {
-  const text = JSON.stringify(
-    input,
-    (_k, v) => {
-      if (v instanceof Date) return v.toISOString();
-      if (typeof v === "bigint") return v.toString();
-      if (typeof URL !== "undefined" && v instanceof URL) return v.toString();
-      return v;
-    }
-  ) ?? "{}";
+  const seen = new WeakSet<object>();
+
+  const text =
+    JSON.stringify(
+      input,
+      (_k, v) => {
+        // Common non-JSON values -> strings
+        if (v instanceof Date) return v.toISOString();
+        if (typeof v === "bigint") return v.toString();
+        if (typeof URL !== "undefined" && v instanceof URL) return v.toString();
+
+        // Guard against accidental circular structures
+        if (v && typeof v === "object") {
+          const obj = v as object;
+          if (seen.has(obj)) return "[Circular]";
+          seen.add(obj);
+
+          // Deterministic key order for plain objects (not arrays / class instances)
+          if (!Array.isArray(v) && v.constructor === Object) {
+            const src = v as Record<string, unknown>;
+            const out: Record<string, unknown> = {};
+            for (const key of Object.keys(src).sort()) out[key] = src[key];
+            return out;
+          }
+        }
+        return v;
+      }
+    ) ?? "{}";
 
   return text
-    .replace(/<\/(script)/gi, "<\\/$1>") // prevent </script> breakout
-    .replace(/\u2028/g, "\\u2028")       // line separator
-    .replace(/\u2029/g, "\\u2029");      // paragraph separator
+    .replace(/<\/(script)/gi, "<\\/$1>")
+    .replace(/\u2028/g, "\\u2028")
+    .replace(/\u2029/g, "\\u2029");
 }
 
 export default function JsonLd({

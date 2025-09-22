@@ -35,7 +35,6 @@ export default function HomeClient() {
     if (typeof window !== "undefined") {
       const missing = ORDER.filter((slug) => !bySlug.has(slug));
       if (missing.length) {
-        // eslint-disable-next-line no-console
         console.warn("[HomeClient] Missing works for slugs:", missing);
       }
     }
