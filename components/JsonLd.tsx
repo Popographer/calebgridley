@@ -1,11 +1,16 @@
 // components/JsonLd.tsx
 import React from "react";
 
+/** Strict JSON value types */
+type JsonPrimitive = string | number | boolean | null;
+type JsonObject = { [k: string]: JsonValue };
+export type JsonValue = JsonPrimitive | JsonObject | JsonValue[];
+
 type JsonLdProps = {
   /** Unique DOM id for this JSON-LD block */
   id: string;
   /** Parsed JSON-LD data (objects/arrays/primitives) */
-  data: unknown;
+  data: JsonValue | unknown; // accept unknowns, we’ll normalize safely
   /** Optional Content-Security-Policy nonce */
   nonce?: string;
   /** Optional marker to identify first-party scripts (defaults to 'cg-o') */
@@ -19,52 +24,67 @@ type JsonLdProps = {
  * - Sorts object keys for stable output
  * - Preserves array order
  * - Skips undefined & function values
- * - Supports Date/URL/custom toJSON() objects
- * - Handles simple circular refs gracefully (replaces with "[Circular]")
+ * - Converts Date/URL/custom toJSON() to strings/JSON
+ * - Handles simple circular refs ("[Circular]")
  */
 function stableStringify(value: unknown): string {
   const seen = new WeakSet<object>();
 
-  const normalize = (v: unknown): any => {
-    if (v === null || typeof v !== "object") return v;
+  const toJsonValue = (v: unknown): JsonValue => {
+    if (v === null) return null;
 
-    // Allow objects that define a custom toJSON() to control their representation
-    try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const anyV: any = v;
-      if (typeof anyV.toJSON === "function") return normalize(anyV.toJSON());
-    } catch {}
+    const t = typeof v;
+    if (t === "string" || t === "number" || t === "boolean") return v;
 
+    // Respect custom toJSON if present
+    if (typeof v === "object" && v !== null && "toJSON" in (v as object)) {
+      const maybe = (v as { toJSON?: () => unknown }).toJSON;
+      if (typeof maybe === "function") {
+        try {
+          return toJsonValue(maybe());
+        } catch {
+          // fall through and treat as a plain object
+        }
+      }
+    }
+
+    // Special cases
     if (v instanceof Date) return v.toISOString();
-
-    // Guard for server envs where URL may not exist
-    // (no ts-expect-error needed since we check existence)
     if (typeof URL !== "undefined" && v instanceof URL) return v.toString();
 
-    if (Array.isArray(v)) return v.map((item) => normalize(item));
-
-    if (seen.has(v as object)) return "[Circular]";
-    seen.add(v as object);
-
-    const obj = v as Record<string, unknown>;
-    const out: Record<string, unknown> = {};
-    for (const key of Object.keys(obj).sort()) {
-      const val = obj[key];
-      if (typeof val === "undefined" || typeof val === "function") continue;
-      out[key] = normalize(val);
+    // Arrays
+    if (Array.isArray(v)) {
+      return v.map((item) => toJsonValue(item));
     }
-    return out;
+
+    // Objects
+    if (typeof v === "object" && v !== null) {
+      if (seen.has(v as object)) return "[Circular]";
+      seen.add(v as object);
+
+      const src = v as Record<string, unknown>;
+      const out: JsonObject = {};
+      for (const key of Object.keys(src).sort()) {
+        const val = src[key];
+        if (typeof val === "undefined" || typeof val === "function") continue;
+        out[key] = toJsonValue(val);
+      }
+      return out;
+    }
+
+    // Fallback: stringify other exotic values deterministically
+    return String(v);
   };
 
-  return JSON.stringify(normalize(value));
+  return JSON.stringify(toJsonValue(value));
 }
 
 /** Escape sequences that could prematurely break out of the script tag */
 function safeJsonForHtml(json: string): string {
   return json
-    .replace(/<\//g, "<\\/")      // </script> safe
-    .replace(/</g, "\\u003C")     // any remaining <
-    .replace(/-->/g, "--\\>")     // HTML comment edge
+    .replace(/<\//g, "<\\/") // </script> safe
+    .replace(/</g, "\\u003C")
+    .replace(/-->/g, "--\\>")
     .replace(/\u2028/g, "\\u2028")
     .replace(/\u2029/g, "\\u2029");
 }
@@ -76,10 +96,15 @@ export default function JsonLd({
   dataOwned = "cg-o",
   dataPath,
 }: JsonLdProps) {
-  const json = React.useMemo(() => safeJsonForHtml(stableStringify(data)), [data]);
+  const json = React.useMemo(
+    () => safeJsonForHtml(stableStringify(data)),
+    [data]
+  );
 
   // Precisely type data-* attrs so we can spread without ts-ignore
-  const extraAttrs: (Partial<Record<`data-${string}`, string>> & { nonce?: string }) = {};
+  const extraAttrs: (Partial<Record<`data-${string}`, string>> & {
+    nonce?: string;
+  }) = {};
   if (nonce) extraAttrs.nonce = nonce;
   if (dataOwned) extraAttrs["data-owned"] = dataOwned;
   if (dataPath) extraAttrs["data-path"] = dataPath;

@@ -4,15 +4,11 @@ import React from "react";
 export interface SoundContextType {
   muted: boolean;
   toggle: () => void;
-  // (optional future-proof, not required by callers)
-  // setMuted?: (next: boolean) => void;
 }
 
 export const SoundContext = React.createContext<SoundContextType>({
   muted: true,
-  toggle: () => {
-    /* noop: default context (replaced by provider) */
-  },
+  toggle: () => {},
 });
 
 const STORAGE_KEY = "cg:soundMuted";
@@ -32,12 +28,12 @@ export function useSoundController(defaultMuted = true): SoundContextType {
     try {
       const raw =
         typeof window !== "undefined"
-          ? localStorage.getItem(STORAGE_KEY)
+          ? window.localStorage.getItem(STORAGE_KEY)
           : null;
       if (raw === "0" || raw === "false") return false;
       if (raw === "1" || raw === "true") return true;
-    } catch (_err) {
-      /* ignore: storage not available (SSR/private mode) */
+    } catch {
+      /* ignore: storage not available */
     }
     return defaultMuted;
   });
@@ -45,18 +41,17 @@ export function useSoundController(defaultMuted = true): SoundContextType {
   // Persist + expose state for CSS hooks
   React.useEffect(() => {
     try {
-      localStorage.setItem(STORAGE_KEY, muted ? "1" : "0");
-    } catch (_err) {
+      window.localStorage.setItem(STORAGE_KEY, muted ? "1" : "0");
+    } catch {
       /* ignore: storage not available */
     }
-    // handy for CSS, tests, or quick inspection
     try {
       document.documentElement.setAttribute(
         "data-sound-muted",
         muted ? "1" : "0"
       );
-    } catch (_err) {
-      /* ignore: document not available */
+    } catch {
+      /* ignore: SSR / no document */
     }
   }, [muted]);
 
@@ -77,15 +72,11 @@ export function useSoundController(defaultMuted = true): SoundContextType {
     return () => window.removeEventListener("keydown", onKey);
   }, [toggle]);
 
-  return React.useMemo(() => ({ muted, toggle /*, setMuted*/ }), [muted, toggle]);
+  return React.useMemo(() => ({ muted, toggle }), [muted, toggle]);
 }
 
 /**
  * Hook to keep a <video> element’s muted state in sync with the SoundContext.
- * Usage:
- *   const ref = React.useRef<HTMLVideoElement>(null);
- *   useSyncVideoMuted(ref);
- *   <video ref={ref} ... />
  */
 export function useSyncVideoMuted(
   ref: React.RefObject<HTMLVideoElement | null>
@@ -95,17 +86,14 @@ export function useSyncVideoMuted(
   React.useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    // mark for debugging / optional selectors
     el.setAttribute("data-sync-sound", "1");
-    // keep the element in sync
-    el.muted = !!muted;
+    el.muted = muted;
   }, [ref, muted]);
 
-  // If the element instance changes, push current state immediately
   React.useEffect(() => {
     const el = ref.current;
-    if (el) el.muted = !!muted;
-  }, [ref]);
+    if (el) el.muted = muted;
+  }, [ref, muted]);
 }
 
 export function SoundProvider({
@@ -116,9 +104,7 @@ export function SoundProvider({
   defaultMuted?: boolean;
 }) {
   const controller = useSoundController(defaultMuted);
-  return (
-    <SoundContext.Provider value={controller}>{children}</SoundContext.Provider>
-  );
+  return <SoundContext.Provider value={controller}>{children}</SoundContext.Provider>;
 }
 
 export function SoundButton() {
