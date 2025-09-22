@@ -257,21 +257,22 @@ export default function IdentityPage() {
           American visual artist, photographer, and art film director. Also known as Popographer.
         </p>
 
-        {/* Hero */}
-        <figure className={styles.fadeUp} style={{ animationDelay: ".1s" }}>
-          <Image
-            src={HERO_URL}
-            alt="Caleb Gridley"
-            width={1820}
-            height={1080}
-            priority
-            sizes="(max-width: 768px) 100vw, (max-width: 1280px) 90vw, 1200px"
-            className="mt-8 w-full h-auto rounded-2xl shadow-sm"
-          />
-          <figcaption className="mt-2 text-sm text-neutral-500">
-            Caleb Gridley. © Caleb Gridley.
-          </figcaption>
-        </figure>
+{/* Hero */}
+<figure className={`${styles.fadeUp}`} style={{ animationDelay: ".1s" }}>
+  <Image
+    src={HERO_URL}
+    alt="Caleb Gridley"
+    width={1820}
+    height={1080}
+    priority
+    sizes="(max-width: 768px) 100vw, (max-width: 1280px) 90vw, 1200px"
+    className="mt-8 w-full h-auto rounded-2xl shadow-sm"
+  />
+  <figcaption className="mt-2 w-full text-sm text-neutral-500 text-right">
+    Caleb Gridley. © Caleb Gridley, POPOGRAPHER LLC.
+  </figcaption>
+</figure>
+
 
         {/* Content grid */}
         <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-12">
