@@ -4,13 +4,14 @@ import React from "react";
 /** Strict JSON value types */
 type JsonPrimitive = string | number | boolean | null;
 type JsonObject = { [k: string]: JsonValue };
-export type JsonValue = JsonPrimitive | JsonObject | JsonValue[];
+type JsonArray = JsonValue[];
+export type JsonValue = JsonPrimitive | JsonObject | JsonArray;
 
 type JsonLdProps = {
   /** Unique DOM id for this JSON-LD block */
   id: string;
   /** Parsed JSON-LD data (objects/arrays/primitives) */
-  data: JsonValue | unknown; // accept unknowns, we’ll normalize safely
+  data: unknown;
   /** Optional Content-Security-Policy nonce */
   nonce?: string;
   /** Optional marker to identify first-party scripts (defaults to 'cg-o') */
@@ -18,6 +19,10 @@ type JsonLdProps = {
   /** Optional route guard attribute (e.g., '/identity/', '/work/') */
   dataPath?: string;
 };
+
+function isUrlLike(v: unknown): v is URL {
+  return typeof URL !== "undefined" && v instanceof URL;
+}
 
 /**
  * Deterministic stringify:
@@ -38,23 +43,24 @@ function stableStringify(value: unknown): string {
 
     // Respect custom toJSON if present
     if (typeof v === "object" && v !== null && "toJSON" in (v as object)) {
-      const maybe = (v as { toJSON?: () => unknown }).toJSON;
-      if (typeof maybe === "function") {
+      const fn = (v as { toJSON?: () => unknown }).toJSON;
+      if (typeof fn === "function") {
         try {
-          return toJsonValue(maybe());
+          return toJsonValue(fn());
         } catch {
-          // fall through and treat as a plain object
+          /* fall through and treat as plain object */
         }
       }
     }
 
     // Special cases
     if (v instanceof Date) return v.toISOString();
-    if (typeof URL !== "undefined" && v instanceof URL) return v.toString();
+    if (isUrlLike(v)) return v.toString();
 
     // Arrays
     if (Array.isArray(v)) {
-      return v.map((item) => toJsonValue(item));
+      const out: JsonArray = v.map((item) => toJsonValue(item));
+      return out;
     }
 
     // Objects
@@ -72,7 +78,7 @@ function stableStringify(value: unknown): string {
       return out;
     }
 
-    // Fallback: stringify other exotic values deterministically
+    // Fallback for exotic values
     return String(v);
   };
 
