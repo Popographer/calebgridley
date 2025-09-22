@@ -4,7 +4,7 @@
 import React from "react";
 
 /**
- * Minimal, centered footer with ISNI links.
+ * Minimal, centered footer with ISNI links + small nav.
  * Small, neutral styling so it doesn't draw attention.
  */
 export default function SiteFooter() {
@@ -32,7 +32,8 @@ export default function SiteFooter() {
 
         <p>
           Popographer<span aria-hidden="true">®</span>
-          <span className="sr-only"> registered</span> is the trade name of Popographer LLC (Louisiana, USA).
+          <span className="sr-only"> registered</span> is the trade name of
+          Popographer LLC (Louisiana, USA).
         </p>
 
         <ul className="list-disc list-inside space-y-1">
@@ -59,6 +60,50 @@ export default function SiteFooter() {
             </a>
           </li>
         </ul>
+
+        {/* Small, unobtrusive link row */}
+        <nav aria-label="Footer links" className="pt-2">
+          <ul className="flex items-center justify-center gap-6">
+            <li>
+              <a
+                href="/identity/"
+                className="hover:opacity-80 focus:opacity-90 focus:outline-none rounded-sm"
+              >
+                Identity
+              </a>
+            </li>
+            <li>
+              <a
+                href="https://popographer.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:opacity-80 focus:opacity-90 focus:outline-none rounded-sm"
+              >
+                Popographer
+              </a>
+            </li>
+            <li>
+              <a
+                href="https://www.instagram.com/thepopographer/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:opacity-80 focus:opacity-90 focus:outline-none rounded-sm"
+              >
+                Instagram
+              </a>
+            </li>
+            <li>
+              <a
+                href="https://popographer.com/licensing/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:opacity-80 focus:opacity-90 focus:outline-none rounded-sm"
+              >
+                Licensing
+              </a>
+            </li>
+          </ul>
+        </nav>
       </div>
     </footer>
   );
