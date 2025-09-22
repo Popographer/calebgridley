@@ -3,18 +3,18 @@ http://calebgridley.com/*        https://calebgridley.com/:splat 308!
 http://www.calebgridley.com/*    https://calebgridley.com/:splat 308!
 https://www.calebgridley.com/*   https://calebgridley.com/:splat 308!
 
-# Trailing-slash normalizers for key sections
-/identity           /identity/      308
-/identity/*         /identity/      308
-
-/work               /work/          308
-/work/*             /work/          308
-
-/about              /about/         308
-/about/*            /about/         308
-
-/contact            /contact/       308
-/contact/*          /contact/       308
+# Trailing-slash normalizers (exact path only — avoids loops)
+ /identity      /identity/    308
+ /work          /work/        308
+ /about         /about/       308
+ /contact       /contact/     308
 
 # Optional: normalize /index.html to /
-/index.html         /               308
+/index.html     /             308
+
+# Optional rewrites (ONLY if you want any deep path to resolve to the section index,
+# without extra redirects). Leave commented unless you need this behavior.
+# /identity/*    /identity/index.html    200
+# /work/*        /work/index.html        200
+# /about/*       /about/index.html       200
+# /contact/*     /contact/index.html     200
