@@ -1,18 +1,14 @@
 // components/JsonLd.tsx
 import React from "react";
 
-type JsonPrimitive = string | number | boolean | null;
-type JsonObject = { [key: string]: JsonValue | undefined };
-export type JsonValue = JsonPrimitive | JsonObject | JsonValue[];
-
 type JsonLdProps = {
-  /** Unique DOM id for this JSON-LD block (optional) */
-  id?: string;
+  /** Unique DOM id for this JSON-LD block */
+  id: string;
   /** Parsed JSON-LD data (objects/arrays/primitives) */
-  data: JsonValue;
+  data: unknown;
   /** Optional Content-Security-Policy nonce */
   nonce?: string;
-  /** Optional marker to identify first-party scripts (e.g., 'cg-o') */
+  /** Optional marker to identify first-party scripts (defaults to 'cg-o') */
   dataOwned?: string;
   /** Optional route guard attribute (e.g., '/identity/', '/work/') */
   dataPath?: string;
@@ -22,31 +18,41 @@ type JsonLdProps = {
  * Deterministic stringify:
  * - Sorts object keys for stable output
  * - Preserves array order
- * - Skips undefined values
- * - Detects simple circular refs
+ * - Skips undefined & function values
+ * - Supports Date/URL/custom toJSON() objects
+ * - Handles simple circular refs gracefully (replaces with "[Circular]")
  */
-function stableStringify(value: JsonValue): string {
+function stableStringify(value: unknown): string {
   const seen = new WeakSet<object>();
 
-  const normalize = (v: JsonValue): JsonValue => {
-    if (v === null) return v;
-    if (typeof v !== "object") return v;
+  const normalize = (v: unknown): any => {
+    if (v === null || typeof v !== "object") return v;
 
-    if (Array.isArray(v)) {
-      return v.map((item) => normalize(item)) as JsonValue[];
-    }
+    // Allow objects that define a custom toJSON() to control their representation
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const anyV: any = v;
+      if (typeof anyV.toJSON === "function") return normalize(anyV.toJSON());
+    } catch {}
 
-    const obj = v as JsonObject;
-    if (seen.has(obj as object)) return "[Circular]";
-    seen.add(obj as object);
+    if (v instanceof Date) return v.toISOString();
+    // Guard for server envs
+    // @ts-expect-error: URL may not exist in some runtimes
+    if (typeof URL !== "undefined" && v instanceof URL) return v.toString();
 
-    const out: JsonObject = {};
+    if (Array.isArray(v)) return v.map((item) => normalize(item));
+
+    if (seen.has(v as object)) return "[Circular]";
+    seen.add(v as object);
+
+    const obj = v as Record<string, unknown>;
+    const out: Record<string, unknown> = {};
     for (const key of Object.keys(obj).sort()) {
       const val = obj[key];
-      if (typeof val === "undefined") continue;
-      out[key] = normalize(val as JsonValue);
+      if (typeof val === "undefined" || typeof val === "function") continue;
+      out[key] = normalize(val);
     }
-    return out as JsonValue;
+    return out;
   };
 
   return JSON.stringify(normalize(value));
@@ -55,37 +61,34 @@ function stableStringify(value: JsonValue): string {
 /** Escape sequences that could prematurely break out of the script tag */
 function safeJsonForHtml(json: string): string {
   return json
-    .replace(/<\//g, "<\\/")       // </script>
-    .replace(/</g, "\\u003C")      // <
-    .replace(/-->/g, "--\\>")      // HTML comment close
-    .replace(/\u2028/g, "\\u2028") // line sep
-    .replace(/\u2029/g, "\\u2029");// paragraph sep
+    .replace(/<\//g, "<\\/")      // </script> safe
+    .replace(/</g, "\\u003C")     // any remaining <
+    .replace(/-->/g, "--\\>")     // HTML comment edge
+    .replace(/\u2028/g, "\\u2028")
+    .replace(/\u2029/g, "\\u2029");
 }
 
 export default function JsonLd({
-  id = "jsonld",
+  id,
   data,
   nonce,
-  dataOwned,
+  dataOwned = "cg-o",
   dataPath,
 }: JsonLdProps) {
-  const json = React.useMemo(
-    () => safeJsonForHtml(stableStringify(data)),
-    [data]
-  );
+  const json = React.useMemo(() => safeJsonForHtml(stableStringify(data)), [data]);
 
-  // Build data-* attributes only if provided
-  const dataAttrs: Record<string, string> = {};
-  if (dataOwned) dataAttrs["data-owned"] = dataOwned;
-  if (dataPath) dataAttrs["data-path"] = dataPath;
+  // Precisely type data-* attrs so we can spread without ts-ignore
+  const extraAttrs: (Partial<Record<`data-${string}`, string>> & { nonce?: string }) = {};
+  if (nonce) extraAttrs.nonce = nonce;
+  if (dataOwned) extraAttrs["data-owned"] = dataOwned;
+  if (dataPath) extraAttrs["data-path"] = dataPath;
 
   return (
     <script
       id={id}
       type="application/ld+json"
       suppressHydrationWarning
-      nonce={nonce}
-      {...dataAttrs}
+      {...extraAttrs}
       dangerouslySetInnerHTML={{ __html: json }}
     />
   );
