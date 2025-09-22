@@ -1,15 +1,15 @@
 // /lib/identity.ts
 import type { WorkSlug } from "./types";
 
-// ── Stable identity anchors — DO NOT CHANGE (schema.org @id IRIs)
+// Stable identity anchors — DO NOT CHANGE (schema.org @id IRIs)
 export const PERSON_ID = "https://calebgridley.com/#person" as const;
 export const ORG_ID    = "https://popographer.com/#org" as const;
 
-// ── Canonical origins (single source of truth)
+// Canonical origins (single source of truth)
 export const SITE_ORIGIN = "https://calebgridley.com" as const;
 export const CDN_ORIGIN  = "https://cdn.calebgridley.com" as const;
 
-// ── Organization (publisher) facts
+// Organization (publisher) facts
 export const ORG_NAME = "Popographer" as const;
 // Public image URL for the logo (used as ImageObject.url)
 export const ORG_LOGO_URL =
@@ -18,7 +18,7 @@ export const ORG_LOGO_URL =
 export const ORG_LOGO_ID = "https://popographer.com/#logo" as const;
 export const LICENSE_URL = "https://popographer.com/licensing/" as const;
 
-// ── ISNI (authoritative org identifier)
+// ISNI (authoritative org identifier)
 export const ORG_ISNI_VALUE = "0000000528230294" as const;
 export const ORG_ISNI_URL =
   "https://isni.oclc.org/cbs/DB=1.2/CMD?ACT=SRCH&IKT=8006&TRM=ISN%3A0000000528230294&TERMS_OF_USE_AGREED=Y&terms_of_use_agree=send" as const;
@@ -33,7 +33,7 @@ export const ORG_IDENTIFIERS = [
   },
 ] as const;
 
-// ── Person facts
+// Person facts
 export const PERSON_NAME  = "Caleb Gridley" as const;
 export const PERSON_ROLES = [
   "Visual Artist",
@@ -62,7 +62,7 @@ export const emailForSchema = PERSON_CONTACT_EMAIL_PLAIN.startsWith("mailto:")
   ? (PERSON_CONTACT_EMAIL_PLAIN as `${string}`)
   : (`mailto:${PERSON_CONTACT_EMAIL_PLAIN}` as const);
 
-// ── Popographer canonicals
+// Popographer canonicals
 export const POP_WORK_URLS: Partial<Record<WorkSlug, string>> = {
   "not-warhol":    "https://popographer.com/artwork/not-warhol/",
   "body-of-work":  "https://popographer.com/artwork/body-of-work/",

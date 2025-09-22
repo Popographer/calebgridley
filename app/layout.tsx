@@ -15,8 +15,8 @@ import {
   ORG_NAME,
   ORG_SAME_AS,
   ORG_IDENTIFIERS,
-  ORG_LOGO_URL,   // + add logo to org node for publisher.logo compliance
-  ORG_LOGO_ID,    // + stable ImageObject @id
+  ORG_LOGO_URL,
+  ORG_LOGO_ID,
 } from "../lib/identity";
 
 const inter = Inter({ subsets: ["latin"], display: "swap" });
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
   title: "Caleb Gridley — Visual Artist, Photographer & Art Film Director",
   description: "Selected works and moving-image portfolio of Caleb Gridley.",
   metadataBase: new URL(SITE_ORIGIN),
-  alternates: { canonical: "/" }, // ensure trailing slash canonical
+  alternates: { canonical: "/" },
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
@@ -38,21 +38,21 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     "https://popograph.com/",
     "https://pop-ographer.com/",
     "https://popographer.co/",
-    // Socials / profiles (kept)
+    // Socials / profiles
     "https://www.instagram.com/thepopographer/",
     "https://www.youtube.com/@popographer",
     "https://vimeo.com/popographer",
     "https://www.facebook.com/Popographer/",
     "https://www.flickr.com/photos/201678917@N06/",
-    // Credits (kept)
+    // Credits
     "https://www.discogs.com/release/34065559-Arcade-Fire-Pink-Elephant",
     "https://www.discogs.com/release/33932553-Arcade-Fire-Pink-Elephant",
-    // ADDED: identity bundle (includes Wikidata person)
+    // Identity bundle (includes Wikidata person)
     ...PERSON_SAME_AS,
   ];
 
   const orgSameAs = [
-    // existing org sameAs (kept)
+    // existing org sameAs
     "https://calebgridley.com/",
     "https://popographer.com/",
     "https://notwarhol.com/",
@@ -62,7 +62,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     "https://www.instagram.com/thepopographer/",
     "https://www.youtube.com/@popographer",
     "https://vimeo.com/popographer",
-    // ADDED: identity bundle (includes Wikidata org + ISNI resolver)
+    // Identity bundle (includes Wikidata org + ISNI resolver)
     ...ORG_SAME_AS,
   ];
 
@@ -132,7 +132,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                   "url": `${SITE_ORIGIN}/`,
                   "image": { "@id": "https://calebgridley.com/identity/#hero" },
                   "description": "Caleb Gridley is a visual artist, photographer, and art film director whose practice under Popographer explores celebrity, digital identity, and cultural transformation.",
-                  "jobTitle": ["Visual Artist","Photographer","Art Film Director"],
+                  "jobTitle": ["Visual Artist","Photographer","Art Film Director", "Fashion Designer"],
                   "worksFor": { "@id": ORG_ID },
                   "brand": { "@id": ORG_ID },
                   "alumniOf": {
@@ -188,6 +188,25 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                     "@id": ORG_LOGO_ID,
                     "url": ORG_LOGO_URL
                   }
+                },
+                // ImageObject for the identity hero (to satisfy the Person.image @id)
+                {
+                  "@type": "ImageObject",
+                  "@id": "https://calebgridley.com/identity/#hero",
+                  "url": "https://cdn.calebgridley.com/caleb-gridley_identity-hero_1820x1080_v1.webp",
+                  "width": 1820,
+                  "height": 1080,
+                  "inLanguage": "en"
+                },
+                // WebPage node for /identity/ (to satisfy mainEntityOfPage @id)
+                {
+                  "@type": "WebPage",
+                  "@id": "https://calebgridley.com/identity/#webpage",
+                  "url": "https://calebgridley.com/identity/",
+                  "name": "Identity | Caleb Gridley",
+                  "isPartOf": { "@id": `${SITE_ORIGIN}/#website` },
+                  "primaryImageOfPage": { "@id": "https://calebgridley.com/identity/#hero" },
+                  "inLanguage": "en"
                 }
               ]
             })
