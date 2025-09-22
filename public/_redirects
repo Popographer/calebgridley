@@ -1,11 +1,20 @@
-/identity      /identity/      308!
-/identity/*    /identity/      308!
+# Force HTTPS + apex host (single hop, preserve path/query)
+http://calebgridley.com/*        https://calebgridley.com/:splat 308!
+http://www.calebgridley.com/*    https://calebgridley.com/:splat 308!
+https://www.calebgridley.com/*   https://calebgridley.com/:splat 308!
 
-/work          /work/          308!
-/work/*        /work/          308!
+# Trailing-slash normalizers for key sections
+/identity           /identity/      308
+/identity/*         /identity/      308
 
-/about         /about/         308!
-/about/*       /about/         308!
+/work               /work/          308
+/work/*             /work/          308
 
-/contact       /contact/       308!
-/contact/*     /contact/       308!
+/about              /about/         308
+/about/*            /about/         308
+
+/contact            /contact/       308
+/contact/*          /contact/       308
+
+# Optional: normalize /index.html to /
+/index.html         /               308

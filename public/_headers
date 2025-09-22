@@ -1,25 +1,24 @@
 /*
-  X-Frame-Options: DENY
+  X-Frame-Options: SAMEORIGIN
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: interest-cohort=()
   Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
   Cross-Origin-Opener-Policy: same-origin
   Cross-Origin-Resource-Policy: cross-origin
-
-  Content-Security-Policy: default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.calebgridley.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https://cdn.calebgridley.com https://images.squarespace-cdn.com https://images.unsplash.com https://storage.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://cdn.calebgridley.com https://images.squarespace-cdn.com https://storage.googleapis.com; media-src 'self' https://cdn.calebgridley.com; frame-src 'self' https://player.vimeo.com https://www.youtube.com; worker-src 'self' blob:; manifest-src 'self'; prefetch-src 'self'
+  Content-Security-Policy: default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; frame-ancestors 'self'; upgrade-insecure-requests; script-src 'self' https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https:; font-src 'self' https://fonts.gstatic.com data:; connect-src 'self' https:; media-src 'self' https:; frame-src 'self' https://player.vimeo.com https://www.youtube.com; worker-src 'self' blob:; manifest-src 'self'; prefetch-src 'self'
 
 /identity/
   Cache-Control: public, max-age=300
   X-Robots-Tag: all
 
+/_next/static/*
+  Cache-Control: public, max-age=31536000, immutable
+
 /augmentations-poster.webp
   Cache-Control: public, max-age=31536000, immutable
 
 /caleb-gridley_identity-hero_1820x1080_v1.webp
-  Cache-Control: public, max-age=31536000, immutable
-
-/_next/static/*
   Cache-Control: public, max-age=31536000, immutable
 
 /caleb-gridley_identity-card_1080x1080.png
@@ -28,6 +27,7 @@
 /caleb-gridley_identity-card_1080x1080.webp
   Cache-Control: public, max-age=31536000, immutable
 
+# Sitemaps
 /sitemap.xml
   Cache-Control: public, max-age=3600
 /pages.xml
