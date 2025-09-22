@@ -131,7 +131,7 @@ export default function ReelSnap({
     return () => io.disconnect();
   }, [visibilityThreshold, crossfadeMs]);
 
-  // Keyboard navigation (strictly typed; no any casts)
+  // Keyboard navigation
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
@@ -166,7 +166,7 @@ export default function ReelSnap({
     return () => el.removeEventListener("keydown", onKey);
   }, [items?.length, toIndex]);
 
-  // Nudge first video shortly after mount
+  // Nudge first video
   useEffect(() => {
     const v0 = videoRefs.current[0];
     if (v0) setTimeout(() => { void v0.play()?.catch(() => {}); }, 60);
@@ -184,7 +184,7 @@ export default function ReelSnap({
     return () => document.removeEventListener("visibilitychange", onVisible);
   }, [activeIndex]);
 
-  // One-time kickstart fallback for first video
+  // One-time kickstart
   useEffect(() => {
     const kickstart = () => {
       const v0 = videoRefs.current[0];
@@ -248,7 +248,7 @@ export default function ReelSnap({
           try {
             nextEl.setAttribute("preload", "auto");
           } catch {
-            /* noop: attribute may be unsupported */
+            /* noop */
           }
         }
         nextPreloadBumpedForIdxRef.current = nextIdx;
@@ -257,7 +257,7 @@ export default function ReelSnap({
     [autoAdvance, lastIndex, wrapAround]
   );
 
-  // Wire up native video events for every panel
+  // Wire up native video events
   useEffect(() => {
     const cleanups: Array<() => void> = [];
     panels.forEach((_, i) => {
@@ -289,11 +289,13 @@ export default function ReelSnap({
     []
   );
 
-  // ---------- DEFAULT FOOTER (used when no footer prop is given) ----------
+  // ---------- DEFAULT FOOTER ----------
   const year = new Date().getFullYear();
 
-  const ISNI_CAL = "https://isni.oclc.org/cbs/DB=1.2/CMD?ACT=SRCH&IKT=8006&TRM=ISN%3A0000000528217647&TERMS_OF_USE_AGREED=Y&terms_of_use_agree=send";
-  const ISNI_POP = "https://isni.oclc.org/cbs/DB=1.2/CMD?ACT=SRCH&IKT=8006&TRM=ISN%3A0000000528230294&TERMS_OF_USE_AGREED=Y&terms_of_use_agree=send";
+  const ISNI_CAL =
+    "https://isni.oclc.org/cbs/DB=1.2/CMD?ACT=SRCH&IKT=8006&TRM=ISN%3A0000000528217647&TERMS_OF_USE_AGREED=Y&terms_of_use_agree=send";
+  const ISNI_POP =
+    "https://isni.oclc.org/cbs/DB=1.2/CMD?ACT=SRCH&IKT=8006&TRM=ISN%3A0000000528230294&TERMS_OF_USE_AGREED=Y&terms_of_use_agree=send";
 
   const footerLinks: ReadonlyArray<{ label: string; href: string }> = [
     { label: "Shop", href: "/shop/" },
@@ -320,6 +322,12 @@ export default function ReelSnap({
                 </a>
               </li>
             ))}
+            {/* ALSO include Identity link in the nav */}
+            <li>
+              <a className="hover:text-white focus:text-white focus:outline-none" href="/identity/">
+                Identity
+              </a>
+            </li>
           </ul>
 
           {/* Search input */}
@@ -329,7 +337,6 @@ export default function ReelSnap({
             </label>
             <div className="relative max-w-xl">
               <div className="pointer-events-none absolute inset-y-0 left-3 flex items-center">
-                {/* magnifier icon */}
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 24 24"
@@ -366,7 +373,12 @@ export default function ReelSnap({
             >
               Popographer
             </a>
-            . All rights reserved.
+            . All rights reserved.{" "}
+            {/* Identity link embedded in the legal line as well */}
+            <a href="/identity/" className="underline decoration-white/40 underline-offset-2 hover:text-white" aria-label="Identity">
+              Identity
+            </a>
+            .
           </p>
           <p>Popographer® is the trade name of Popographer LLC (Louisiana, USA).</p>
 
@@ -398,9 +410,9 @@ export default function ReelSnap({
       </div>
     </footer>
   );
-  // --------------------------------------------------------------------
+  // ------------------------------------
 
-  // ---------- Accessible carousel semantics ----------
+  // Accessible carousel semantics
   const carouselLabel = "Featured works carousel";
   const liveRegionText = useMemo(() => {
     const total = panels.length || 1;
@@ -408,7 +420,6 @@ export default function ReelSnap({
     const currentTitle = panels[activeIndex]?.title || "Slide";
     return `Slide ${current} of ${total}: ${currentTitle}`;
   }, [activeIndex, panels]);
-  // ---------------------------------------------------
 
   return (
     <div
