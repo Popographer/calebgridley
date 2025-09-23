@@ -24,7 +24,7 @@ const CARD_WEBP = "https://cdn.calebgridley.com/caleb-gridley_identity-card_1080
 export const metadata: Metadata = {
   title: "Identity | Caleb Gridley",
   description:
-    "Official identity page for Caleb Gridley, visual artist, photographer, and art film director.",
+    "Official identity page for Caleb Gridley, visual artist, photographer, film director, and fashion designer.",
   alternates: { canonical: `${SITE_ORIGIN}/identity/` },
   openGraph: {
     url: `${SITE_ORIGIN}/identity/`,
@@ -53,7 +53,7 @@ export const metadata: Metadata = {
 export default function IdentityPage() {
   const dateModified = "2025-09-12";
 
-  // keep your originals; only add canonical constants and Wikidata
+  // originals + canonical bundles
   const personSameAs = [
     "https://calebgridley.com/",
     "https://popographer.com/",
@@ -64,7 +64,6 @@ export default function IdentityPage() {
     "https://www.instagram.com/thepopographer/",
     "https://www.youtube.com/@popographer",
     "https://vimeo.com/popographer",
-    // add canonical bundle (includes Wikidata person)
     ...PERSON_SAME_AS,
   ];
 
@@ -78,7 +77,6 @@ export default function IdentityPage() {
     "https://www.instagram.com/thepopographer/",
     "https://www.youtube.com/@popographer",
     "https://vimeo.com/popographer",
-    // add canonical bundle (includes Wikidata org + ISNI resolver in identity.ts)
     ...ORG_SAME_AS,
   ];
 
@@ -95,7 +93,7 @@ export default function IdentityPage() {
         isPartOf: { "@id": `${SITE_ORIGIN}/#website` },
         breadcrumb: { "@id": `${SITE_ORIGIN}/identity/#breadcrumbs` },
         about: { "@id": PERSON_ID },
-        mainEntity: { "@id": PERSON_ID }, // two-way bind (page → person)
+        mainEntity: { "@id": PERSON_ID },
         publisher: { "@id": ORG_ID },
         primaryImageOfPage: { "@id": `${SITE_ORIGIN}/identity/#hero` },
         inLanguage: "en",
@@ -136,20 +134,10 @@ export default function IdentityPage() {
         description: "American visual artist, photographer, and art film director.",
         url: `${SITE_ORIGIN}/`,
         worksFor: { "@id": ORG_ID },
-
-        // Wikidata identifier (PropertyValue)
         identifier: [
-          {
-            "@type": "PropertyValue",
-            propertyID: "Wikidata",
-            value: WD_PERSON_CALEB,
-          },
+          { "@type": "PropertyValue", propertyID: "Wikidata", value: WD_PERSON_CALEB },
         ],
-
-        // merged sameAs (kept originals, added bundle)
         sameAs: personSameAs,
-
-        // press + canonical works/events
         subjectOf: [
           {
             "@type": "WebPage",
@@ -170,8 +158,7 @@ export default function IdentityPage() {
           { "@type": "CreativeWorkSeries", "@id": SUBJECT_OF_REFERENCES.AUGMENTATIONS_SERIES },
           { "@type": "ExhibitionEvent", "@id": SUBJECT_OF_REFERENCES.ANOINTING_THE_ARTIFICE_EXHIBITION },
         ],
-
-        mainEntityOfPage: { "@id": `${SITE_ORIGIN}/identity/#webpage` }, // two-way bind (person → page)
+        mainEntityOfPage: { "@id": `${SITE_ORIGIN}/identity/#webpage` },
       },
       {
         "@type": "ItemList",
@@ -179,30 +166,10 @@ export default function IdentityPage() {
         name: "Selected works",
         itemListOrder: "https://schema.org/ItemListOrderDescending",
         itemListElement: [
-          {
-            "@type": "ListItem",
-            position: 1,
-            name: "Not Warhol",
-            item: { "@id": "https://popographer.com/artwork/not-warhol/#work" },
-          },
-          {
-            "@type": "ListItem",
-            position: 2,
-            name: "Anointing the Artifice",
-            item: { "@id": "https://popographer.com/artwork/anointing-the-artifice/#work" },
-          },
-          {
-            "@type": "ListItem",
-            position: 3,
-            name: "Body of Work",
-            item: { "@id": "https://popographer.com/artwork/body-of-work/#work" },
-          },
-          {
-            "@type": "ListItem",
-            position: 4,
-            name: "Augmentations",
-            item: { "@id": "https://popographer.com/artwork/augmentations/#work" },
-          },
+          { "@type": "ListItem", position: 1, name: "Not Warhol", item: { "@id": "https://popographer.com/artwork/not-warhol/#work" } },
+          { "@type": "ListItem", position: 2, name: "Anointing the Artifice", item: { "@id": "https://popographer.com/artwork/anointing-the-artifice/#work" } },
+          { "@type": "ListItem", position: 3, name: "Body of Work", item: { "@id": "https://popographer.com/artwork/body-of-work/#work" } },
+          { "@type": "ListItem", position: 4, name: "Augmentations", item: { "@id": "https://popographer.com/artwork/augmentations/#work" } },
         ],
       },
       {
@@ -213,14 +180,10 @@ export default function IdentityPage() {
         url: "https://popographer.com/",
         foundingLocation: {
           "@type": "Place",
-          address: {
-            "@type": "PostalAddress",
-            addressRegion: "LA",
-            addressCountry: "US",
-          },
+          address: { "@type": "PostalAddress", addressRegion: "LA", addressCountry: "US" },
         },
         sameAs: orgSameAs,
-        identifier: ORG_IDENTIFIERS, // ← ISNI + label from /lib/identity.ts
+        identifier: ORG_IDENTIFIERS,
       },
     ],
   };
@@ -235,28 +198,25 @@ export default function IdentityPage() {
         Skip to content
       </a>
 
-      {/* Global header (brand matches Work page) */}
+      {/* Global header — identical to Work page */}
       <Header />
 
-      {/* On-page TOC (matches your previous right-side links).
-          Fixed so it sits in the same visual line as the header; hidden on mobile. */}
-      <nav
-        aria-label="On-page sections"
-        className="fixed top-0 inset-x-0 z-50 hidden md:block"
-      >
-        <div className="mx-auto max-w-5xl px-6 py-3">
-          <ul className="float-right flex gap-5 text-sm">
-            <li><a href="#works" className="hover:text-gray-600 transition-colors">WORKS</a></li>
-            <li><a href="#press" className="hover:text-gray-600 transition-colors">PRESS</a></li>
-            <li><a href="#exhibitions" className="hover:text-gray-600 transition-colors">EXHIBITIONS</a></li>
-            <li><a href="#domains" className="hover:text-gray-600 transition-colors">DOMAINS</a></li>
-            <li><a href="#credits" className="hover:text-gray-600 transition-colors">CREDITS</a></li>
+      {/* Sub-nav TOC: sits just below the header, aligns with container, desktop only */}
+      <nav aria-label="On-page sections" className="hidden md:block">
+        <div className="mx-auto max-w-5xl px-6">
+          <ul className="flex items-center justify-end gap-5 py-3 text-xs tracking-widest uppercase text-neutral-800">
+            <li><a href="#works" className="hover:text-neutral-600 focus:outline-none">WORKS</a></li>
+            <li><a href="#press" className="hover:text-neutral-600 focus:outline-none">PRESS</a></li>
+            <li><a href="#exhibitions" className="hover:text-neutral-600 focus:outline-none">EXHIBITIONS</a></li>
+            <li><a href="#domains" className="hover:text-neutral-600 focus:outline-none">DOMAINS</a></li>
+            <li><a href="#credits" className="hover:text-neutral-600 focus:outline-none">CREDITS</a></li>
           </ul>
         </div>
       </nav>
 
-      <main id="main-content" className="mx-auto max-w-5xl px-6 pt-28 pb-12">
-        <h1 className={`text-4xl font-semibold tracking-tight uppercase ${styles.fadeUp}`}>CALEB GRIDLEY</h1>
+      {/* Content */}
+      <main id="main-content" className="mx-auto max-w-5xl px-6 pb-12">
+        <h1 className={`mt-6 text-4xl font-semibold tracking-tight uppercase ${styles.fadeUp}`}>CALEB GRIDLEY</h1>
         <p className={`mt-3 text-lg ${styles.fadeUp}`} style={{ animationDelay: ".05s" }}>
           American visual artist, photographer, and art film director. Also known as Popographer.
         </p>
@@ -297,33 +257,17 @@ export default function IdentityPage() {
             </ul>
           </section>
 
-          {/* Notable works — INLINE list with accessible separators */}
+          {/* Notable works */}
           <section id="works" aria-labelledby="works-h" className={`${styles.fadeUp} md:col-span-2`} style={{ animationDelay: ".24s" }}>
             <h2 id="works-h" className="text-sm font-semibold tracking-widest uppercase">NOTABLE WORKS</h2>
             <ul className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-base">
-              <li>
-                <a href="https://popographer.com/artwork/not-warhol/" className="underline underline-offset-2 hover:text-gray-600 transition-colors">
-                  Not Warhol
-                </a>
-              </li>
+              <li><a href="https://popographer.com/artwork/not-warhol/" className="underline underline-offset-2 hover:text-gray-600 transition-colors">Not Warhol</a></li>
               <li aria-hidden="true" className="select-none opacity-50">•</li>
-              <li>
-                <a href="https://popographer.com/artwork/anointing-the-artifice/" className="underline underline-offset-2 hover:text-gray-600 transition-colors">
-                  Anointing the Artifice
-                </a>
-              </li>
+              <li><a href="https://popographer.com/artwork/anointing-the-artifice/" className="underline underline-offset-2 hover:text-gray-600 transition-colors">Anointing the Artifice</a></li>
               <li aria-hidden="true" className="select-none opacity-50">•</li>
-              <li>
-                <a href="https://popographer.com/artwork/body-of-work/" className="underline underline-offset-2 hover:text-gray-600 transition-colors">
-                  Body of Work
-                </a>
-              </li>
+              <li><a href="https://popographer.com/artwork/body-of-work/" className="underline underline-offset-2 hover:text-gray-600 transition-colors">Body of Work</a></li>
               <li aria-hidden="true" className="select-none opacity-50">•</li>
-              <li>
-                <a href="https://popographer.com/artwork/augmentations/" className="underline underline-offset-2 hover:text-gray-600 transition-colors">
-                  Augmentations
-                </a>
-              </li>
+              <li><a href="https://popographer.com/artwork/augmentations/" className="underline underline-offset-2 hover:text-gray-600 transition-colors">Augmentations</a></li>
             </ul>
           </section>
 
