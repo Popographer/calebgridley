@@ -24,13 +24,13 @@ const CARD_WEBP = "https://cdn.calebgridley.com/caleb-gridley_identity-card_1080
 export const metadata: Metadata = {
   title: "Identity | Caleb Gridley",
   description:
-    "Official identity page for Caleb Gridley, visual artist, photographer, film director, and fashion designer.",
+    "Official identity page for Caleb Gridley, visual artist, photographer, art film director, and fashion designer.",
   alternates: { canonical: `${SITE_ORIGIN}/identity/` },
   openGraph: {
     url: `${SITE_ORIGIN}/identity/`,
     title: "Identity | Caleb Gridley",
     description:
-      "Official identity page for Caleb Gridley, visual artist, photographer, and art film director.",
+      "Official identity page for Caleb Gridley, visual artist, photographer, art film director, and fashion designer.",
     siteName: "Caleb Gridley",
     type: "website",
     images: [
@@ -43,7 +43,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Identity | Caleb Gridley",
     description:
-      "Official identity page for Caleb Gridley, visual artist, photographer, and art film director.",
+      "Official identity page for Caleb Gridley, visual artist, photographer, art film director, and fashion designer.",
     images: [CARD_PNG, CARD_WEBP],
   },
   robots: { index: true, follow: true },
@@ -131,7 +131,7 @@ export default function IdentityPage() {
         "@id": PERSON_ID,
         name: "Caleb Gridley",
         alternateName: "Popographer",
-        description: "American visual artist, photographer, and art film director.",
+        description: "American visual artist, photographer, film director, and fashion designer.",
         url: `${SITE_ORIGIN}/`,
         worksFor: { "@id": ORG_ID },
         identifier: [
@@ -218,7 +218,7 @@ export default function IdentityPage() {
       <main id="main-content" className="mx-auto max-w-5xl px-6 pb-12">
         <h1 className={`mt-6 text-4xl font-semibold tracking-tight uppercase ${styles.fadeUp}`}>CALEB GRIDLEY</h1>
         <p className={`mt-3 text-lg ${styles.fadeUp}`} style={{ animationDelay: ".05s" }}>
-          American visual artist, photographer, and art film director. Also known as Popographer.
+          American visual artist, photographer, film director, and fashion designer. Also known as Popographer.
         </p>
 
         {/* Hero */}
