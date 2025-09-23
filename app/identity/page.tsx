@@ -1,9 +1,9 @@
 // /app/identity/page.tsx
 import type { Metadata } from "next";
 import Image from "next/image";
-import Link from "next/link";
 import styles from "./identity.module.css";
 import JsonLd from "../../components/JsonLd";
+import Header from "../../components/Header";
 
 // Canonical identity + Wikidata refs
 import {
@@ -235,33 +235,27 @@ export default function IdentityPage() {
         Skip to content
       </a>
 
-      {/* Header */}
-      <header
-        className="sticky top-0 z-40 bg-white/85 backdrop-blur supports-[backdrop-filter]:backdrop-blur-md"
-        aria-label="Primary"
-      >
-        <nav className="mx-auto max-w-5xl px-6 py-3 flex items-center justify-between" aria-label="Global">
-          {/* Brand → link to home, same size/attributes */}
-          <Link
-            href="/"
-            aria-label="Home"
-            className="text-sm tracking-widest font-semibold uppercase hover:opacity-80 focus:outline-none focus:ring-2 focus:ring-neutral-900/10 rounded-sm"
-          >
-            POPOGRAPHER
-          </Link>
+      {/* Global header (brand matches Work page) */}
+      <Header />
 
-          {/* TOC (top menu) — default font restored */}
-          <ul className="flex gap-5 text-sm">
+      {/* On-page TOC (matches your previous right-side links).
+          Fixed so it sits in the same visual line as the header; hidden on mobile. */}
+      <nav
+        aria-label="On-page sections"
+        className="fixed top-0 inset-x-0 z-50 hidden md:block"
+      >
+        <div className="mx-auto max-w-5xl px-6 py-3">
+          <ul className="float-right flex gap-5 text-sm">
             <li><a href="#works" className="hover:text-gray-600 transition-colors">WORKS</a></li>
             <li><a href="#press" className="hover:text-gray-600 transition-colors">PRESS</a></li>
             <li><a href="#exhibitions" className="hover:text-gray-600 transition-colors">EXHIBITIONS</a></li>
             <li><a href="#domains" className="hover:text-gray-600 transition-colors">DOMAINS</a></li>
             <li><a href="#credits" className="hover:text-gray-600 transition-colors">CREDITS</a></li>
           </ul>
-        </nav>
-      </header>
+        </div>
+      </nav>
 
-      <main id="main-content" className="mx-auto max-w-5xl px-6 py-12">
+      <main id="main-content" className="mx-auto max-w-5xl px-6 pt-28 pb-12">
         <h1 className={`text-4xl font-semibold tracking-tight uppercase ${styles.fadeUp}`}>CALEB GRIDLEY</h1>
         <p className={`mt-3 text-lg ${styles.fadeUp}`} style={{ animationDelay: ".05s" }}>
           American visual artist, photographer, and art film director. Also known as Popographer.
