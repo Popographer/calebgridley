@@ -189,7 +189,7 @@ export default function IdentityPage() {
   };
 
   return (
-    <div className="bg-white text-neutral-900 font-sans">
+    <div className="bg-white text-neutral-900">
       {/* skip link */}
       <a
         href="#main-content"
@@ -198,25 +198,12 @@ export default function IdentityPage() {
         Skip to content
       </a>
 
-      {/* Global header — identical to Work page */}
+      {/* Global header (brand styling comes from Header.tsx) */}
       <Header />
 
-      {/* Sub-nav TOC: sits just below the header, aligns with container, desktop only */}
-      <nav aria-label="On-page sections" className="hidden md:block">
-        <div className="mx-auto max-w-5xl px-6">
-          <ul className="flex items-center justify-end gap-5 py-3 text-xs tracking-widest uppercase text-neutral-800">
-            <li><a href="#works" className="hover:text-neutral-600 focus:outline-none">WORKS</a></li>
-            <li><a href="#press" className="hover:text-neutral-600 focus:outline-none">PRESS</a></li>
-            <li><a href="#exhibitions" className="hover:text-neutral-600 focus:outline-none">EXHIBITIONS</a></li>
-            <li><a href="#domains" className="hover:text-neutral-600 focus:outline-none">DOMAINS</a></li>
-            <li><a href="#credits" className="hover:text-neutral-600 focus:outline-none">CREDITS</a></li>
-          </ul>
-        </div>
-      </nav>
-
       {/* Content */}
-      <main id="main-content" className="mx-auto max-w-5xl px-6 pb-12">
-        <h1 className={`mt-6 text-4xl font-semibold tracking-tight uppercase ${styles.fadeUp}`}>CALEB GRIDLEY</h1>
+      <main id="main-content" className="mx-auto max-w-5xl px-6 pt-28 pb-12">
+        <h1 className={`text-4xl font-semibold tracking-tight uppercase ${styles.fadeUp}`}>CALEB GRIDLEY</h1>
         <p className={`mt-3 text-lg ${styles.fadeUp}`} style={{ animationDelay: ".05s" }}>
           American visual artist, photographer, film director, and fashion designer. Also known as Popographer.
         </p>
