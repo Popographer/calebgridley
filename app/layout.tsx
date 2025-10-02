@@ -5,7 +5,6 @@ import "./globals.css";
 import { Inter } from "next/font/google";
 import Script from "next/script";
 
-// Reuse canonical constants so IDs/URLs stay consistent everywhere
 import {
   SITE_ORIGIN,
   PERSON_ID,
@@ -29,30 +28,24 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
-  // keep original arrays but add canonicals; no removals
   const personSameAs = [
-    // Owned domains (kept)
     "https://calebgridley.com/",
     "https://popographer.com/",
     "https://notwarhol.com/",
     "https://popograph.com/",
     "https://pop-ographer.com/",
     "https://popographer.co/",
-    // Socials / profiles
     "https://www.instagram.com/thepopographer/",
     "https://www.youtube.com/@popographer",
     "https://vimeo.com/popographer",
     "https://www.facebook.com/Popographer/",
     "https://www.flickr.com/photos/201678917@N06/",
-    // Credits
     "https://www.discogs.com/release/34065559-Arcade-Fire-Pink-Elephant",
     "https://www.discogs.com/release/33932553-Arcade-Fire-Pink-Elephant",
-    // Identity bundle (includes Wikidata person)
     ...PERSON_SAME_AS,
   ];
 
   const orgSameAs = [
-    // existing org sameAs
     "https://calebgridley.com/",
     "https://popographer.com/",
     "https://notwarhol.com/",
@@ -62,20 +55,17 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     "https://www.instagram.com/thepopographer/",
     "https://www.youtube.com/@popographer",
     "https://vimeo.com/popographer",
-    // Identity bundle (includes Wikidata org + ISNI resolver)
     ...ORG_SAME_AS,
   ];
 
   return (
     <html lang="en" dir="ltr">
       <head>
-        {/* Preconnect/DNS-prefetch to CDNs */}
         <link rel="preconnect" href="https://cdn.calebgridley.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://cdn.calebgridley.com" />
         <link rel="preconnect" href="https://images.squarespace-cdn.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://images.squarespace-cdn.com" />
 
-        {/* Preload key posters (CDN) */}
         <link
           rel="preload"
           as="image"
@@ -101,13 +91,10 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           crossOrigin="anonymous"
         />
 
-        {/* Viewport / theme */}
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
         <meta name="color-scheme" content="dark light" />
         <meta name="theme-color" content="#000000" />
 
-        {/* GLOBAL JSON-LD: WebSite (host), Person (authoritative), Organization (ref)
-            Note: keep properties minimal + canonicalize fragments with NO trailing slash */}
         <Script
           id="sitewide-jsonld"
           type="application/ld+json"
@@ -118,7 +105,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
               "@graph": [
                 {
                   "@type": "WebSite",
-                  "@id": `${SITE_ORIGIN}/#website`,
+                  "@id": `${SITE_ORIGIN}#website`,
                   "url": `${SITE_ORIGIN}/`,
                   "name": PERSON_NAME,
                   "inLanguage": "en",
@@ -130,7 +117,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                   "name": PERSON_NAME,
                   "alternateName": "Popographer",
                   "url": `${SITE_ORIGIN}/`,
-                  "image": { "@id": "https://calebgridley.com/identity/#hero" },
+                  "image": { "@id": "https://calebgridley.com/identity#hero" },
                   "description": "Caleb Gridley is a visual artist, photographer, and art film director whose practice under Popographer explores celebrity, digital identity, and cultural transformation.",
                   "jobTitle": ["Visual Artist","Photographer","Art Film Director", "Fashion Designer"],
                   "worksFor": { "@id": ORG_ID },
@@ -155,19 +142,19 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                     "Costume Design","3D Modeling"
                   ],
                   "notableWork": [
-                    { "@id": "https://popographer.com/artwork/not-warhol/#work" },
-                    { "@id": "https://popographer.com/artwork/augmentations/#work" },
-                    { "@id": "https://popographer.com/artwork/anointing-the-artifice/#work" },
-                    { "@id": "https://popographer.com/artwork/body-of-work/#work" }
+                    { "@id": "https://popographer.com/artwork/not-warhol#work" },
+                    { "@id": "https://popographer.com/artwork/body-of-work#work" },
+                    { "@id": "https://popographer.com/artwork/anointing-the-artifice#work" },
+                    { "@id": "https://popographer.com/artwork/augmentations#work" }
                   ],
                   "subjectOf": [
-                    { "@id": "https://popographer.com/press/#ext-canvasrebel" },
-                    { "@id": "https://popographer.com/press/#ext-charliefeet" },
-                    { "@id": "https://popographer.com/press/#ext-225mag" },
-                    { "@id": "https://popographer.com/press/#ext-advocate" }
+                    { "@id": "https://popographer.com/press#ext-canvasrebel" },
+                    { "@id": "https://popographer.com/press#ext-charliefeet" },
+                    { "@id": "https://popographer.com/press#ext-225mag" },
+                    { "@id": "https://popographer.com/press#ext-advocate" }
                   ],
                   "sameAs": personSameAs,
-                  "mainEntityOfPage": { "@id": "https://calebgridley.com/identity/#webpage" }
+                  "mainEntityOfPage": { "@id": "https://calebgridley.com/identity#webpage" }
                 },
                 {
                   "@type": "Organization",
@@ -182,30 +169,27 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                   "founder": { "@id": PERSON_ID },
                   "sameAs": orgSameAs,
                   "identifier": ORG_IDENTIFIERS,
-                  // ensure publisher.logo is always resolvable from this node
                   "logo": {
                     "@type": "ImageObject",
                     "@id": ORG_LOGO_ID,
                     "url": ORG_LOGO_URL
                   }
                 },
-                // ImageObject for the identity hero (to satisfy the Person.image @id)
                 {
                   "@type": "ImageObject",
-                  "@id": "https://calebgridley.com/identity/#hero",
+                  "@id": "https://calebgridley.com/identity#hero",
                   "url": "https://cdn.calebgridley.com/caleb-gridley_identity-hero_1820x1080_v1.webp",
                   "width": 1820,
                   "height": 1080,
                   "inLanguage": "en"
                 },
-                // WebPage node for /identity/ (to satisfy mainEntityOfPage @id)
                 {
                   "@type": "WebPage",
-                  "@id": "https://calebgridley.com/identity/#webpage",
+                  "@id": "https://calebgridley.com/identity#webpage",
                   "url": "https://calebgridley.com/identity/",
                   "name": "Identity | Caleb Gridley",
-                  "isPartOf": { "@id": `${SITE_ORIGIN}/#website` },
-                  "primaryImageOfPage": { "@id": "https://calebgridley.com/identity/#hero" },
+                  "isPartOf": { "@id": `${SITE_ORIGIN}#website` },
+                  "primaryImageOfPage": { "@id": "https://calebgridley.com/identity#hero" },
                   "inLanguage": "en"
                 }
               ]
@@ -215,9 +199,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       </head>
 
       <body className={`${inter.className} antialiased bg-black text-white min-h-screen flex flex-col`}>
-        {/* Hide skip-to-content anchor (none rendered) */}
         <style>{`a[href="#content"], .skip-to-content { display: none !important; }`}</style>
-
         {children}
       </body>
     </html>
