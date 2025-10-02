@@ -1,9 +1,9 @@
 // /lib/identity.ts
 import type { WorkSlug } from "./types";
 
-// Stable identity anchors — DO NOT CHANGE (schema.org @id IRIs)
-export const PERSON_ID = "https://calebgridley.com/#person" as const;
-export const ORG_ID    = "https://popographer.com/#org" as const;
+// Stable identity anchors — NO TRAILING SLASH before fragments (@id IRIs)
+export const PERSON_ID = "https://calebgridley.com#person" as const;
+export const ORG_ID    = "https://popographer.com#org" as const;
 
 // Canonical origins (single source of truth)
 export const SITE_ORIGIN = "https://calebgridley.com" as const;
@@ -14,8 +14,10 @@ export const ORG_NAME = "Popographer" as const;
 // Public image URL for the logo (used as ImageObject.url)
 export const ORG_LOGO_URL =
   "https://images.squarespace-cdn.com/content/66fde070bf644e552e3c778e/1a403812-82a6-4520-bead-560e6d2f1c77/popgrapher-logo.png" as const;
-// Stable @id for the logo node (used as ImageObject @id)
-export const ORG_LOGO_ID = "https://popographer.com/#logo" as const;
+// Stable @id for the logo node (used as ImageObject @id) — no slash before #logo
+export const ORG_LOGO_ID = "https://popographer.com#logo" as const;
+
+// Popographer page URLs keep trailing slash by standard
 export const LICENSE_URL = "https://popographer.com/licensing/" as const;
 
 // ISNI (authoritative org identifier)
@@ -62,7 +64,7 @@ export const emailForSchema = PERSON_CONTACT_EMAIL_PLAIN.startsWith("mailto:")
   ? (PERSON_CONTACT_EMAIL_PLAIN as `${string}`)
   : (`mailto:${PERSON_CONTACT_EMAIL_PLAIN}` as const);
 
-// Popographer canonicals
+// Popographer canonicals (Popographer page URLs keep trailing slash)
 export const POP_WORK_URLS: Partial<Record<WorkSlug, string>> = {
   "not-warhol":    "https://popographer.com/artwork/not-warhol/",
   "body-of-work":  "https://popographer.com/artwork/body-of-work/",

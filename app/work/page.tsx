@@ -12,7 +12,7 @@ import {
   ORG_NAME,
   ORG_SAME_AS,
   WIKIDATA_BY_SLUG,
-  ORG_IDENTIFIERS, // ← ADDED
+  ORG_IDENTIFIERS,
 } from "../../lib/identity";
 
 /** Static export: force SSG and disable ISR */
@@ -87,7 +87,6 @@ function compact<T>(val: T): T {
 
 // ────────────────────────────────────────────────────────────────────────────
 function JsonLdWorkIndex({ items }: { items: Work[] }) {
-  // Minimal CreativeWorkSeries nodes for each item (canonicalized to Popographer)
   const workSeriesNodes = items
     .map((w) => {
       const popUrl = (POP_WORK_URLS as Record<string, string | undefined>)[w.slug];
@@ -114,7 +113,7 @@ function JsonLdWorkIndex({ items }: { items: Work[] }) {
     "@graph": [
       {
         "@type": "BreadcrumbList",
-        "@id": `${SITE_ORIGIN}/work/#breadcrumbs`,
+        "@id": `${SITE_ORIGIN}/work#breadcrumbs`,
         "itemListElement": [
           { "@type": "ListItem", "position": 1, "name": "Home", "item": `${SITE_ORIGIN}/` },
           { "@type": "ListItem", "position": 2, "name": "Work", "item": `${SITE_ORIGIN}/work/` },
@@ -122,20 +121,20 @@ function JsonLdWorkIndex({ items }: { items: Work[] }) {
       },
       {
         "@type": ["WebPage", "CollectionPage"],
-        "@id": `${SITE_ORIGIN}/work/#webpage`,
+        "@id": `${SITE_ORIGIN}/work#webpage`,
         "url": `${SITE_ORIGIN}/work/`,
         "name": "Selected Works",
         "inLanguage": "en",
-        "isPartOf": { "@id": `${SITE_ORIGIN}/#website` },
-        "breadcrumb": { "@id": `${SITE_ORIGIN}/work/#breadcrumbs` },
+        "isPartOf": { "@id": `${SITE_ORIGIN}#website` },
+        "breadcrumb": { "@id": `${SITE_ORIGIN}/work#breadcrumbs` },
         "about": { "@id": PERSON_ID },
         "publisher": { "@id": ORG_ID }
       },
       {
         "@type": "ItemList",
-        "@id": `${SITE_ORIGIN}/work/#selected-works`,
+        "@id": `${SITE_ORIGIN}/work#selected-works`,
         "name": "Selected Works",
-        "mainEntityOfPage": { "@id": `${SITE_ORIGIN}/work/#webpage` },
+        "mainEntityOfPage": { "@id": `${SITE_ORIGIN}/work#webpage` },
         "itemListElement": items.map((w, i) => {
           const popUrl = (POP_WORK_URLS as Record<string, string | undefined>)[w.slug];
           return compact({
@@ -153,9 +152,8 @@ function JsonLdWorkIndex({ items }: { items: Work[] }) {
         "name": ORG_NAME,
         "url": "https://popographer.com/",
         "sameAs": ORG_SAME_AS,
-        "identifier": ORG_IDENTIFIERS, // ← ADDED (ISNI as PropertyValue)
+        "identifier": ORG_IDENTIFIERS,
       },
-      // Per-work CreativeWorkSeries nodes
       ...workSeriesNodes,
     ],
   });

@@ -17,13 +17,9 @@ import {
   ORG_LOGO_ID,
 } from "../lib/identity";
 
-/** Force full SSG for static export and disable ISR. */
 export const dynamic = "force-static";
 export const revalidate = false;
 
-// ────────────────────────────────────────────────────────────────────────────
-// Metadata
-// ────────────────────────────────────────────────────────────────────────────
 export const metadata: Metadata = {
   title: `${PERSON_NAME} — Artist & Director`,
   description:
@@ -39,14 +35,11 @@ export const metadata: Metadata = {
   robots: { index: true, follow: true },
 };
 
-// ────────────────────────────────────────────────────────────────────────────
-/** Prefix relative (site-hosted) paths with the site origin. */
 function absOnSite(url?: string | null): string | undefined {
   if (!url) return undefined;
   return /^https?:\/\//i.test(url) ? url : `${SITE_ORIGIN}${url}`;
 }
 
-/** ISO string with local timezone offset (e.g., 2025-09-07T12:00:00-05:00). */
 function isoWithTZ(d: Date = new Date()): string {
   const pad2 = (n: number) => `${Math.floor(Math.abs(n))}`.padStart(2, "0");
   const tz = -d.getTimezoneOffset();
@@ -58,7 +51,6 @@ function isoWithTZ(d: Date = new Date()): string {
   )}:${pad2(d.getMinutes())}:${pad2(d.getSeconds())}${sign}${hh}:${mm}`;
 }
 
-/** Build a schema.org encoding array from multiple sources (keeps exact URLs). */
 function encodings(
   ...sources: Array<{ url?: string | null; type?: string | null } | undefined>
 ) {
@@ -71,7 +63,6 @@ function encodings(
   return arr;
 }
 
-/** Remove undefined keys from objects/arrays (for clean JSON-LD). */
 function compact<T>(val: T): T {
   if (Array.isArray(val as unknown)) {
     const arr = (val as unknown as unknown[])
@@ -90,25 +81,22 @@ function compact<T>(val: T): T {
   return val;
 }
 
-// ────────────────────────────────────────────────────────────────────────────
-// JSON-LD graphs
-// ────────────────────────────────────────────────────────────────────────────
 function ProfileGraph() {
   const jsonld = compact({
     "@context": "https://schema.org",
     "@graph": [
       {
         "@type": ["WebPage", "ProfilePage"],
-        "@id": `${SITE_ORIGIN}/#webpage/`,
+        "@id": `${SITE_ORIGIN}#webpage`,
         "url": `${SITE_ORIGIN}/`,
         "name": `${PERSON_NAME} — Artist & Director`,
-        "isPartOf": { "@id": `${SITE_ORIGIN}/#website/` },
-        "breadcrumb": { "@id": `${SITE_ORIGIN}/#breadcrumbs/` },
+        "isPartOf": { "@id": `${SITE_ORIGIN}#website` },
+        "breadcrumb": { "@id": `${SITE_ORIGIN}#breadcrumbs` },
         "mainEntity": { "@id": PERSON_ID }
       },
       {
         "@type": "BreadcrumbList",
-        "@id": `${SITE_ORIGIN}/#breadcrumbs/`,
+        "@id": `${SITE_ORIGIN}#breadcrumbs`,
         "itemListElement": [
           { "@type": "ListItem", "position": 1, "name": "Home", "item": `${SITE_ORIGIN}/` },
           {
@@ -139,11 +127,11 @@ function ProfileGraph() {
         "sameAs": PERSON_SAME_AS,
         "email": emailForSchema,
         "hasOccupation": PERSON_ROLES.map((r) => ({ "@type": "Occupation", "name": r })),
-        "mainEntityOfPage": { "@id": `${SITE_ORIGIN}/#webpage/` }
+        "mainEntityOfPage": { "@id": `${SITE_ORIGIN}#webpage` }
       },
       {
         "@type": "ItemList",
-        "@id": `${SITE_ORIGIN}/#selected-works/`,
+        "@id": `${SITE_ORIGIN}#selected-works`,
         "name": "Selected Works",
         "itemListElement": (WORKS as Work[]).map((w, i) => ({
           "@type": "ListItem",
@@ -161,21 +149,23 @@ function ProfileGraph() {
 function VideosGraph() {
   const graph: Array<Record<string, unknown>> = [];
 
-  // Publisher org (referenced by @id; Organization with logo is declared above)
-  const publisher = { "@type": "Organization", "@id": ORG_ID };
+  const publisher = {
+    "@type": "Organization",
+    "@id": ORG_ID,
+    "logo": { "@id": ORG_LOGO_ID }
+  };
 
-  // Landing video
   graph.push(
     compact({
       "@type": "VideoObject",
-      "@id": `${SITE_ORIGIN}/#landing-video/`,
+      "@id": `${SITE_ORIGIN}#landing-video`,
       "name": `${PERSON_NAME} — Landing Loop`,
       "description": "Landing/profile loop.",
       "inLanguage": "en",
       "uploadDate": isoWithTZ(),
       "duration": "PT17S",
       "thumbnailUrl": absOnSite("/loops/caleb-gridley-poster.webp"),
-      "mainEntityOfPage": { "@id": `${SITE_ORIGIN}/#webpage/` },
+      "mainEntityOfPage": { "@id": `${SITE_ORIGIN}#webpage` },
       "publisher": publisher,
       "creator": { "@id": PERSON_ID },
       "author": { "@id": PERSON_ID },
@@ -190,7 +180,6 @@ function VideosGraph() {
     })
   );
 
-  // Work videos
   for (const w of WORKS as Work[]) {
     const v: LoopSource = w.loop;
 
@@ -207,7 +196,7 @@ function VideosGraph() {
     graph.push(
       compact({
         "@type": "VideoObject",
-        "@id": `${SITE_ORIGIN}${w.canonicalUrl}#video/`,
+        "@id": `${SITE_ORIGIN}${w.canonicalUrl}#video`,
         "name": w.title,
         "description": w.description,
         "inLanguage": "en",

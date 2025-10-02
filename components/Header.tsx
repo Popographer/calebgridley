@@ -8,18 +8,15 @@ import { usePathname } from "next/navigation";
 export default function Header() {
   const [open, setOpen] = useState(false);
 
-  // Explicitly typed refs
   const dialogRef = useRef<HTMLDivElement | null>(null);
   const closeBtnRef = useRef<HTMLButtonElement | null>(null);
 
   const pathname = usePathname();
 
-  // Close on route change
   useEffect(() => {
     setOpen(false);
   }, [pathname]);
 
-  // Body scroll lock without layout shift (desktop scrollbar compensation)
   useEffect(() => {
     if (!open) return;
 
@@ -33,7 +30,6 @@ export default function Header() {
     body.style.overflow = "hidden";
     if (scrollbarWidth > 0) body.style.paddingRight = `${scrollbarWidth}px`;
 
-    // Focus the close button after paint
     requestAnimationFrame(() => {
       const btn = closeBtnRef.current;
       btn?.focus();
@@ -45,7 +41,6 @@ export default function Header() {
     };
   }, [open]);
 
-  // Escape-to-close
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
@@ -55,7 +50,6 @@ export default function Header() {
     return () => window.removeEventListener("keydown", onKey);
   }, [open]);
 
-  // Focus trap (no assertions)
   useEffect(() => {
     if (!open) return;
 
@@ -88,7 +82,6 @@ export default function Header() {
       const active = activeEl instanceof HTMLElement ? activeEl : null;
 
       if (e.shiftKey) {
-        // If focus is outside container or at first, wrap to last
         if (active === first || !active || !container.contains(active)) {
           e.preventDefault();
           last.focus();
@@ -109,12 +102,11 @@ export default function Header() {
     typeof window !== "undefined" &&
     window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
 
-  const isHome = pathname === "/" || pathname === "";
-  const isWork = pathname === "/work" || pathname === "/work/";
+  const isHome = pathname === "/";
+  const isWork = pathname === "/work/";
 
   return (
     <header>
-      {/* Top bar */}
       <div className="fixed top-0 left-0 right-0 z-40 flex items-center justify-between px-6 py-4 mix-blend-difference">
         <Link
           href="/"
@@ -139,7 +131,6 @@ export default function Header() {
         </button>
       </div>
 
-      {/* Fullscreen overlay menu */}
       {open && (
         <div
           id="main-menu"
@@ -149,7 +140,7 @@ export default function Header() {
           aria-labelledby="main-menu-title"
           tabIndex={-1}
           onMouseDown={(e: React.MouseEvent<HTMLDivElement>) => {
-            if (e.target === e.currentTarget) setOpen(false); // backdrop click
+            if (e.target === e.currentTarget) setOpen(false);
           }}
           className={[
             "fixed inset-0 z-50 text-white",
@@ -161,7 +152,6 @@ export default function Header() {
             Main menu
           </h2>
 
-          {/* Top row with X */}
           <div className="flex items-center justify-between p-6">
             <button
               type="button"
@@ -175,7 +165,6 @@ export default function Header() {
             <div style={{ width: 24, height: 24 }} aria-hidden="true" />
           </div>
 
-          {/* Nav links */}
           <nav className="min-h-[calc(100vh-80px)] flex items-center">
             <ul className="px-6 space-y-6 text-3xl">
               <li>

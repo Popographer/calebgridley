@@ -5,7 +5,6 @@ import styles from "./identity.module.css";
 import JsonLd from "../../components/JsonLd";
 import Header from "../../components/Header";
 
-// Canonical identity + Wikidata refs
 import {
   SITE_ORIGIN,
   PERSON_ID,
@@ -17,7 +16,7 @@ import {
   ORG_IDENTIFIERS,
 } from "../../lib/identity";
 
-const HERO_URL = "https://cdn.calebgridley.com/augmentations-poster.webp"; // 1820x1080
+const HERO_URL = "https://cdn.calebgridley.com/augmentations-poster.webp";
 const CARD_PNG = "https://cdn.calebgridley.com/caleb-gridley_identity-card_1080x1080.png";
 const CARD_WEBP = "https://cdn.calebgridley.com/caleb-gridley_identity-card_1080x1080.webp";
 
@@ -53,7 +52,6 @@ export const metadata: Metadata = {
 export default function IdentityPage() {
   const dateModified = "2025-09-12";
 
-  // originals + canonical bundles
   const personSameAs = [
     "https://calebgridley.com/",
     "https://popographer.com/",
@@ -85,23 +83,23 @@ export default function IdentityPage() {
     "@graph": [
       {
         "@type": ["WebPage", "ProfilePage"],
-        "@id": `${SITE_ORIGIN}/identity/#webpage`,
+        "@id": `${SITE_ORIGIN}/identity#webpage`,
         url: `${SITE_ORIGIN}/identity/`,
         name: "Identity",
         description:
           "Identity information for Caleb Gridley. Official domains, socials, press, exhibitions, and legal notes.",
-        isPartOf: { "@id": `${SITE_ORIGIN}/#website` },
-        breadcrumb: { "@id": `${SITE_ORIGIN}/identity/#breadcrumbs` },
+        isPartOf: { "@id": `${SITE_ORIGIN}#website` },
+        breadcrumb: { "@id": `${SITE_ORIGIN}/identity#breadcrumbs` },
         about: { "@id": PERSON_ID },
         mainEntity: { "@id": PERSON_ID },
         publisher: { "@id": ORG_ID },
-        primaryImageOfPage: { "@id": `${SITE_ORIGIN}/identity/#hero` },
+        primaryImageOfPage: { "@id": `${SITE_ORIGIN}/identity#hero` },
         inLanguage: "en",
         dateModified,
       },
       {
         "@type": "BreadcrumbList",
-        "@id": `${SITE_ORIGIN}/identity/#breadcrumbs`,
+        "@id": `${SITE_ORIGIN}/identity#breadcrumbs`,
         name: "Breadcrumbs",
         itemListElement: [
           { "@type": "ListItem", position: 1, name: "Home", item: `${SITE_ORIGIN}/` },
@@ -110,7 +108,7 @@ export default function IdentityPage() {
       },
       {
         "@type": "ImageObject",
-        "@id": `${SITE_ORIGIN}/identity/#hero`,
+        "@id": `${SITE_ORIGIN}/identity#hero`,
         name: "Caleb Gridley",
         caption: "Caleb Gridley",
         contentUrl: HERO_URL,
@@ -141,7 +139,7 @@ export default function IdentityPage() {
         subjectOf: [
           {
             "@type": "WebPage",
-            "@id": "https://popographer.com/press/#ext-canvasrebel",
+            "@id": "https://popographer.com/press#ext-canvasrebel",
             name: "Meet Caleb Gridley",
             url: "https://canvasrebel.com/meet-caleb-gridley/",
             mainEntityOfPage: "https://canvasrebel.com/meet-caleb-gridley/",
@@ -158,18 +156,18 @@ export default function IdentityPage() {
           { "@type": "CreativeWorkSeries", "@id": SUBJECT_OF_REFERENCES.AUGMENTATIONS_SERIES },
           { "@type": "ExhibitionEvent", "@id": SUBJECT_OF_REFERENCES.ANOINTING_THE_ARTIFICE_EXHIBITION },
         ],
-        mainEntityOfPage: { "@id": `${SITE_ORIGIN}/identity/#webpage` },
+        mainEntityOfPage: { "@id": `${SITE_ORIGIN}/identity#webpage` },
       },
       {
         "@type": "ItemList",
-        "@id": `${SITE_ORIGIN}/identity/#selected-works`,
+        "@id": `${SITE_ORIGIN}/identity#selected-works`,
         name: "Selected works",
         itemListOrder: "https://schema.org/ItemListOrderDescending",
         itemListElement: [
-          { "@type": "ListItem", position: 1, name: "Not Warhol", item: { "@id": "https://popographer.com/artwork/not-warhol/#work" } },
-          { "@type": "ListItem", position: 2, name: "Anointing the Artifice", item: { "@id": "https://popographer.com/artwork/anointing-the-artifice/#work" } },
-          { "@type": "ListItem", position: 3, name: "Body of Work", item: { "@id": "https://popographer.com/artwork/body-of-work/#work" } },
-          { "@type": "ListItem", position: 4, name: "Augmentations", item: { "@id": "https://popographer.com/artwork/augmentations/#work" } },
+          { "@type": "ListItem", position: 1, name: "Not Warhol", item: { "@id": "https://popographer.com/artwork/not-warhol#work" } },
+          { "@type": "ListItem", position: 2, name: "Anointing the Artifice", item: { "@id": "https://popographer.com/artwork/anointing-the-artifice#work" } },
+          { "@type": "ListItem", position: 3, name: "Body of Work", item: { "@id": "https://popographer.com/artwork/body-of-work#work" } },
+          { "@type": "ListItem", position: 4, name: "Augmentations", item: { "@id": "https://popographer.com/artwork/augmentations#work" } },
         ],
       },
       {
@@ -190,7 +188,6 @@ export default function IdentityPage() {
 
   return (
     <div className="bg-white text-neutral-900">
-      {/* skip link */}
       <a
         href="#main-content"
         className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 bg-black text-white px-3 py-2 rounded"
@@ -198,17 +195,14 @@ export default function IdentityPage() {
         Skip to content
       </a>
 
-      {/* Global header (brand styling comes from Header.tsx) */}
       <Header />
 
-      {/* Content */}
       <main id="main-content" className="mx-auto max-w-5xl px-6 pt-28 pb-12">
         <h1 className={`text-4xl font-semibold tracking-tight uppercase ${styles.fadeUp}`}>CALEB GRIDLEY</h1>
         <p className={`mt-3 text-lg ${styles.fadeUp}`} style={{ animationDelay: ".05s" }}>
           American visual artist, photographer, film director, and fashion designer. Also known as Popographer.
         </p>
 
-        {/* Hero */}
         <figure className={`${styles.fadeUp}`} style={{ animationDelay: ".1s" }}>
           <Image
             src={HERO_URL}
@@ -224,7 +218,6 @@ export default function IdentityPage() {
           </figcaption>
         </figure>
 
-        {/* Content grid */}
         <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-12">
           <section id="domains" aria-labelledby="domains-h" className={styles.fadeUp} style={{ animationDelay: ".15s" }}>
             <h2 id="domains-h" className="text-sm font-semibold tracking-widest uppercase">OFFICIAL DOMAINS</h2>
@@ -244,7 +237,6 @@ export default function IdentityPage() {
             </ul>
           </section>
 
-          {/* Notable works */}
           <section id="works" aria-labelledby="works-h" className={`${styles.fadeUp} md:col-span-2`} style={{ animationDelay: ".24s" }}>
             <h2 id="works-h" className="text-sm font-semibold tracking-widest uppercase">NOTABLE WORKS</h2>
             <ul className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-base">
@@ -308,7 +300,6 @@ export default function IdentityPage() {
           <strong>Legal note:</strong> Popographer® is the trade name of Popographer, LLC (Louisiana, USA).
         </p>
 
-        {/* JSON-LD */}
         <JsonLd id="identity-jsonld" data={jsonLd} dataOwned="cg-o" dataPath="/identity/" />
       </main>
     </div>
